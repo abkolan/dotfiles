@@ -1,0 +1,143 @@
+# ~/.zsh_functions
+extract() { tar -xvf "$1"; }  # Another useful function
+
+# ===========================
+# 📂 DIRECTORY MANAGEMENT
+# ===========================
+
+# Create a directory and move into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Quickly go up N levels
+up() {
+    local c
+    c=$1
+    [ -z "$c" ] && c=1
+    while [ "$c" -gt 0 ]; do
+        cd ..
+        ((c--))
+    done
+}
+
+# Go to the most recently used directory (requires `z`)
+alias z="cd $(z -l 2>/dev/null | sort -rn | head -1 | awk '{print $2}')"
+
+# ===========================
+# 🔥 GIT SHORTCUTS
+# ===========================
+
+# Git commit with message
+gcm() {
+    git commit -m "$1"
+}
+
+# Git add and commit in one step
+gac() {
+    git add .
+    git commit -m "$1"
+}
+
+# Git clone into a new directory and enter it
+gclone() {
+    git clone "$1" && cd "$(basename "$1" .git)"
+}
+
+# ===========================
+# 🛠 SYSTEM UTILITIES
+# ===========================
+
+# Show disk usage in a human-readable format
+diskusage() {
+    du -sh * | sort -hr
+}
+
+# Show top 10 largest files in the current directory
+biggestfiles() {
+    find . -type f -exec du -h {} + | sort -rh | head -n 10
+}
+
+# Find and kill a process by name
+killproc() {
+    ps aux | grep "$1" | grep -v grep | awk '{print $2}' | xargs -r kill -9
+}
+
+# Cleanup system (for macOS)
+cleanmac() {
+    sudo rm -rf ~/Library/Caches/*
+    sudo rm -rf ~/Library/Logs/*
+    sudo rm -rf /Library/Caches/*
+    echo "🧹 Cleaned macOS system caches!"
+}
+
+# ===========================
+# 🌐 NETWORK & INTERNET
+# ===========================
+
+# Quick check if a website is up
+isup() {
+    curl -Is "$1" | head -n 1
+}
+
+# Get external IP
+myip() {
+    curl -s ifconfig.me
+}
+
+# Ping test
+pingtest() {
+    ping -c 5 "$1"
+}
+
+# Fastest DNS lookup
+fastdns() {
+    dig +short google.com
+}
+
+# ===========================
+# 📦 PACKAGE MANAGEMENT
+# ===========================
+
+# Update Homebrew and cleanup (for macOS)
+brewupdate() {
+    brew update && brew upgrade && brew cleanup
+}
+
+# Update APT packages (for Debian/Ubuntu)
+aptupdate() {
+    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+}
+
+# Update Pacman packages (for Arch Linux)
+pacmanupdate() {
+    sudo pacman -Syu
+}
+
+# ===========================
+# 🏗️ DOCKER HELPERS
+# ===========================
+
+# Remove all stopped containers
+docker-clean() {
+    docker rm "$(docker ps -aq)"
+}
+
+# Remove all unused images
+docker-rmi() {
+    docker rmi "$(docker images -q)"
+}
+
+# ===========================
+# ⏳ TIME & PRODUCTIVITY
+# ===========================
+
+# Countdown timer (example: `timer 10`)
+timer() {
+    sleep "$1" && echo "⏰ Time's up!"
+}
+
+# Show current date and time
+now() {
+    date "+%Y-%m-%d %H:%M:%S"
+}
