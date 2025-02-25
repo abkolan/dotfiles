@@ -1,4 +1,9 @@
 [user]
-	email = 104200+abkolan@users.noreply.github.com
-	name = abkolan
+email = 104200+abkolan@users.noreply.github.com
+name = abkolan
 
+[credential]
+helper =
+helper = /usr/local/share/gcm-core/git-credential-manager
+[credential "https://dev.azure.com"]
+useHttpPath = true
