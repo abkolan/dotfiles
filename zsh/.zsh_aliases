@@ -84,6 +84,15 @@ alias cea="code ~/.zsh_aliases" # Open Zsh aliases in VS Code
 alias cef="code ~/.zsh_functions" # Open Zsh functions in VS Code
 
 # ===========================
+# lsd - The next gen ls command
+# ===========================
+# LSD aliases
+alias ls='lsd'
+alias ll='lsd -l'
+alias la='lsd -la'
+alias lt='lsd --tree'
+
+# ===========================
 # 🔥 Personal CONFIGURATIONS
 # ===========================
 alias @dot="cd $HOME/dotfiles"
