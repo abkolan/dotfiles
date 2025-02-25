@@ -168,3 +168,6 @@ source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 # z - jump around configs
 source $(brew --prefix)/etc/profile.d/z.sh
 eval "$(zoxide init zsh)"
+
+# ripgrep - faster grep configs
+export RIPGREP_CONFIG_PATH=~/.config/.ripgreprc
