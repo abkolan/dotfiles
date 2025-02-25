@@ -5,15 +5,15 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"  # Go to home directory
-alias c="clear"  # Clear terminal
+alias c="clear" # Clear terminal
 
 # ===========================
 # 📂 DIRECTORY LISTING ALIASES
 # ===========================
-alias ls="ls --color=auto"  # Enable colors
-alias ll="ls -lah"  # Long format, human-readable sizes, show hidden files
-alias la="ls -A"  # List all except `.` and `..`
-alias l="ls -CF"  # Compact view with file type indicators
+alias ls="ls --color=auto" # Enable colors
+alias ll="ls -lah"         # Long format, human-readable sizes, show hidden files
+alias la="ls -A"           # List all except `.` and `..`
+alias l="ls -CF"           # Compact view with file type indicators
 
 # macOS-specific `ls` (if using macOS)
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -23,23 +23,21 @@ fi
 # ===========================
 # 🛠️ SYSTEM & FILE MANAGEMENT
 # ===========================
-alias mkdir="mkdir -p"  # Auto-create parent directories
-alias cp="cp -iv"  # Confirm before overwriting
-alias mv="mv -iv"  # Confirm before moving
-alias rm="rm -Iv --preserve-root"  # Interactive remove, prevent root deletion
+alias mkdir="mkdir -p"            # Auto-create parent directories
+alias cp="cp -iv"                 # Confirm before overwriting
+alias mv="mv -iv"                 # Confirm before moving
+alias rm="rm -Iv --preserve-root" # Interactive remove, prevent root deletion
 
 # Safeguard against accidental file deletions
-alias rmd="rm -r"  # Remove directory
-alias rf="rm -rf"  # Force delete
-
+alias rmd="rm -r" # Remove directory
+alias rf="rm -rf" # Force delete
 
 # ===========================
 # 📝 EDITOR SHORTCUTS
 # ===========================
-alias v="nvim"  # Open Neovim
+alias v="nvim" # Open Neovim
 alias vi="nvim"
 alias vim="nvim"
-
 
 # ===========================
 # 🐳 DOCKER ALIASES
@@ -48,22 +46,22 @@ alias d="docker"
 alias dc="docker compose"
 alias dps="docker ps"
 alias dim="docker images"
-alias drm="docker rm $(docker ps -aq)"  # Remove all containers
-alias drmi="docker rmi $(docker images -q)"  # Remove all images
+alias drm="docker rm $(docker ps -aq)"      # Remove all containers
+alias drmi="docker rmi $(docker images -q)" # Remove all images
 
 # ===========================
 # 🌐 NETWORK & INTERNET
 # ===========================
-alias myip="curl ifconfig.me"  # Show public IP
-alias ports="netstat -tulanp"  # List open ports
-alias pingg="ping 8.8.8.8"  # Google DNS ping
-alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"  # macOS DNS flush
+alias myip="curl ifconfig.me"                                                    # Show public IP
+alias ports="netstat -tulanp"                                                    # List open ports
+alias pingg="ping 8.8.8.8"                                                       # Google DNS ping
+alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder" # macOS DNS flush
 
 # ===========================
 # ⏳ PROCESS MANAGEMENT
 # ===========================
-alias psg="ps aux | grep -i"  # Search for a process
-alias kill9="kill -9"  # Force kill a process
+alias psg="ps aux | grep -i" # Search for a process
+alias kill9="kill -9"        # Force kill a process
 
 # ===========================
 # 📦 PACKAGE MANAGERS
@@ -78,9 +76,9 @@ alias bs="brew search"
 # ===========================
 alias ez="nvim ~/.zshrc"
 alias rz="source ~/.zshrc"
-alias cez="code ~/.zshrc" # Open Zsh config in VS Code
-alias czenv="code ~/.zshenv" # Open Zsh env config in VS Code
-alias cea="code ~/.zsh_aliases" # Open Zsh aliases in VS Code
+alias cez="code ~/.zshrc"         # Open Zsh config in VS Code
+alias czenv="code ~/.zshenv"      # Open Zsh env config in VS Code
+alias cea="code ~/.zsh_aliases"   # Open Zsh aliases in VS Code
 alias cef="code ~/.zsh_functions" # Open Zsh functions in VS Code
 
 # ===========================
@@ -101,5 +99,17 @@ alias @workspace="cd $WORKSPACE"
 alias @kodex="cd $WORKSPACE/kodex"
 alias @goprojs="cd $WORKSPACE/kodex/go-projects"
 
+# ===========================
+# fzf - Fuzzy Finder aliases
+# ===========================
+# Basic fzf alias with fd command to respect gitignore
+alias f="fd --type f --hidden --exclude .git --exclude node_modules | fzf"
 
+# fzf with bat preview, using fd to filter
+alias fzf="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}'"
 
+# fzf for files with preview window configuration
+alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
+
+# Change directory, using fd to find directories and exclude unwanted ones
+alias fcd='cd $(fd --type d --hidden --exclude .git --exclude node_modules | fzf)'
