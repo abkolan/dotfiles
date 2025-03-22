@@ -171,3 +171,4 @@ eval "$(zoxide init zsh)"
 
 # ripgrep - faster grep configs
 export RIPGREP_CONFIG_PATH=~/.config/.ripgreprc
+source /Users/ab/.config/broot/launcher/bash/br
