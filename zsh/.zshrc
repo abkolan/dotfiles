@@ -99,7 +99,7 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
     [ -f ~/.zsh_aliases ] && source ~/.zsh_aliases
     
     # Source functions
-    [ -f ~/.zsh_aliases ] && source ~/.zsh_aliases
+    [ -f ~/.zsh_functions ] && source ~/.zsh_functions
     
     # History settings
     # HISTSIZE=5000

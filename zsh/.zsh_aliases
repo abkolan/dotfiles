@@ -23,14 +23,14 @@ fi
 # ===========================
 # 🛠️ SYSTEM & FILE MANAGEMENT
 # ===========================
-alias mkdir="mkdir -p"            # Auto-create parent directories
-alias cp="cp -iv"                 # Confirm before overwriting
-alias mv="mv -iv"                 # Confirm before moving
-alias rm="rm -Iv --preserve-root" # Interactive remove, prevent root deletion
+alias mkdir="mkdir -p" # Auto-create parent directories
+alias cp="cp -iv"      # Confirm before overwriting
+alias mv="mv -iv"      # Confirm before moving
+#alias rm="rm -Iv --preserve-root" # Interactive remove, prevent root deletion
 
 # Safeguard against accidental file deletions
-alias rmd="rm -r" # Remove directory
-alias rf="rm -rf" # Force delete
+#alias rmd="rm -r" # Remove directory
+#alias rf="rm -rf" # Force delete
 
 # ===========================
 # 📝 EDITOR SHORTCUTS
@@ -46,13 +46,11 @@ alias d="docker"
 alias dc="docker compose"
 alias dps="docker ps"
 alias dim="docker images"
-alias drm="docker rm $(docker ps -aq)"      # Remove all containers
-alias drmi="docker rmi $(docker images -q)" # Remove all images
 
 # ===========================
 # 🌐 NETWORK & INTERNET
 # ===========================
-alias myip="curl ifconfig.me"                                                    # Show public IP
+alias myip="curl -s ipinfo.io/ip"                                                # Show public IP
 alias ports="netstat -tulanp"                                                    # List open ports
 alias pingg="ping 8.8.8.8"                                                       # Google DNS ping
 alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder" # macOS DNS flush

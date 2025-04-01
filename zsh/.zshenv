@@ -23,3 +23,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 
+. "$HOME/.cargo/env"

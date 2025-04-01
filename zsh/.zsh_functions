@@ -1,5 +1,11 @@
 # ~/.zsh_functions
-extract() { tar -xvf "$1"; }  # Another useful function
+
+# ===========================
+# 📦 EXTRACTORS
+# ===========================
+extract() {
+    tar -xvf "$1"
+}
 
 # ===========================
 # 📂 DIRECTORY MANAGEMENT
@@ -12,36 +18,23 @@ mkcd() {
 
 # Quickly go up N levels
 up() {
-    local c
-    c=$1
-    [ -z "$c" ] && c=1
+    local c=${1:-1}
     while [ "$c" -gt 0 ]; do
         cd ..
         ((c--))
     done
 }
 
-# Go to the most recently used directory (requires `z`)
-alias z="cd $(z -l 2>/dev/null | sort -rn | head -1 | awk '{print $2}')"
-
-# ===========================
-# 🔥 GIT SHORTCUTS
-# ===========================
-
-# Git commit with message
-gcm() {
-    git commit -m "$1"
-}
-
-# Git add and commit in one step
-gac() {
-    git add .
-    git commit -m "$1"
-}
-
-# Git clone into a new directory and enter it
-gclone() {
-    git clone "$1" && cd "$(basename "$1" .git)"
+# NOTE: This alias will be evaluated at shell load!
+# Better as a function that evaluates at runtime
+function z {
+    local recent
+    recent="$(z -l 2>/dev/null | sort -rn | head -1 | awk '{print $2}')"
+    if [ -n "$recent" ]; then
+        cd "$recent"
+    else
+        echo "No recent directory found."
+    fi
 }
 
 # ===========================
@@ -50,17 +43,24 @@ gclone() {
 
 # Show disk usage in a human-readable format
 diskusage() {
-    du -sh * | sort -hr
+    du -sh * 2>/dev/null | sort -hr
 }
 
 # Show top 10 largest files in the current directory
 biggestfiles() {
-    find . -type f -exec du -h {} + | sort -rh | head -n 10
+    find . -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
 }
 
 # Find and kill a process by name
 killproc() {
-    ps aux | grep "$1" | grep -v grep | awk '{print $2}' | xargs -r kill -9
+    local pids
+    pids=$(pgrep -f "$1")
+    if [ -n "$pids" ]; then
+        echo "$pids" | xargs -r kill -9
+        echo "🔪 Killed process(es): $1"
+    else
+        echo "⚠️ No process found matching: $1"
+    fi
 }
 
 # Cleanup system (for macOS)
@@ -78,11 +78,6 @@ cleanmac() {
 # Quick check if a website is up
 isup() {
     curl -Is "$1" | head -n 1
-}
-
-# Get external IP
-myip() {
-    curl -s ifconfig.me
 }
 
 # Ping test
@@ -104,28 +99,31 @@ brewupdate() {
     brew update && brew upgrade && brew cleanup
 }
 
-# Update APT packages (for Debian/Ubuntu)
-aptupdate() {
-    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
-}
-
 # Update Pacman packages (for Arch Linux)
 pacmanupdate() {
     sudo pacman -Syu
 }
 
 # ===========================
-# 🏗️ DOCKER HELPERS
+# 🐳 DOCKER HELPERS
 # ===========================
 
 # Remove all stopped containers
 docker-clean() {
-    docker rm "$(docker ps -aq)"
+    if docker info &>/dev/null; then
+        docker rm "$(docker ps -aq)"
+    else
+        echo "🐳 Docker daemon not running."
+    fi
 }
 
-# Remove all unused images
+# Remove all images
 docker-rmi() {
-    docker rmi "$(docker images -q)"
+    if docker info &>/dev/null; then
+        docker rmi "$(docker images -q)"
+    else
+        echo "🐳 Docker daemon not running."
+    fi
 }
 
 # ===========================
