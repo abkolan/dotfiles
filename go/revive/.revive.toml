@@ -1,0 +1,122 @@
+# revive config based on Effective Go, Code Review Comments, and community best practices
+# All rules default to "hint" unless overridden
+
+severity = "hint"
+confidence = 0.8
+
+##########################
+# ✨ Naming & Export Rules
+##########################
+
+[rule.exported]
+# Require comments on exported declarations
+# Matches Effective Go + Code Review Comments
+
+[rule.var-naming]
+# Enforce idiomatic variable names (camelCase, no underscores)
+
+[rule.func-naming]
+# PascalCase for exported funcs, camelCase otherwise
+
+[rule.receiver-naming]
+# Use short, consistent receiver names like "r", "c", "s", "t"
+
+[rule.error-naming]
+# Errors should be named "err" or end with "Err"
+
+[rule.package-comments]
+# Package declaration should be preceded by a comment
+
+[rule.unexported-return]
+# Exported functions should not return unexported types
+
+[rule.context-as-argument]
+# `context.Context` should be the first param if present
+severity = "warning"
+
+##########################
+# ✨ Control Flow & Logic
+##########################
+
+[rule.if-return]
+# Use early returns instead of else
+
+[rule.superfluous-else]
+# Avoid else after return
+
+[rule.indent-error-flow]
+# Reduce nesting by handling errors early
+
+[rule.range-val-address]
+# Don’t take address of loop vars (Go trap)
+
+[rule.unreachable-code]
+# Dead code after return/panic
+
+[rule.empty-block]
+# Warn on empty `{}` blocks unless intentional
+
+[rule.constant-logical-expr]
+# Detect expressions like `if true || x`
+
+[rule.modifies-parameter]
+# Avoid modifying incoming function parameters
+severity = "warning"
+
+##########################
+# ✨ Code Cleanliness
+##########################
+
+[rule.unused-parameter]
+# Suggest removing unused function params
+
+[rule.unused-receiver]
+# Remove unused receiver if method doesn’t use it
+
+[rule.argument-limit]
+# Warn if too many arguments (discouraged in Go)
+disabled = true
+
+[rule.cognitive-complexity]
+# Warn if a function is too complex
+disabled = true
+
+[rule.flag-parameter]
+# Discourage bool flags like `func(debug bool)`
+disabled = true
+
+##########################
+# ✨ Formatting / Readability
+##########################
+
+[rule.line-length-limit]
+# Not enforced in Effective Go — devs prefer flexibility
+disabled = true
+
+[rule.struct-tag]
+# Warn on malformed struct tags (JSON/XML/etc.)
+# Enable if you care about tag correctness
+disabled = true
+
+[rule.dot-imports]
+# Discourage `import .` unless in tests
+disabled = true
+
+[rule.time-naming]
+# Suggest suffixing time vars with `Time`, e.g., `startTime`
+disabled = true
+
+##########################
+# 🧪 Optional/Advanced Rules
+##########################
+
+[rule.blank-imports]
+# Allow blank imports in `main` and with a comment
+arguments = ["allow-main", "allow-dot"]
+
+[rule.confusing-naming]
+# Warn about `data1`, `data2`, `result1`, etc.
+
+[rule.atomic]
+# Avoid non-atomic operations on atomic values
+severity = "warning"
