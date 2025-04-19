@@ -139,3 +139,17 @@ timer() {
 now() {
     date "+%Y-%m-%d %H:%M:%S"
 }
+
+# ===========================
+# GitHub Helpers
+# ===========================
+
+# Open Github repository in browser
+ghopen() {
+    url=$(git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+    if [ -n "$url" ]; then
+        open "$url" 2>/dev/null || xdg-open "$url"
+    else
+        echo "Not a Git repository or 'origin' remote not found."
+    fi
+}
