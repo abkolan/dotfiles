@@ -40,6 +40,10 @@ alias vi="nvim"
 alias vim="nvim"
 
 # ===========================
+# golang  
+# ===========================
+alias go=richgo
+# ===========================
 # 🐳 DOCKER ALIASES
 # ===========================
 alias d="docker"
