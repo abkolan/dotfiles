@@ -205,7 +205,7 @@ content_search_max_file_size: 10MB
 # This makes it possible to use shortcuts like 'space-n', 
 # 'ctrl-alt-a-b', 'shift-space', etc.
 #
-enable_kitty_keyboard: false
+# enable_kitty_keyboard: false
 
 ###############################################################
 # lines around matching line in filtered preview

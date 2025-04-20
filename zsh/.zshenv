@@ -22,5 +22,5 @@ if [[ "$(uname)" == "Darwin" ]]; then
   export PATH="/opt/homebrew/bin:$PATH"
 fi
 
-
+# Cargo 
 . "$HOME/.cargo/env"

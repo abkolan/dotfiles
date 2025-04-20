@@ -34,6 +34,7 @@ alias mv="mv -iv"      # Confirm before moving
 
 # ===========================
 # 📝 EDITOR SHORTCUTS
+# dep: neovim
 # ===========================
 alias v="nvim" # Open Neovim
 alias vi="nvim"
@@ -41,10 +42,12 @@ alias vim="nvim"
 
 # ===========================
 # golang  
+# dep: richgo
 # ===========================
-alias go=richgo
+alias go=richgo # Run go tests with colored highlighting
 # ===========================
 # 🐳 DOCKER ALIASES
+# dep: docker
 # ===========================
 alias d="docker"
 alias dc="docker compose"
@@ -85,6 +88,7 @@ alias cef="code ~/.zsh_functions" # Open Zsh functions in VS Code
 
 # ===========================
 # lsd - The next gen ls command
+# dep: lsd
 # ===========================
 # LSD aliases
 alias ls='lsd'
@@ -103,6 +107,7 @@ alias @goprojs="cd $WORKSPACE/kodex/go-projects"
 
 # ===========================
 # fzf - Fuzzy Finder aliases
+# dep: fd, fzf
 # ===========================
 # Basic fzf alias with fd command to respect gitignore
 alias f="fd --type f --hidden --exclude .git --exclude node_modules | fzf"
