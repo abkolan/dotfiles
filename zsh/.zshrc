@@ -144,7 +144,7 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
         eval "$__conda_setup"
     else
         if [ -f "/Users/ab/anaconda3/etc/profile.d/conda.sh" ]; then
-            . "/Users/ab/anaconda3/etc/profile.d/conda.sh"
+# . "/Users/ab/anaconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
         else
             export PATH="/Users/ab/anaconda3/bin:$PATH"
         fi
@@ -172,3 +172,9 @@ eval "$(zoxide init zsh)"
 # ripgrep - faster grep configs
 export RIPGREP_CONFIG_PATH=~/.config/.ripgreprc
 source /Users/ab/.config/broot/launcher/bash/br
+
+# >>> conda initialize >>>
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+eval "$__conda_setup"
+# <<< conda initialize <<<
+
