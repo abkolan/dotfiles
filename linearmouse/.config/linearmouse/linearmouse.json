@@ -1,0 +1,81 @@
+{
+  "schemes" : [
+    {
+      "pointer" : {
+        "acceleration" : 4,
+        "disableAcceleration" : true
+      },
+      "if" : {
+        "device" : {
+          "productID" : "0x28e",
+          "vendorID" : "0x3f0",
+          "productName" : "HyperX Pulsefire Haste Wireless",
+          "category" : "mouse"
+        }
+      }
+    },
+    {
+      "pointer" : {
+        "disableAcceleration" : false,
+        "acceleration" : 3,
+        "speed" : 0
+      },
+      "if" : {
+        "device" : {
+          "vendorID" : "0x4c",
+          "serialNumber" : "10-cf-0f-e7-3c-18",
+          "category" : "mouse",
+          "productID" : "0x269",
+          "productName" : "Magic Mouse"
+        }
+      },
+      "scrolling" : {
+        "acceleration" : 1,
+        "speed" : {
+          "vertical" : 8,
+          "horizontal" : 0.1
+        }
+      }
+    },
+    {
+      "pointer" : {
+        "acceleration" : 2
+      },
+      "if" : {
+        "device" : {
+          "vendorID" : "0x4c",
+          "productName" : "Magic Mouse",
+          "productID" : "0x269",
+          "serialNumber" : "10-cf-0f-e7-3c-18",
+          "category" : "mouse"
+        },
+        "app" : "com.google.Chrome"
+      },
+      "scrolling" : {
+        "acceleration" : {
+          "horizontal" : 0.25
+        },
+        "speed" : {
+          "horizontal" : 0.1
+        }
+      }
+    },
+    {
+      "if" : {
+        "device" : {
+          "serialNumber" : "10:CF:0F:E7:3C:18",
+          "category" : "mouse",
+          "productID" : "0x269",
+          "vendorID" : "0x4c",
+          "productName" : "AB’s Magic Mouse"
+        }
+      },
+      "scrolling" : {
+        "acceleration" : {
+          "vertical" : 1
+        }
+      }
+    }
+  ],
+  "$schema" : "https:\/\/schema.linearmouse.app\/0.10.0"
+}

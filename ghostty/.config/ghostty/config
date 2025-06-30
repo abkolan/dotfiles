@@ -1,0 +1,8 @@
+theme = iTerm2 Dark Background
+font-family = JetBrainsMonoNL NFM Regular
+font-size = 17
+cursor-style = block
+cursor-style-blink = true
+shell-integration-features = no-cursor
+window-height = 30 
+window-width = 100

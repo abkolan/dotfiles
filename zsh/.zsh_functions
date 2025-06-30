@@ -4,7 +4,7 @@
 # 📦 EXTRACTORS
 # ===========================
 extract() {
-    tar -xvf "$1"
+	tar -xvf "$1"
 }
 
 # ===========================
@@ -13,28 +13,16 @@ extract() {
 
 # Create a directory and move into it
 mkcd() {
-    mkdir -p "$1" && cd "$1"
+	mkdir -p "$1" && cd "$1"
 }
 
 # Quickly go up N levels
 up() {
-    local c=${1:-1}
-    while [ "$c" -gt 0 ]; do
-        cd ..
-        ((c--))
-    done
-}
-
-# NOTE: This alias will be evaluated at shell load!
-# Better as a function that evaluates at runtime
-function z {
-    local recent
-    recent="$(z -l 2>/dev/null | sort -rn | head -1 | awk '{print $2}')"
-    if [ -n "$recent" ]; then
-        cd "$recent"
-    else
-        echo "No recent directory found."
-    fi
+	local c=${1:-1}
+	while [ "$c" -gt 0 ]; do
+		cd ..
+		((c--))
+	done
 }
 
 # ===========================
@@ -43,32 +31,32 @@ function z {
 
 # Show disk usage in a human-readable format
 diskusage() {
-    du -sh * 2>/dev/null | sort -hr
+	du -sh * 2>/dev/null | sort -hr
 }
 
 # Show top 10 largest files in the current directory
 biggestfiles() {
-    find . -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
+	find . -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
 }
 
 # Find and kill a process by name
 killproc() {
-    local pids
-    pids=$(pgrep -f "$1")
-    if [ -n "$pids" ]; then
-        echo "$pids" | xargs -r kill -9
-        echo "🔪 Killed process(es): $1"
-    else
-        echo "⚠️ No process found matching: $1"
-    fi
+	local pids
+	pids=$(pgrep -f "$1")
+	if [ -n "$pids" ]; then
+		echo "$pids" | xargs -r kill -9
+		echo "🔪 Killed process(es): $1"
+	else
+		echo "⚠️ No process found matching: $1"
+	fi
 }
 
 # Cleanup system (for macOS)
 cleanmac() {
-    sudo rm -rf ~/Library/Caches/*
-    sudo rm -rf ~/Library/Logs/*
-    sudo rm -rf /Library/Caches/*
-    echo "🧹 Cleaned macOS system caches!"
+	sudo rm -rf ~/Library/Caches/*
+	sudo rm -rf ~/Library/Logs/*
+	sudo rm -rf /Library/Caches/*
+	echo "🧹 Cleaned macOS system caches!"
 }
 
 # ===========================
@@ -77,17 +65,17 @@ cleanmac() {
 
 # Quick check if a website is up
 isup() {
-    curl -Is "$1" | head -n 1
+	curl -Is "$1" | head -n 1
 }
 
 # Ping test
 pingtest() {
-    ping -c 5 "$1"
+	ping -c 5 "$1"
 }
 
 # Fastest DNS lookup
 fastdns() {
-    dig +short google.com
+	dig +short google.com
 }
 
 # ===========================
@@ -96,12 +84,12 @@ fastdns() {
 
 # Update Homebrew and cleanup (for macOS)
 brewupdate() {
-    brew update && brew upgrade && brew cleanup
+	brew update && brew upgrade && brew cleanup
 }
 
 # Update Pacman packages (for Arch Linux)
 pacmanupdate() {
-    sudo pacman -Syu
+	sudo pacman -Syu
 }
 
 # ===========================
@@ -110,20 +98,20 @@ pacmanupdate() {
 
 # Remove all stopped containers
 docker-clean() {
-    if docker info &>/dev/null; then
-        docker rm "$(docker ps -aq)"
-    else
-        echo "🐳 Docker daemon not running."
-    fi
+	if docker info &>/dev/null; then
+		docker rm "$(docker ps -aq)"
+	else
+		echo "🐳 Docker daemon not running."
+	fi
 }
 
 # Remove all images
 docker-rmi() {
-    if docker info &>/dev/null; then
-        docker rmi "$(docker images -q)"
-    else
-        echo "🐳 Docker daemon not running."
-    fi
+	if docker info &>/dev/null; then
+		docker rmi "$(docker images -q)"
+	else
+		echo "🐳 Docker daemon not running."
+	fi
 }
 
 # ===========================
@@ -132,12 +120,12 @@ docker-rmi() {
 
 # Countdown timer (example: `timer 10`)
 timer() {
-    sleep "$1" && echo "⏰ Time's up!"
+	sleep "$1" && echo "⏰ Time's up!"
 }
 
 # Show current date and time
 now() {
-    date "+%Y-%m-%d %H:%M:%S"
+	date "+%Y-%m-%d %H:%M:%S"
 }
 
 # ===========================
@@ -146,10 +134,10 @@ now() {
 
 # Open Github repository in browser
 ghopen() {
-    url=$(git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
-    if [ -n "$url" ]; then
-        open "$url" 2>/dev/null || xdg-open "$url"
-    else
-        echo "Not a Git repository or 'origin' remote not found."
-    fi
+	url=$(git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+	if [ -n "$url" ]; then
+		open "$url" 2>/dev/null || xdg-open "$url"
+	else
+		echo "Not a Git repository or 'origin' remote not found."
+	fi
 }
