@@ -1,62 +1,62 @@
 {
   "schemes" : [
     {
-      "pointer" : {
-        "acceleration" : 4,
-        "disableAcceleration" : true
-      },
       "if" : {
         "device" : {
           "productID" : "0x28e",
           "vendorID" : "0x3f0",
-          "productName" : "HyperX Pulsefire Haste Wireless",
-          "category" : "mouse"
+          "category" : "mouse",
+          "productName" : "HyperX Pulsefire Haste Wireless"
         }
+      },
+      "pointer" : {
+        "acceleration" : 4,
+        "disableAcceleration" : true
       }
     },
     {
-      "pointer" : {
-        "disableAcceleration" : false,
-        "acceleration" : 3,
-        "speed" : 0
-      },
       "if" : {
         "device" : {
+          "productName" : "Magic Mouse",
           "vendorID" : "0x4c",
-          "serialNumber" : "10-cf-0f-e7-3c-18",
-          "category" : "mouse",
           "productID" : "0x269",
-          "productName" : "Magic Mouse"
+          "serialNumber" : "10-cf-0f-e7-3c-18",
+          "category" : "mouse"
         }
       },
+      "pointer" : {
+        "disableAcceleration" : false,
+        "speed" : 0,
+        "acceleration" : 3
+      },
       "scrolling" : {
-        "acceleration" : 1,
         "speed" : {
           "vertical" : 8,
           "horizontal" : 0.1
-        }
+        },
+        "acceleration" : 1
       }
     },
     {
-      "pointer" : {
-        "acceleration" : 2
-      },
       "if" : {
         "device" : {
-          "vendorID" : "0x4c",
-          "productName" : "Magic Mouse",
           "productID" : "0x269",
           "serialNumber" : "10-cf-0f-e7-3c-18",
+          "vendorID" : "0x4c",
+          "productName" : "Magic Mouse",
           "category" : "mouse"
         },
         "app" : "com.google.Chrome"
       },
+      "pointer" : {
+        "acceleration" : 2
+      },
       "scrolling" : {
-        "acceleration" : {
-          "horizontal" : 0.25
-        },
         "speed" : {
           "horizontal" : 0.1
+        },
+        "acceleration" : {
+          "horizontal" : 0.25
         }
       }
     },
@@ -65,10 +65,14 @@
         "device" : {
           "serialNumber" : "10:CF:0F:E7:3C:18",
           "category" : "mouse",
-          "productID" : "0x269",
           "vendorID" : "0x4c",
+          "productID" : "0x269",
           "productName" : "AB’s Magic Mouse"
         }
+      },
+      "pointer" : {
+        "acceleration" : 0.675,
+        "speed" : 0.05
       },
       "scrolling" : {
         "acceleration" : {

@@ -49,9 +49,9 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
     if [ $? -eq 0 ]; then
       eval "$__conda_setup"
     elif [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
-      . "$HOME/anaconda3/etc/profile.d/conda.sh"
+# . "$HOME/anaconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
     else
-      export PATH="$HOME/anaconda3/bin:$PATH"
+# export PATH="$HOME/anaconda3/bin:$PATH"  # commented out by conda initialize
     fi
     unset __conda_setup
   fi
@@ -93,3 +93,19 @@ alias k=kubectl
 
 # Enable completion for 'k' alias
 compdef __start_kubectl k
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/ab/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/ab/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/ab/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/ab/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
