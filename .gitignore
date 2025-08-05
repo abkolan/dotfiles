@@ -1,1 +1,49 @@
+# macOS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+
+# Temporary files
+.tmp/
+temp/
+
+# Personal configurations that shouldn't be shared
+.personal/
+.local/
+
+# Stow conflicts
+.stow-*
+
+# Backup files
+*.bak
+*.backup
+
+# Node modules (if any JS projects)
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Compiled binaries
+*.exe
+*.o
+*.so
+*.dylib
