@@ -123,9 +123,15 @@ fi  # End of INTELLIJ_ENVIRONMENT_READER check
 # PERFORMANCE: Completion paths setup (outside IntelliJ check)
 # These need to be set before compinit for optimal performance
 # ===========================
-# PERFORMANCE: Cache brew prefix to avoid repeated calls
+# PERFORMANCE: Use static Homebrew prefix detection (avoids slow brew --prefix)
 if [[ -z "$HOMEBREW_PREFIX" ]]; then
-  export HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null || echo '/opt/homebrew')"
+  if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    export HOMEBREW_PREFIX="/opt/homebrew"  # Apple Silicon default
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    export HOMEBREW_PREFIX="/usr/local"     # Intel Mac default
+  else
+    export HOMEBREW_PREFIX="/opt/homebrew"  # Fallback to common default
+  fi
 fi
 
 # PERFORMANCE: Add completion paths efficiently
@@ -182,12 +188,14 @@ fi
 # ===========================
 autoload -Uz compinit
 
-# PERFORMANCE: Skip security check for faster startup (use with caution)
-# Only rebuild completions if they're older than 24 hours
-if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
-  compinit
-else
+# PERFORMANCE: Only rebuild completions if they're older than 24 hours
+# The glob pattern (#qN.mh+24) checks if the file exists and is less than 24 hours old
+if [[ -f ${ZDOTDIR:-$HOME}/.zcompdump ]] && [[ ${ZDOTDIR:-$HOME}/.zcompdump -nt /usr/share/zsh ]] && [[ ! ${ZDOTDIR:-$HOME}/.zcompdump -ot ${ZDOTDIR:-$HOME}/.zshrc ]]; then
+  # Dump exists, is newer than system files, and not older than .zshrc
   compinit -C  # Skip security check for speed
+else
+  # Dump is missing, outdated, or .zshrc has been modified
+  compinit
 fi
 
 # ===========================
@@ -252,8 +260,4 @@ zstyle ':completion:*' file-patterns '*:all-files' '.*:hidden-files'
 zstyle ':completion:*' menu select                    # Visual menu for completion
 zstyle ':completion:*' verbose true                   # Show descriptions
 
-# PERFORMANCE: Force rebuild completion cache with new settings
-if [[ ! -f ~/.zcompdump ]] || [[ ~/.zcompdump -ot ${ZDOTDIR:-$HOME}/.zshrc ]]; then
-  autoload -Uz compinit
-  compinit
-fi
+# NOTE: Completion system already initialized above with optimized caching

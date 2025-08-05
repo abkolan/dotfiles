@@ -14,6 +14,10 @@ export HOMEBREW_NO_ANALYTICS=1
 # PERFORMANCE: Use Homebrew's faster installation method
 export HOMEBREW_NO_AUTO_UPDATE=1
 
+# PERFORMANCE: Disable Oh My Zsh auto-update prompts for faster startup
+export DISABLE_UPDATE_PROMPT=true
+export DISABLE_AUTO_UPDATE=true
+
 # PERFORMANCE: Default editors (essential for many tools)
 export EDITOR=nvim
 export VISUAL=nvim
@@ -33,21 +37,13 @@ typeset -U PATH
 # Build PATH efficiently with minimal external calls
 # ===========================
 
-# PERFORMANCE: Initialize PATH with system defaults (faster than multiple appends)
-PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-
-# PERFORMANCE: Add Homebrew path (for macOS users)
+# PERFORMANCE: Build PATH in a single operation to minimize overhead
 if [[ "$(uname)" == "Darwin" ]]; then
-  PATH="/opt/homebrew/bin:$PATH"
-fi
-
-# PERFORMANCE: Add macOS system paths efficiently
-if [[ "$(uname)" == "Darwin" ]]; then
-  PATH="$PATH:/System/Cryptexes/App/usr/bin"
-  PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
-  PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
-  PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
-  PATH="$PATH:/Library/Apple/usr/bin"
+  # macOS: Include all paths in one assignment
+  PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/System/Cryptexes/App/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin"
+else
+  # Linux/other: Standard paths only
+  PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 fi
 
 # PERFORMANCE: Add Go PATH with error handling and caching
