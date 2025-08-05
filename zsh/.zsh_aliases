@@ -117,32 +117,27 @@ alias @goprojs="cd $WORKSPACE/kodex/go-projects"
 # dep: fd, fzf, bat
 # ===========================
 # Basic fzf alias with fd command to respect gitignore
-alias f="fd --type f --hidden --exclude .git --exclude node_modules | fzf"
+alias f="fd --type f --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf"
 
 # Enhanced file search with fd + fzf + bat
-alias ff="fd --type f --hidden --follow --exclude .git | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
-
-# fzf with bat preview, using fd to filter
-alias fzf="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}'"
+alias ff="fd --type f --hidden --follow --exclude .git | /opt/homebrew/bin/fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' --bind \"ctrl-/:change-preview-window(down|hidden|)\""
 
 # fzf for files with preview window configuration
-alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
+alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
 
 # Search in file contents with rg + fzf
-alias rg="rg --color=always --line-number --no-heading --smart-case"
-alias rgf="rg --files-with-matches --no-messages | fzf --preview 'rg {} --color=always --context 10' --preview-window 'right:60%'"
+alias rg="/opt/homebrew/bin/rg --color=always --line-number --no-heading --smart-case"
 
-# Search text content interactively
-alias rgi="rg --color=always --line-number --no-heading --smart-case . | fzf --ansi --preview 'echo {} | cut -d: -f1 | xargs bat --color=always --highlight-line {2}' --delimiter ':'"
+# Search text content interactively - function moved to .zsh_functions
 
 # Change directory, using fd to find directories and exclude unwanted ones
-alias fcd='cd $(fd --type d --hidden --exclude .git --exclude node_modules | fzf)'
+alias fcd='local dir=$(fd --type d --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
 
 # Fuzzy cd with better preview
-alias fzd="fd --type d --hidden --follow --exclude .git | fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+alias fzd="fd --type d --hidden --follow --exclude .git | /opt/homebrew/bin/fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 
 # Recent directories (requires zoxide)
-alias zz="zoxide query -l | fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}'"
+alias zz='local dir=$(zoxide query -l | /opt/homebrew/bin/fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
 
 # ===========================
 # 👻 GHOSTTY TERMINAL ALIASES - PERFORMANCE OPTIMIZED  

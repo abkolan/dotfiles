@@ -63,7 +63,7 @@ fi
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 
 # Default options with optimized preview and keybindings
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview-window=right:60% --bind ctrl-/:change-preview-window(down|hidden|) --bind ctrl-u:preview-page-up --bind ctrl-d:preview-page-down'
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview-window=right:60% --bind "ctrl-/:change-preview-window(down|hidden|)" --bind ctrl-u:preview-page-up --bind ctrl-d:preview-page-down'
 
 # Ctrl+T command for file selection
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

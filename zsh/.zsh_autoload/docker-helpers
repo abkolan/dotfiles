@@ -1,0 +1,43 @@
+#!/usr/bin/env zsh
+# Docker helper functions - loaded on demand
+
+# Docker cleanup
+docker-cleanup() {
+  echo "🧹 Cleaning up Docker resources..."
+  
+  # Remove stopped containers
+  echo "Removing stopped containers..."
+  docker container prune -f
+  
+  # Remove unused images
+  echo "Removing unused images..."
+  docker image prune -a -f
+  
+  # Remove unused volumes
+  echo "Removing unused volumes..."
+  docker volume prune -f
+  
+  # Remove unused networks
+  echo "Removing unused networks..."
+  docker network prune -f
+  
+  echo "✅ Docker cleanup complete!"
+}
+
+# Docker stats with better formatting
+docker-stats() {
+  docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+}
+
+# Quick shell into container
+docker-shell() {
+  local container="${1:-}"
+  if [[ -z "$container" ]]; then
+    # Show running containers and let user choose
+    container=$(docker ps --format "table {{.Names}}" | tail -n +2 | fzf)
+  fi
+  
+  if [[ -n "$container" ]]; then
+    docker exec -it "$container" /bin/bash || docker exec -it "$container" /bin/sh
+  fi
+}

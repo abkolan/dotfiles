@@ -1,0 +1,46 @@
+# ===========================
+# LAZY FUNCTION WRAPPERS
+# These create stub functions that load the real implementation on first use
+# ===========================
+
+# List of functions to lazy-load
+lazy_functions=(
+  # File and directory operations
+  mkcd extract compress backup
+  # Search functions
+  findfile finddir findtext
+  # Git functions
+  gco gclean gpush gpr ghopen gitst
+  # System utilities
+  ports listening killport
+  # Development utilities
+  serve json_pretty yaml_validate
+  # Performance tools
+  benchmark-shell profile-zsh
+  # Directory analysis
+  diskusage biggestfiles dirsize
+  # Ghostty functions
+  ghostty-theme ghostty-profile ghostty-benchmark
+  # Completion helpers
+  test-completion reload-completions
+  # NVM test
+  test-nvm
+  # FZF git functions
+  fzg fzc fzb
+)
+
+# Create lazy wrapper for each function
+for func in $lazy_functions; do
+  eval "$func() {
+    # Remove the lazy wrapper
+    unfunction $func
+    # Source the real functions
+    source ~/.zsh_functions
+    # Call the real function with original arguments
+    $func \"\$@\"
+  }"
+done
+
+# For frequently used functions, load immediately
+source <(sed -n '/^# PERFORMANCE: Quick directory creation/,/^}$/p' ~/.zsh_functions)
+source <(sed -n '/^# PERFORMANCE: Smart cd/,/^}$/p' ~/.zsh_functions)

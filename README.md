@@ -1,53 +1,25 @@
-# abkolan's dotfiles 🔧
+# 🚀 Ultimate DevOps Dotfiles
 
-A collection of configuration files for my development environment, managed with GNU Stow.
+My personal dotfiles setup optimized for DevOps workflows, managed with GNU Stow.
 
-## Overview
+## 📦 What's Included
 
-This repository contains my personal dotfiles for various tools and applications I use daily in my development workflow. The configurations are organized to work with [GNU Stow](https://www.gnu.org/software/stow/), which creates symlinks from this repository to your home directory.
+### 🔧 Neovim Configuration
+- **Lightning-fast navigation** with FZF and Telescope
+- **Kubernetes LSP support** with auto-schema validation  
+- **Multi-file management** (splits, tabs, buffers)
+- **DevOps workflows** (Terraform, Docker, Go, Python, Helm)
+- **Auto-installing LSP servers** for zero-config setup
+- **Git integration** with diff views
+- **Harpoon** for instant file switching
 
-## ⚠️ Warning
+### 🐚 Shell & Terminal (if added)
+- [**zsh**](https://www.zsh.org/) - Extended shell with improvements
+- Custom aliases and functions for DevOps workflows
 
-⚠️ **Use at your own risk!** These configuration files are tailored to my personal setup and may not work for everyone. Make sure to review and understand the changes before applying them to your system.
-
-## Tools & Configurations
-
-### Window Manager
-- [**i3**](https://i3wm.org/) - A tiling window manager for X11
-
-### Terminal & Shell
-- [**zsh**](https://www.zsh.org/) - Extended Bourne shell with many improvements
-  - `.p10k.zsh` - Configuration for [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme
-  - `.zsh_aliases` - Custom shell aliases
-  - `.zsh_functions` - Custom shell functions
-  - `.zshenv` - Environment variables
-  - `.zshrc` - Main zsh configuration
-
-### Text Editor
-- [**Neovim**](https://neovim.io/) - Hyperextensible Vim-based text editor
-  - Init configs in both Vim script and Lua
-  - Includes plugin management with [lazy.nvim](https://github.com/folke/lazy.nvim)
-
-### Development Tools
-- [**git**](https://git-scm.com/) - Distributed version control system
-  - `.gitconfig` - Global Git configuration
-
-- [**lsd**](https://github.com/lsd-rs/lsd) - The next gen ls command
-  - Modern replacement for `ls` with colorization and icons
-
-- [**ripgrep**](https://github.com/BurntSushi/ripgrep) - A modern replacement for grep
-  - Recursively searches directories for a regex pattern
-
-### Utility Scripts
-- **Mac-specific scripts**
-  - `set_sound_io_studio_display.sh` - Configure audio for Studio Display
-  - `switch_audio_source.sh` - Switch between audio sources
-  - `toggle_dark_mode.sh` - Toggle macOS dark/light mode
-  - `toggle_dock_position.sh` - Toggle Dock position
-  
-- **Nix-specific scripts**
-  - `brightness` - Adjust screen brightness
-  - `fuzzy_lock.sh` - Lock screen with blur effect
+### 🛠️ Development Tools
+- [**git**](https://git-scm.com/) - Version control configuration
+- Modern CLI tools (fd, ripgrep, fzf)
 
 ## Installation
 

@@ -1,0 +1,22 @@
+# Neovim specific
+lazy-lock.json
+
+# Mason installations (auto-reinstalled)
+# Plugin cache (auto-rebuilt)
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*~

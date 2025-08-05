@@ -43,55 +43,17 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
   [[ -f "$HOME/.zsh_functions" ]] && source "$HOME/.zsh_functions"
 
   # ===========================
-  # PERFORMANCE: Smart NVM lazy loading
-  # Load NVM only when actually needed, but ensure it works correctly
+  # NVM CONFIGURATION - Immediate loading for LSP compatibility
+  # Load NVM immediately to ensure LSP servers can find Node.js
   # ===========================
   export NVM_DIR="$HOME/.nvm"
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+  [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
   
-  # PERFORMANCE: Helper function to initialize NVM once
-  _load_nvm() {
-    # Only load if not already loaded
-    if ! command -v nvm >/dev/null 2>&1 || [[ $(type nvm) == *"function"* ]]; then
-      [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
-      [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
-    fi
-  }
-  
-  # PERFORMANCE: Lazy-loading wrapper for nvm
-  nvm() {
-    unfunction nvm 2>/dev/null
-    _load_nvm
-    nvm "$@"
-  }
-  
-  # PERFORMANCE: Lazy-loading wrappers for node tools
-  node() {
-    unfunction node 2>/dev/null
-    _load_nvm
-    # Try to use default version if available, otherwise use current
-    if nvm list default >/dev/null 2>&1; then
-      nvm use default >/dev/null 2>&1
-    fi
-    node "$@"
-  }
-  
-  npm() {
-    unfunction npm 2>/dev/null  
-    _load_nvm
-    if nvm list default >/dev/null 2>&1; then
-      nvm use default >/dev/null 2>&1
-    fi
-    npm "$@"
-  }
-  
-  npx() {
-    unfunction npx 2>/dev/null
-    _load_nvm
-    if nvm list default >/dev/null 2>&1; then
-      nvm use default >/dev/null 2>&1
-    fi
-    npx "$@"
-  }
+  # Auto-use default Node version if available
+  if nvm list default >/dev/null 2>&1; then
+    nvm use default >/dev/null 2>&1
+  fi
 
   # ===========================
   # PERFORMANCE: Lazy-load Conda (prevents slow startup)
@@ -261,3 +223,5 @@ zstyle ':completion:*' menu select                    # Visual menu for completi
 zstyle ':completion:*' verbose true                   # Show descriptions
 
 # NOTE: Completion system already initialized above with optimized caching
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
