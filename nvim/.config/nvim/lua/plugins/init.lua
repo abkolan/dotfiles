@@ -223,7 +223,7 @@ return {
       "rcarriga/nvim-dap-ui",
     },
     config = function()
-      local path = "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
+      local path = vim.fn.expand("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
       require("dap-python").setup(path)
     end,
   },
@@ -513,8 +513,18 @@ return {
       "ClaudeCodeTab"
     },
     config = function()
-      -- Set up PATH to include node
-      vim.env.PATH = "/Users/ab/.nvm/versions/node/v22.4.0/bin:" .. vim.env.PATH
+      -- Set up PATH to include node dynamically
+      local nvm_dir = vim.fn.expand("~/.nvm/versions/node")
+      if vim.fn.isdirectory(nvm_dir) == 1 then
+        -- Get the latest node version
+        local node_versions = vim.fn.glob(nvm_dir .. "/*", false, true)
+        if #node_versions > 0 then
+          -- Sort and get the latest version
+          table.sort(node_versions)
+          local latest_node = node_versions[#node_versions]
+          vim.env.PATH = latest_node .. "/bin:" .. vim.env.PATH
+        end
+      end
       
       require("claude-code").setup({
         command = vim.fn.expand("~/.config/nvim/claude-wrapper.sh"),

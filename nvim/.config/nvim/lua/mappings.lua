@@ -59,7 +59,14 @@ map("n", "<leader>pt", "<cmd>!python -m pytest<cr>", { desc = "Run pytest" })
 map("n", "<leader>fd", "<cmd>Telescope find_files search_dirs={'./docker','./k8s','./kubernetes','./helm','./terraform'}<cr>", { desc = "Find DevOps files" })
 
 -- YAML validation
-map("n", "<leader>yv", "<cmd>!~/.local/share/nvim/mason/bin/yamllint %<cr>", { desc = "YAML lint current file" })
+map("n", "<leader>yv", function()
+  local yamllint = vim.fn.expand("~/.local/share/nvim/mason/bin/yamllint")
+  if vim.fn.executable(yamllint) == 1 then
+    vim.cmd("!" .. yamllint .. " %")
+  else
+    vim.notify("yamllint not found. Please install it via Mason.", vim.log.levels.ERROR)
+  end
+end, { desc = "YAML lint current file" })
 
 -- Advanced Search and Navigation (Monorepo Optimized)
 -- Telescope mappings
@@ -149,9 +156,9 @@ map("n", "<leader>cw", "<cmd>pwd<cr>", { desc = "Show working directory" })
 map("n", "<leader>ch", "<cmd>cd ~<cr><cmd>pwd<cr>", { desc = "Change to home directory" })
 
 -- Fast directory bookmarks (you can customize these paths)
-map("n", "<leader>bh", "<cmd>lua require('fzf-lua').files({ cwd = '~/lab/helm3' })<cr>", { desc = "Helm3 project" })
-map("n", "<leader>bc", "<cmd>lua require('fzf-lua').files({ cwd = '~/.config' })<cr>", { desc = "Config directory" })
-map("n", "<leader>bn", "<cmd>lua require('fzf-lua').files({ cwd = '~/.config/nvim' })<cr>", { desc = "Neovim config" })
+map("n", "<leader>bh", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/lab/helm3') })<cr>", { desc = "Helm3 project" })
+map("n", "<leader>bc", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/.config') })<cr>", { desc = "Config directory" })
+map("n", "<leader>bn", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/.config/nvim') })<cr>", { desc = "Neovim config" })
 
 -- Directory tree operations
 map("n", "-", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('%:p:h') })<cr>", { desc = "Browse parent directory" })
