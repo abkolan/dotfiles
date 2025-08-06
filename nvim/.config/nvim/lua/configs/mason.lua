@@ -1,4 +1,8 @@
-local mason = require("mason")
+local status_ok, mason = pcall(require, "mason")
+if not status_ok then
+  vim.notify("Failed to load mason", vim.log.levels.ERROR)
+  return
+end
 
 -- Mason setup with automatic installation for dotfiles portability
 mason.setup({

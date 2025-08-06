@@ -10,7 +10,7 @@ local servers = {
   "pyright",           -- Python
   "gopls",             -- Go
   "terraformls",       -- Terraform
-  "yamlls",            -- YAML
+  -- "yamlls" is configured separately in configs/yamlls.lua
   "bashls",            -- Bash
   "dockerls",          -- Docker
   "helm_ls",           -- Helm
@@ -33,25 +33,28 @@ for _, lsp in ipairs(servers) do
   end
 end
 
--- Python specific configuration
-lspconfig.pyright.setup {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
-  settings = {
-    python = {
-      analysis = {
-        autoSearchPaths = true,
-        diagnosticMode = "workspace",
-        useLibraryCodeForTypes = true,
-        typeCheckingMode = "basic"
+-- Python specific configuration (only if installed)
+pcall(function()
+  lspconfig.pyright.setup {
+    on_attach = nvlsp.on_attach,
+    on_init = nvlsp.on_init,
+    capabilities = nvlsp.capabilities,
+    settings = {
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "workspace",
+          useLibraryCodeForTypes = true,
+          typeCheckingMode = "basic"
+        }
       }
     }
   }
-}
+end)
 
--- Go specific configuration
-lspconfig.gopls.setup {
+-- Go specific configuration (only if installed)
+pcall(function()
+  lspconfig.gopls.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
@@ -67,18 +70,21 @@ lspconfig.gopls.setup {
     },
   },
 }
+end)
 
-
--- Terraform configuration
-lspconfig.terraformls.setup {
+-- Terraform configuration (only if installed)
+pcall(function()
+  lspconfig.terraformls.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
   filetypes = { "terraform", "hcl" },
 }
+end)
 
--- JSON configuration
-lspconfig.jsonls.setup {
+-- JSON configuration (only if installed)
+pcall(function()
+  lspconfig.jsonls.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
@@ -96,9 +102,11 @@ lspconfig.jsonls.setup {
     },
   },
 }
+end)
 
--- SQL LSP configuration
-lspconfig.sqls.setup {
+-- SQL LSP configuration (only if installed)
+pcall(function()
+  lspconfig.sqls.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
@@ -117,9 +125,11 @@ lspconfig.sqls.setup {
     },
   },
 }
+end)
 
--- Docker LSP configuration
-lspconfig.dockerls.setup {
+-- Docker LSP configuration (only if installed)
+pcall(function()
+  lspconfig.dockerls.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
@@ -133,84 +143,17 @@ lspconfig.dockerls.setup {
     },
   },
 }
+end)
 
--- Docker Compose LSP
-lspconfig.docker_compose_language_service.setup {
+-- Docker Compose LSP (only if installed)
+pcall(function()
+  lspconfig.docker_compose_language_service.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
 }
+end)
 
--- Kubernetes LSP (using yamlls with enhanced Kubernetes schemas)
-lspconfig.yamlls.setup {
-  on_attach = function(client, bufnr)
-    nvlsp.on_attach(client, bufnr)
-    
-    -- Enhanced Kubernetes detection and schema assignment
-    local filename = vim.api.nvim_buf_get_name(bufnr)
-    local basename = vim.fn.fnamemodify(filename, ":t")
-    
-    -- Auto-detect Kubernetes files and set appropriate schemas
-    if string.match(filename, "k8s/") or 
-       string.match(filename, "kubernetes/") or
-       string.match(basename, "%.k8s%.ya?ml$") or
-       string.match(basename, "^kustomization%.ya?ml$") then
-      
-      vim.b[bufnr].yaml_schema = "kubernetes"
-      vim.notify("Kubernetes schema applied to " .. basename, vim.log.levels.INFO)
-    end
-  end,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
-  settings = {
-    yaml = {
-      schemas = {
-        -- Kubernetes schemas
-        ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json"] = {
-          "/*.k8s.yaml",
-          "/*.k8s.yml", 
-          "/k8s/**/*.yaml",
-          "/k8s/**/*.yml",
-          "/kubernetes/**/*.yaml", 
-          "/kubernetes/**/*.yml",
-          "/manifests/**/*.yaml",
-          "/manifests/**/*.yml"
-        },
-        
-        -- Kustomization
-        ["https://json.schemastore.org/kustomization.json"] = "kustomization.{yml,yaml}",
-        
-        -- GitHub workflows
-        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-        
-        -- Helm charts
-        ["https://json.schemastore.org/chart.json"] = "Chart.{yml,yaml}",
-        
-        -- Docker Compose
-        ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
-        
-        -- Ansible
-        ["https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks"] = "roles/tasks/*.{yml,yaml}",
-        ["https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook"] = "*play*.{yml,yaml}",
-        ["https://json.schemastore.org/ansible-stable-2.9.json"] = "site.{yml,yaml}",
-      },
-      validate = true,
-      completion = true,
-      hover = true,
-      schemaStore = {
-        enable = true,
-        url = "https://www.schemastore.org/api/json/catalog.json",
-      },
-      customTags = {
-        "!reference sequence",
-        "!secret scalar",
-        "!vault scalar",
-      },
-      format = {
-        enable = true,
-        singleQuote = false,
-        bracketSpacing = true,
-      },
-    },
-  },
-}
+-- YAML Language Server is configured separately
+-- See configs/yamlls.lua for the configuration
+require("configs.yamlls").setup()

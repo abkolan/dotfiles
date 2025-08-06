@@ -59,7 +59,7 @@ map("n", "<leader>pt", "<cmd>!python -m pytest<cr>", { desc = "Run pytest" })
 map("n", "<leader>fd", "<cmd>Telescope find_files search_dirs={'./docker','./k8s','./kubernetes','./helm','./terraform'}<cr>", { desc = "Find DevOps files" })
 
 -- YAML validation
-map("n", "<leader>yv", "<cmd>!yamllint %<cr>", { desc = "YAML lint current file" })
+map("n", "<leader>yv", "<cmd>!~/.local/share/nvim/mason/bin/yamllint %<cr>", { desc = "YAML lint current file" })
 
 -- Advanced Search and Navigation (Monorepo Optimized)
 -- Telescope mappings

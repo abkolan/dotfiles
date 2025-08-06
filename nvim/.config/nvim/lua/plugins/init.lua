@@ -9,6 +9,8 @@ return {
     "williamboman/mason.nvim",
     cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
     build = ":MasonUpdate",
+    lazy = false,
+    priority = 100,
     config = function()
       require "configs.mason"
     end,
@@ -21,6 +23,8 @@ return {
     },
     config = function()
       require "configs.lspconfig"
+      -- Setup Kubernetes YAML detection
+      require("configs.kubernetes").setup()
     end,
   },
 
@@ -495,6 +499,60 @@ return {
     config = function()
       require "configs.ufo"
     end,
+  },
+
+  {
+    "greggh/claude-code.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    lazy = false,
+    cmd = {
+      "ClaudeCode",
+      "ClaudeCodeContinue",
+      "ClaudeCodeResume",
+      "ClaudeCodeVerbose",
+      "ClaudeCodeTab"
+    },
+    config = function()
+      -- Set up PATH to include node
+      vim.env.PATH = "/Users/ab/.nvm/versions/node/v22.4.0/bin:" .. vim.env.PATH
+      
+      require("claude-code").setup({
+        command = vim.fn.expand("~/.config/nvim/claude-wrapper.sh"),
+        terminal = {
+          position = "bottom",
+          size = 0.3,
+          floating = false,
+          floating_opts = {
+            relative = "editor",
+            width = 0.8,
+            height = 0.6,
+            row = 0.1,
+            col = 0.1,
+            border = "rounded",
+          },
+        },
+        file_refresh = {
+          enabled = true,
+          delay = 100,
+        },
+        git_project = {
+          use_root = true,
+        },
+        commands = {
+          continue_variant = "continue",
+          resume_variant = "resume",
+          verbose_variant = "verbose",
+        },
+      })
+    end,
+    keys = {
+      { "<C-,>", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code" },
+      { "<leader>cC", "<cmd>ClaudeCodeContinue<cr>", desc = "Continue Claude conversation" },
+      { "<leader>cV", "<cmd>ClaudeCodeVerbose<cr>", desc = "Claude verbose mode" },
+      { "<leader>cR", "<cmd>ClaudeCodeResume<cr>", desc = "Resume Claude conversation" },
+      { "<leader>cA", function() vim.fn.input("Ask Claude: ") end, desc = "Ask Claude a question" },
+      { "<leader>cT", "<cmd>ClaudeCodeTab<cr>", desc = "Open Claude in new tab" },
+    },
   },
 
 }
