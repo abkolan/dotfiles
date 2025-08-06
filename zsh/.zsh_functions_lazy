@@ -10,9 +10,9 @@ lazy_functions=(
   # Search functions
   findfile finddir findtext
   # Git functions
-  gco gclean gpush gpr ghopen gitst
+  gpush ghopen gitst
   # System utilities
-  ports listening killport
+  listening killport
   # Development utilities
   serve json_pretty yaml_validate
   # Performance tools

@@ -92,6 +92,12 @@ alias bu="brew update && brew upgrade"
 alias bs="brew search"
 
 # ===========================
+# ☸️  KUBERNETES ALIASES
+# ===========================
+alias kctx="kubectx"
+alias kns="kubens"
+
+# ===========================
 # 🔥 RELOAD CONFIGURATIONS
 # ===========================
 alias ez="nvim ~/.zshrc"
