@@ -27,7 +27,7 @@ brew "stow"            # Dotfiles symlink manager (used in Makefile)
 brew "neovim"          # Editor (aliased as vim, vi, v)
 brew "docker"          # Containerization (has aliases and functions)
 brew "kubernetes-cli"  # Kubectl (lazy loaded in zshrc)
-
+brew "lazygit"
 # ===========================
 # SYSTEM MONITORING
 # ===========================
