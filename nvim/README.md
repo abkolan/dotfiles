@@ -7,40 +7,28 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
 ### Required Software
 
 1. **Neovim** (>= 0.9.4)
+
    ```bash
    # macOS
    brew install neovim
-
-   # Ubuntu/Debian
-   sudo apt update && sudo apt install neovim
-
-   # Arch Linux
-   sudo pacman -S neovim
    ```
 
 2. **Git** (for plugin management)
+
    ```bash
    # macOS
    brew install git
-
-   # Linux
-   sudo apt install git  # Ubuntu/Debian
-   sudo pacman -S git     # Arch
    ```
 
 3. **GNU Stow** (for dotfiles management)
+
    ```bash
    # macOS
    brew install stow
-
-   # Ubuntu/Debian
-   sudo apt install stow
-
-   # Arch Linux
-   sudo pacman -S stow
    ```
 
 4. **Node.js & npm** (for LSP servers and tools)
+
    ```bash
    # Install via nvm (recommended)
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
@@ -50,43 +38,38 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
 
    # Or via package manager
    brew install node  # macOS
-   sudo apt install nodejs npm  # Ubuntu/Debian
    ```
 
 5. **Python 3** (for Python LSP and tools)
    ```bash
    # macOS
    brew install python3
-
-   # Linux
-   sudo apt install python3 python3-pip  # Ubuntu/Debian
-   sudo pacman -S python python-pip      # Arch
    ```
 
 ### Optional but Recommended
 
 - **ripgrep** (for faster searching)
+
   ```bash
   brew install ripgrep  # macOS
-  sudo apt install ripgrep  # Ubuntu/Debian
   ```
 
 - **fd** (find alternative)
+
   ```bash
   brew install fd  # macOS
-  sudo apt install fd-find  # Ubuntu/Debian
   ```
 
 - **fzf** (fuzzy finder)
+
   ```bash
   brew install fzf  # macOS
-  sudo apt install fzf  # Ubuntu/Debian
   ```
 
 - **lazygit** (git UI)
+
   ```bash
   brew install lazygit  # macOS
-  sudo apt install lazygit  # Ubuntu/Debian
   ```
 
 - **Claude CLI** (AI assistance)
@@ -99,12 +82,14 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
 ### Method 1: Using GNU Stow (Recommended)
 
 1. Clone this repository to your dotfiles directory:
+
    ```bash
    git clone <your-repo> ~/dotfiles
    cd ~/dotfiles
    ```
 
 2. Back up your existing Neovim configuration:
+
    ```bash
    mv ~/.config/nvim ~/.config/nvim.backup
    mv ~/.local/share/nvim ~/.local/share/nvim.backup
@@ -112,6 +97,7 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
    ```
 
 3. Use stow to create symlinks:
+
    ```bash
    stow nvim
    ```
@@ -125,11 +111,13 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
 ### Method 2: Manual Installation
 
 1. Back up existing configuration:
+
    ```bash
    mv ~/.config/nvim ~/.config/nvim.backup
    ```
 
 2. Copy this configuration:
+
    ```bash
    cp -r ~/dotfiles/nvim/.config/nvim ~/.config/
    ```
@@ -144,6 +132,7 @@ A modern Neovim setup based on NvChad v2.5 with extensive customizations for dev
 ### 1. Install Plugins
 
 Launch Neovim and wait for lazy.nvim to install all plugins:
+
 ```bash
 nvim
 # Plugins will auto-install on first launch
@@ -153,17 +142,20 @@ nvim
 ### 2. Install LSP Servers
 
 Open Neovim and run:
+
 ```vim
 :MasonInstallAll
 ```
 
 Or install specific language servers:
+
 ```vim
 :Mason
 # Press 'i' on any server to install
 ```
 
 Common LSP servers:
+
 - `typescript-language-server` (TypeScript/JavaScript)
 - `pyright` or `pylsp` (Python)
 - `lua-language-server` (Lua)
@@ -184,6 +176,7 @@ Common LSP servers:
 ### 4. Configure AI Tools (Optional)
 
 If using Claude integration:
+
 ```bash
 # Install Claude CLI
 npm install -g @anthropic-ai/claude-cli
@@ -195,6 +188,7 @@ claude login
 ## Features
 
 ### Core Features
+
 - **NvChad Base**: Beautiful UI with multiple themes
 - **LSP Support**: Full Language Server Protocol integration
 - **Autocompletion**: nvim-cmp with multiple sources
@@ -205,6 +199,7 @@ claude login
 - **Debugging**: DAP (Debug Adapter Protocol) support
 
 ### Custom Additions
+
 - **AI Integration**: Claude Code support for AI assistance
 - **DevOps Tools**: Kubernetes, Docker, Terraform support
 - **Advanced Search**: Optimized for monorepos
@@ -217,6 +212,7 @@ claude login
 ### Leader Key: `<Space>`
 
 #### File Operations
+
 - `<leader>ff` - Find files (smart)
 - `<leader>fw` - Find word (grep)
 - `<leader>fb` - Find buffers
@@ -224,6 +220,7 @@ claude login
 - `<leader>fo` - Find old files (recent)
 
 #### Code Actions
+
 - `<leader>ca` - Code actions
 - `<leader>cf` - Format code
 - `<leader>rn` - Rename symbol
@@ -232,11 +229,13 @@ claude login
 - `K` - Hover documentation
 
 #### Git Operations
+
 - `<leader>gg` - Open lazygit
 - `<leader>gd` - Git diff
 - `<leader>gb` - Git blame
 
 #### AI Assistance
+
 - `<leader>cc` - Open Claude Code
 - `<leader>ct` - Claude in new tab
 
@@ -245,12 +244,14 @@ claude login
 ### Common Issues
 
 1. **Plugins not loading**
+
    ```vim
    :Lazy sync
    :Lazy update
    ```
 
 2. **LSP not working**
+
    ```vim
    :LspInfo
    :Mason
@@ -258,12 +259,14 @@ claude login
    ```
 
 3. **Treesitter errors**
+
    ```vim
    :TSUpdate
    :TSInstall <language>
    ```
 
 4. **Node.js path issues**
+
    - Ensure nvm is properly installed
    - The configuration now dynamically detects Node versions
 
@@ -276,6 +279,7 @@ claude login
 ### Health Check
 
 Run a complete health check:
+
 ```vim
 :checkhealth
 ```
@@ -283,6 +287,7 @@ Run a complete health check:
 ### Reset Configuration
 
 If you encounter issues, you can reset:
+
 ```bash
 # Remove all Neovim data
 rm -rf ~/.local/share/nvim
@@ -297,6 +302,7 @@ nvim
 ### Adding Plugins
 
 Edit `lua/plugins/init.lua`:
+
 ```lua
 {
   "username/plugin-name",
@@ -309,6 +315,7 @@ Edit `lua/plugins/init.lua`:
 ### Modifying Keymaps
 
 Edit `lua/mappings.lua`:
+
 ```lua
 local map = vim.keymap.set
 map("n", "<leader>xx", "<cmd>YourCommand<cr>", { desc = "Description" })
@@ -321,6 +328,7 @@ Edit `lua/options.lua` for Neovim settings.
 ## Updates
 
 To update the configuration:
+
 ```bash
 cd ~/dotfiles
 git pull
@@ -328,6 +336,7 @@ git pull
 ```
 
 To update plugins:
+
 ```vim
 :Lazy update
 :MasonUpdate
@@ -341,6 +350,7 @@ This configuration is based on [NvChad](https://nvchad.com/) and includes variou
 ## Support
 
 For issues or questions:
+
 1. Check `:checkhealth` output
 2. Review plugin documentation
 3. Check NvChad documentation: https://nvchad.com/docs/

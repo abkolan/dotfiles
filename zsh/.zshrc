@@ -166,16 +166,9 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
   }
   
   # ===========================
-  # PERFORMANCE: kubectl lazy loading (unchanged)
+  # PERFORMANCE: kubectl with proper autocomplete
   # ===========================
-  if command -v kubectl >/dev/null 2>&1; then
-    kubectl() {
-      unfunction kubectl
-      source <(command kubectl completion zsh)
-      command kubectl "$@"
-    }
-    alias k='kubectl'
-  fi
+  # Moved after compinit for proper loading
   
   # ===========================
   # PERFORMANCE: Homebrew setup
@@ -204,6 +197,13 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
   zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
   zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
   zstyle ':completion:*' menu select
+  
+  # kubectl completion (after compinit)
+  if command -v kubectl >/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+    alias k='kubectl'
+    compdef k=kubectl
+  fi
   
   # ===========================
   # OTHER TOOLS
