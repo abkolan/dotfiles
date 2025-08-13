@@ -47,3 +47,13 @@ venv/
 *.o
 *.so
 *.dylib
+
+# Security - sensitive files
+.envrc
+.env*
+!.env*.example
+!.envrc.example
+*.key
+*.pem
+secrets/
+credentials/

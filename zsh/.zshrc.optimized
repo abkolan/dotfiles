@@ -1,6 +1,6 @@
 # ===========================
-# OPTIMIZED ZINIT-ONLY ZSH CONFIGURATION
-# Target: < 50ms startup time
+# ULTRA-FAST ZINIT CONFIGURATION
+# Optimized for < 50ms startup time
 # ===========================
 
 # Enable Powerlevel10k instant prompt (MUST be first)
@@ -10,10 +10,12 @@ fi
 
 # Skip all initialization in non-interactive environments
 [[ -o interactive ]] || return
+
+# Skip in IntelliJ
 [ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return
 
 # ===========================
-# ZINIT INSTALLATION & SETUP
+# ZINIT SETUP (Optimized)
 # ===========================
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -36,29 +38,28 @@ zstyle ':zinit:*' use-cache yes
 zstyle ':zinit:*' cache-dir ~/.cache/zinit
 
 # ===========================
-# THEME: Powerlevel10k (optimized loading)
+# THEME: Powerlevel10k (depth=1 for faster clone)
 # ===========================
 zinit ice depth=1 atload'[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
 zinit light romkatv/powerlevel10k
 
 # ===========================
-# TURBO MODE PLUGINS (loaded after prompt appears)
-# Using wait'0a', '0b', '0c' for staged loading
+# TURBO MODE PLUGINS (load after prompt)
 # ===========================
 
-# Git support - load immediately after prompt
+# Git support - lazy load after 0a (immediately after prompt)
 zinit ice wait'0a' lucid
 zinit snippet OMZP::git
 
-# Fast syntax highlighting - load after git
+# Fast syntax highlighting - load after 0b
 zinit ice wait'0b' lucid atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
 zinit light zdharma-continuum/fast-syntax-highlighting
 
-# Autosuggestions - load with syntax highlighting
+# Autosuggestions - load after 0b
 zinit ice wait'0b' lucid atload"!_zsh_autosuggest_start"
 zinit load zsh-users/zsh-autosuggestions
 
-# History substring search - load slightly later
+# History substring search - load after 0c
 zinit ice wait'0c' lucid atload'bindkey "^[[A" history-substring-search-up; bindkey "^[[B" history-substring-search-down'
 zinit light zsh-users/zsh-history-substring-search
 
@@ -71,23 +72,40 @@ zinit ice wait'1' lucid
 zinit light Aloxaf/fzf-tab
 
 # ===========================
-# NVM LAZY LOADING
+# COMPLETIONS (Optimized)
 # ===========================
-export NVM_DIR="$HOME/.nvm"
+autoload -Uz compinit
 
+# Check if dump exists and is recent (within 24 hours)
+zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+if [[ $zcompdump -nt /usr/share/zsh ]] && [[ ! $zcompdump.zwc -ot $zcompdump ]]; then
+  compinit -C  # Skip security check for faster startup
+else
+  compinit
+  # Compile the dump file for faster loading
+  [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
+fi
+
+# Completion styling (minimal)
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' menu select
+
+# ===========================
+# LAZY LOADING FUNCTIONS
+# ===========================
+
+# NVM lazy loading
+export NVM_DIR="$HOME/.nvm"
 nvm() {
   unfunction nvm node npm npx 2>/dev/null
   [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
   nvm "$@"
 }
-
 node() { nvm; node "$@" }
 npm() { nvm; npm "$@" }
 npx() { nvm; npx "$@" }
 
-# ===========================
-# CONDA LAZY LOADING
-# ===========================
+# Conda lazy loading
 conda() {
   unfunction conda 2>/dev/null
   __conda_setup="$('/Users/ab/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -96,9 +114,7 @@ conda() {
   conda "$@"
 }
 
-# ===========================
-# KUBECTL LAZY LOADING
-# ===========================
+# kubectl lazy loading
 if command -v kubectl >/dev/null 2>&1; then
   kubectl() {
     unfunction kubectl
@@ -110,6 +126,7 @@ fi
 # ===========================
 # ENVIRONMENT SETUP
 # ===========================
+
 # Homebrew (minimal check)
 if [[ -x "/opt/homebrew/bin/brew" ]]; then
   export HOMEBREW_PREFIX="/opt/homebrew"
@@ -117,74 +134,38 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
   export HOMEBREW_PREFIX="/usr/local"
 fi
 
-# ===========================
-# OPTIMIZED COMPLETION
-# ===========================
-autoload -Uz compinit
-zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-
-# Only refresh dump once per day
-if [[ $(date +'%j') != $(stat -f '%Sm' -t '%j' $zcompdump 2>/dev/null || echo 0) ]]; then
-  compinit
-  # Compile for faster loading
-  [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
-else
-  compinit -C
-fi
-
-# Minimal completion styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' menu select
-
-# ===========================
-# OTHER TOOLS (DEFERRED)
-# ===========================
-# Zoxide (if installed)
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-# FZF (if installed)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# ===========================
-# ZSH OPTIONS & HISTORY
-# ===========================
-# History settings
+# History settings (before setopt)
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
 
-# Set ZSH options
+# ===========================
+# ZSH OPTIONS (Consolidated)
+# ===========================
 setopt AUTO_CD INTERACTIVE_COMMENTS
 setopt HIST_IGNORE_DUPS HIST_REDUCE_BLANKS SHARE_HISTORY EXTENDED_HISTORY
 setopt INC_APPEND_HISTORY HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS HIST_VERIFY
 
 # ===========================
+# DEFERRED LOADING (after 2 seconds)
+# ===========================
+zinit ice wait'2' lucid
+zinit light-mode for \
+  id-as'zoxide' atclone'zoxide init zsh > zoxide.zsh' \
+    atpull'%atclone' src'zoxide.zsh' \
+    zdharma-continuum/null
+
+# Source aliases if exists
+[[ -f "$HOME/.zsh_aliases" ]] && source "$HOME/.zsh_aliases"
+
+# FZF - load only if exists
+[ -f ~/.fzf.zsh ] && zinit ice wait'2' lucid; zinit snippet ~/.fzf.zsh
+
+# ===========================
 # ALIASES
 # ===========================
 alias k='kubectl'
+alias g='git'
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
-alias g='git'
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gpl='git pull'
-alias gco='git checkout'
-alias gb='git branch'
-alias gd='git diff'
-
-# Source user aliases if exists
-[[ -f "$HOME/.zsh_aliases" ]] && source "$HOME/.zsh_aliases"
-
-# ===========================
-# TOOL INTEGRATIONS
-# ===========================
-# Direnv - automatic environment loading
-eval "$(direnv hook zsh)"
-
-# Zoxide - smarter cd command (if installed)
-command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"

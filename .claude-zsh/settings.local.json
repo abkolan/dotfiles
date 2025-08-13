@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(alias rgf)",
+      "Bash(source:*)",
+      "Bash(nvim:*)",
+      "Bash(find:*)",
+      "Bash(timeout 10s nvim:*)",
+      "Bash(diff:*)"
+    ],
+    "deny": []
+  }
+}

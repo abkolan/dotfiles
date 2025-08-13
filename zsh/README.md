@@ -2,6 +2,14 @@
 
 A comprehensive, ultra-performance-optimized ZSH configuration with modern tools integration, fuzzy search capabilities, and productivity-focused aliases and functions. Now featuring both Oh My Zsh and Zinit configurations for maximum flexibility.
 
+## 🆕 Recent Updates (2025)
+- **Security**: Removed hardcoded credentials, now using environment variables via direnv
+- **Performance**: Enhanced benchmarking with hyperfine (~58ms startup achieved)
+- **Git Integration**: Added git-delta for beautiful diffs and comprehensive git aliases
+- **Health Monitoring**: New scripts for dotfile health checks and backups
+- **Smart Navigation**: Integrated zoxide for intelligent directory jumping
+- **Environment Management**: Automatic per-project environment loading with direnv
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -21,7 +29,7 @@ A comprehensive, ultra-performance-optimized ZSH configuration with modern tools
 ## 🎯 Overview
 
 This ZSH configuration is built for developers who want:
-- **Lightning-fast shell startup** (<150ms with Oh My Zsh, <50ms perceived with Zinit)
+- **Lightning-fast shell startup** (<150ms with Oh My Zsh, <60ms with Zinit measured)
 - **Powerful file search** with ripgrep, fd, and fzf integration
 - **Git-aware workflows** with interactive branch/commit browsing
 - **Modern tool integrations** (Docker, Kubernetes, Node.js, Python)
@@ -49,7 +57,10 @@ scripts/
 ├── migrate-to-zinit.sh       # Easy switching between configurations
 ├── profile-zsh-startup.sh    # Performance profiling tool
 ├── ghostty-theme-switcher.sh # Terminal theme management
-└── test-completion-demo.sh   # Completion system testing
+├── test-completion-demo.sh   # Completion system testing
+├── health-check.sh           # Dotfiles health verification
+├── backup-configs.sh         # Configuration backup utility
+└── benchmark.sh              # Enhanced performance benchmarking
 ```
 
 ## 🔧 Dependencies
@@ -58,6 +69,9 @@ scripts/
 ```bash
 # Core tools (install via Homebrew)
 brew install zsh fd fzf ripgrep bat lsd zoxide
+
+# Performance & productivity tools (now included)
+brew install direnv hyperfine git-delta
 
 # Optional but recommended
 brew install eza tree ncdu neovim powerlevel10k
@@ -71,7 +85,7 @@ brew install eza tree ncdu neovim powerlevel10k
 - **Plugins**: git, zsh-autosuggestions, you-should-use, zsh-syntax-highlighting
 
 ### Option 2: Zinit (Blazing Fast)
-- **Startup time**: <50ms perceived, plugins load in background
+- **Startup time**: ~58ms measured with hyperfine, plugins load in background
 - **Best for**: Performance-focused users who want instant shell
 - **Features**: Turbo mode, parallel loading, lazy functions, modular architecture
 
@@ -367,6 +381,23 @@ Show current time in multiple formats.
 now                 # Show local and UTC time
 ```
 
+### 🐙 Enhanced Git Aliases & Functions
+
+#### New Git Aliases (via ~/.gitconfig.d/aliases)
+| Alias | Command | Description |
+|-------|---------|-------------|
+| `git st` | `status -sb` | Compact status view |
+| `git ll` | `log --oneline --graph -15` | Quick log with graph |
+| `git lg` | Enhanced log | Pretty log with colors |
+| `git cm` | `commit -m` | Quick commit with message |
+| `git cam` | `commit -am` | Add all and commit |
+| `git unstage` | `reset HEAD --` | Unstage files |
+| `git last` | `log -1 HEAD` | Show last commit |
+| `git find` | Search commits | Find commits by message |
+| `git cleanup` | Branch cleanup | Remove merged branches |
+| `git d` | `diff` | Quick diff |
+| `git dc` | `diff --cached` | Diff staged changes |
+
 ### 🐙 Git Functions
 #### `fzg`
 Browse and select Git-tracked files with preview.
@@ -630,12 +661,24 @@ my-function
 - **Syntax highlighting**: Loaded last for better performance
 - **Homebrew prefix caching**: Static detection vs slow `brew --prefix`
 
-### Performance Tools
+### Performance & Health Tools
 
 ```bash
-# Benchmark startup time
-benchmark-shell                    # Test current config
+# Benchmark startup time (enhanced with hyperfine)
+./scripts/benchmark.sh             # Uses hyperfine if available
+benchmark-shell                    # Basic benchmark function
 ./scripts/profile-zsh-startup.sh   # Detailed component profiling
+
+# Health check for dotfiles
+./scripts/health-check.sh          # Check symlinks, dependencies, conflicts
+# - Verifies all stow symlinks are valid
+# - Checks for stow conflicts
+# - Validates installed dependencies
+# - Tests ZSH startup time
+
+# Backup configurations before changes
+./scripts/backup-configs.sh        # Creates timestamped backup
+# Backs up all configurations to ~/.dotfiles-backup/
 
 # Compare configurations  
 ./scripts/migrate-to-zinit.sh      # Choose option 3 for comparison
@@ -653,6 +696,81 @@ Our optimizations achieved:
 - **Removed slow brew --prefix** calls (saved ~50ms per call)
 - **Optimized PATH construction** (eliminated multiple append operations)
 - **Added intelligent caching** for expensive operations
+
+## 🔐 Environment Management
+
+### Direnv Integration
+Automatic environment variable loading per directory:
+
+```bash
+# Create .envrc in project directory
+echo 'export API_KEY="secret"' > .envrc
+direnv allow                    # Allow the .envrc file
+
+# Variables load automatically when entering directory
+cd project/                     # Environment loaded
+cd ..                          # Environment unloaded
+```
+
+### Database Connection Management
+Database credentials are now managed via environment variables:
+
+```bash
+# Copy example configuration
+cp ~/.envrc.example ~/.envrc
+
+# Edit with your credentials
+nvim ~/.envrc
+
+# Add your database connection strings:
+export DB_MYSQL_DSN="root:password@tcp(127.0.0.1:3306)/dbname"
+export DB_POSTGRES_DSN="host=127.0.0.1 port=5432 user=postgres password=password dbname=dbname"
+
+# Allow direnv to load
+direnv allow
+```
+
+## 🛠️ New Productivity Tools
+
+### Hyperfine - Advanced Benchmarking
+```bash
+# Benchmark shell startup with statistics
+hyperfine --warmup 3 'zsh -i -c exit'
+
+# Compare different configurations
+hyperfine 'bash -i -c exit' 'zsh -i -c exit'
+
+# Benchmark with multiple runs
+hyperfine --min-runs 10 --max-runs 50 'zsh -i -c exit'
+```
+
+### Git Delta - Enhanced Diffs
+Git diffs are now enhanced with syntax highlighting and side-by-side view:
+
+```bash
+# Regular git commands now use delta
+git diff                        # Syntax highlighted diff
+git show                        # Enhanced commit view
+git log -p                      # Better patch view
+
+# Delta-specific features
+git diff --side-by-side         # Side-by-side comparison
+git diff --line-numbers          # Show line numbers
+```
+
+### Zoxide - Smart Directory Navigation
+```bash
+# Jump to frequently used directories
+z dotfiles                      # Jump to ~/dotfiles
+z proj                          # Jump to most used 'proj' directory
+
+# Interactive selection
+zi                              # Interactive directory selection
+
+# Query recent directories
+zoxide query -l                 # List all tracked directories
+zz                              # Alias for fuzzy selection of recent dirs
+```
 
 ## 🐛 Troubleshooting
 

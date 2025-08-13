@@ -115,11 +115,13 @@ pcall(function()
       connections = {
         {
           driver = "mysql",
-          dataSourceName = "root:password@tcp(127.0.0.1:3306)/dbname",
+          -- Use environment variable: export DB_MYSQL_DSN="root:YOUR_PASSWORD@tcp(127.0.0.1:3306)/dbname"
+          dataSourceName = vim.fn.getenv("DB_MYSQL_DSN") ~= vim.NIL and vim.fn.getenv("DB_MYSQL_DSN") or "",
         },
         {
           driver = "postgresql",
-          dataSourceName = "host=127.0.0.1 port=5432 user=postgres password=password dbname=dbname sslmode=disable",
+          -- Use environment variable: export DB_POSTGRES_DSN="host=127.0.0.1 port=5432 user=postgres password=YOUR_PASSWORD dbname=dbname sslmode=disable"
+          dataSourceName = vim.fn.getenv("DB_POSTGRES_DSN") ~= vim.NIL and vim.fn.getenv("DB_POSTGRES_DSN") or "",
         },
       },
     },
