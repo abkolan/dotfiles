@@ -183,8 +183,8 @@ alias gd='git diff'
 # ===========================
 # TOOL INTEGRATIONS
 # ===========================
-# Direnv - automatic environment loading
-eval "$(direnv hook zsh)"
+# Direnv - automatic environment loading (only if installed)
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
 # Zoxide - smarter cd command (if installed)
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"

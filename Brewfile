@@ -2,7 +2,11 @@
 # TAPS FOR SPECIALIZED TOOLS
 # ===========================
 tap "kyoh86/tap"  # For richgo (enhanced go test output)
-tap "homebrew/cask-fonts"  # For Nerd Fonts and other fonts
+
+# ===========================
+# SHELL ENVIRONMENT TOOLS
+# ===========================
+brew "direnv"                 # Auto-load project-specific environment variables
 
 # ===========================
 # CORE FILE SEARCH & NAVIGATION TOOLS
