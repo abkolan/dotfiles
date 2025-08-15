@@ -27,7 +27,8 @@ brew "stow"            # Dotfiles symlink manager (used in Makefile)
 brew "neovim"          # Editor (aliased as vim, vi, v)
 brew "docker"          # Containerization (has aliases and functions)
 brew "kubernetes-cli"  # Kubectl (lazy loaded in zshrc)
-brew "lazygit"
+brew "lazygit"         # Git TUI
+brew "git-delta"       # Better git diffs (configured in .gitconfig.d/tools)
 # ===========================
 # SYSTEM MONITORING
 # ===========================
@@ -44,8 +45,18 @@ brew "powerlevel10k"   # ZSH theme
 brew "kyoh86/tap/richgo"  # Enhanced go test output (aliased as 'go')
 
 # ===========================
+# BENCHMARKING & UTILITIES
+# ===========================
+brew "hyperfine"       # Command-line benchmarking tool (used in scripts)
+brew "jq"              # JSON processor (found installed)
+brew "curl"            # URL transfer tool (used in nvim install)
+brew "wget"            # Network downloader (used in nvim install)
+
+# ===========================
 # APPLICATIONS & TOOLS
 # ===========================
 cask "ghostty"                # Terminal emulator (extensive config in dotfiles)
 cask "git-credential-manager" # Git credential helper (referenced in .gitconfig)
 cask "miniconda"              # Python environment manager (lazy loaded in zshrc)
+cask "kitty"                  # Terminal emulator (has config in dotfiles)
+cask "linearmouse"            # Mouse configuration tool (has config)

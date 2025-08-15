@@ -5,6 +5,112 @@
 # ============================================================================
 
 # ============================================================================
+# KITTY TERMINAL FUNCTIONS
+# ============================================================================
+
+# Interactive theme switcher for Kitty
+kitty-theme() {
+    if [[ -n "$1" ]]; then
+        # If theme name provided, apply it directly
+        kitty +kitten themes --dump-theme "$1" > ~/.config/kitty/current-theme.conf
+        kitty @ set-colors --all ~/.config/kitty/current-theme.conf 2>/dev/null || true
+        echo "✓ Applied theme: $1"
+        echo "  If colors didn't update, press Ctrl+Shift+F5 in Kitty"
+    else
+        # Interactive theme browser
+        echo "Opening interactive theme browser..."
+        echo "Use arrow keys to preview, Enter to apply, Esc to cancel"
+        kitty +kitten themes
+    fi
+}
+
+# Quick toggle between dark and light themes optimized for reading
+toggle-theme() {
+    local current_bg=$(grep "^background" ~/.config/kitty/current-theme.conf | awk '{print $2}')
+    
+    # Check if current theme is light (background is bright)
+    if [[ "$current_bg" == "#ffffff" ]] || [[ "$current_bg" == "#f"* ]]; then
+        # Switch to dark theme with thin strokes
+        cp ~/.config/kitty/themes/tomorrow-night-optimized.conf ~/.config/kitty/current-theme.conf
+        # Thin strokes for dark theme (better readability)
+        kitty @ set-spacing --configured text_composition_strategy="0.4 0" 2>/dev/null
+        echo "🌙 Switched to dark theme (Tomorrow Night) with thin strokes"
+    else
+        # Switch to light theme with normal/thick strokes
+        cp ~/.config/kitty/themes/github-light.conf ~/.config/kitty/current-theme.conf
+        # Normal/thicker strokes for light theme (better contrast)
+        kitty @ set-spacing --configured text_composition_strategy="1.7 0" 2>/dev/null
+        echo "☀️  Switched to light theme (GitHub Light) with normal strokes"
+    fi
+    
+    # Apply the theme
+    kitty @ set-colors --all ~/.config/kitty/current-theme.conf 2>/dev/null || {
+        echo "  Press Ctrl+Shift+F5 in Kitty to apply"
+    }
+}
+
+# Aliases for quick access
+alias dark='cp ~/.config/kitty/themes/tomorrow-night-optimized.conf ~/.config/kitty/current-theme.conf && kitty @ set-colors --all ~/.config/kitty/current-theme.conf 2>/dev/null && kitty @ set-spacing --configured text_composition_strategy="0.4 0" 2>/dev/null; echo "🌙 Dark theme applied with thin strokes"'
+alias light='cp ~/.config/kitty/themes/github-light.conf ~/.config/kitty/current-theme.conf && kitty @ set-colors --all ~/.config/kitty/current-theme.conf 2>/dev/null && kitty @ set-spacing --configured text_composition_strategy="1.7 0" 2>/dev/null; echo "☀️ Light theme applied with normal strokes"'
+alias tt='toggle-theme'
+
+# Quick theme switcher between favorite themes
+theme() {
+    local themes=(
+        "Tomorrow Night (Optimized)"
+        "GitHub Light"
+        "Catppuccin-Mocha"
+        "Catppuccin-Latte"
+        "Tokyo Night"
+        "Dracula"
+        "Gruvbox Dark"
+        "Nord"
+        "Solarized Dark"
+        "Solarized Light"
+    )
+    
+    if [[ -n "$1" ]]; then
+        if [[ "$1" == "Tomorrow Night (Optimized)" ]]; then
+            dark
+        elif [[ "$1" == "GitHub Light" ]]; then
+            light
+        else
+            kitty-theme "$1"
+        fi
+    else
+        echo "Quick switches:"
+        echo "  dark   - Tomorrow Night (reading optimized)"
+        echo "  light  - GitHub Light (outdoor/glare)"
+        echo "  tt     - Toggle between dark/light"
+        echo ""
+        echo "Available themes:"
+        local i=1
+        for theme in "${themes[@]}"; do
+            echo "  $i) $theme"
+            ((i++))
+        done
+        echo ""
+        echo -n "Select theme (1-${#themes[@]}) or press Enter for interactive browser: "
+        read choice
+        
+        if [[ -z "$choice" ]]; then
+            kitty +kitten themes
+        elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#themes[@]} )); then
+            local selected="${themes[$choice]}"
+            if [[ "$selected" == "Tomorrow Night (Optimized)" ]]; then
+                dark
+            elif [[ "$selected" == "GitHub Light" ]]; then
+                light
+            else
+                kitty-theme "$selected"
+            fi
+        else
+            echo "Invalid selection"
+        fi
+    fi
+}
+
+# ============================================================================
 # NODE.JS & NPM LAZY LOADING
 # ============================================================================
 

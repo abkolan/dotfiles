@@ -642,7 +642,8 @@ my-function
 ### Advanced Performance Features
 
 #### Lazy Loading (Both Configurations)
-- **NVM**: Loaded only when Node.js tools are used
+- **Node.js/npm**: Smart detection and loading of Node version managers (fnm, nvm, asdf)
+- **Global npm packages**: Common tools (eslint, prettier, yarn, etc.) load on first use
 - **Conda**: Initialized only when conda command is called  
 - **kubectl**: Completions loaded on first use
 - **Functions**: Heavy functions load on-demand with Zinit
@@ -696,6 +697,55 @@ Our optimizations achieved:
 - **Removed slow brew --prefix** calls (saved ~50ms per call)
 - **Optimized PATH construction** (eliminated multiple append operations)
 - **Added intelligent caching** for expensive operations
+
+## 🚀 Node.js Lazy Loading
+
+### How It Works
+
+The configuration implements intelligent lazy loading for Node.js to significantly improve shell startup time. Instead of initializing Node version managers (nvm, fnm, asdf) at startup, they're loaded only when needed.
+
+### Features
+
+1. **Auto-detection**: Automatically detects which Node version manager you have installed
+2. **On-demand loading**: Node environment loads only when you first use npm, node, or a global package
+3. **Global package support**: Common tools like eslint, prettier, yarn load seamlessly
+4. **Zero configuration**: Works out of the box with your existing setup
+
+### Implementation Details
+
+```bash
+# First time you run npm/node (one-time delay ~200ms)
+npm install    # 1. Wrapper function called
+               # 2. Detects and initializes Node version manager
+               # 3. Removes wrapper function
+               # 4. Runs actual npm command
+
+# Subsequent runs (no delay)
+npm install    # Direct execution, wrapper is gone
+```
+
+### Supported Version Managers
+
+- **fnm** (Fast Node Manager) - Recommended for best performance
+- **nvm** (Node Version Manager) - Most common, fully supported
+- **asdf** - Universal version manager, Node plugin supported
+
+### Customizing Global Packages
+
+Edit `~/.zsh_functions_lazy` to add/remove global package wrappers:
+
+```bash
+# Find the loop that creates wrappers
+for cmd in eslint prettier typescript tsc yarn pnpm tsx bun deno; do
+    # Add your global packages to this list
+done
+```
+
+### Performance Impact
+
+- **Without lazy loading**: +300-500ms startup time (nvm)
+- **With lazy loading**: 0ms startup time, one-time 200ms on first Node use
+- **Net savings**: 300-500ms on every shell startup
 
 ## 🔐 Environment Management
 
