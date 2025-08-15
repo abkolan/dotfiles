@@ -3,6 +3,9 @@
 
 .PHONY: help install uninstall nvim deps check clean restow dry-run
 
+# Stowable packages
+PACKAGES = nvim git zsh broot btop ghostty kitty linearmouse lsd ripgrep
+
 # Default target
 help:
 	@echo "🚀 Ultimate DevOps Neovim Dotfiles"
@@ -66,18 +69,30 @@ nvim: check-stow
 	@echo "4. Use <C-p> to start file navigation"
 
 # Install all dotfiles
-install: check-stow nvim
+install: check-stow
+	@echo "⚙️  Installing all dotfiles..."
+	@for pkg in $(PACKAGES); do \
+		echo "  Installing $$pkg..."; \
+		stow -v $$pkg || echo "  ⚠️  Failed to install $$pkg"; \
+	done
 	@echo "✅ All dotfiles installed!"
 	@echo ""
-	@echo "🎯 Configuration installed to:"
+	@echo "🎯 Configurations installed:"
 	@echo "  ~/.config/nvim -> $(PWD)/nvim/.config/nvim"
+	@echo "  ~/.gitconfig -> $(PWD)/git/.gitconfig"
+	@echo "  ~/.gitconfig.d -> $(PWD)/git/.gitconfig.d"
+	@echo "  ~/.zshrc -> $(PWD)/zsh/.zshrc"
+	@echo "  ... and more!"
 	@echo ""
-	@echo "🚀 Start Neovim: nvim"
+	@echo "🚀 Restart your shell or run: source ~/.zshrc"
 
 # Uninstall all dotfiles
 uninstall: check-stow
-	@echo "🗑️  Removing dotfiles symlinks..."
-	@stow -D nvim
+	@echo "🗑️  Removing all dotfiles symlinks..."
+	@for pkg in $(PACKAGES); do \
+		echo "  Removing $$pkg..."; \
+		stow -D $$pkg 2>/dev/null || true; \
+	done
 	@echo "✅ Dotfiles uninstalled!"
 
 # Clean up broken symlinks
@@ -88,11 +103,18 @@ clean:
 
 # Restow (useful after updates)
 restow: check-stow
-	@echo "🔄 Restowing dotfiles..."
-	@stow -R nvim
+	@echo "🔄 Restowing all dotfiles..."
+	@for pkg in $(PACKAGES); do \
+		echo "  Restowing $$pkg..."; \
+		stow -R $$pkg || echo "  ⚠️  Failed to restow $$pkg"; \
+	done
 	@echo "✅ Dotfiles restowed!"
 
 # Show what would be installed
 dry-run: check-stow
 	@echo "🔍 Dry run - showing what would be installed:"
-	@stow -n -v nvim
+	@for pkg in $(PACKAGES); do \
+		echo ""; \
+		echo "Package: $$pkg"; \
+		stow -n -v $$pkg 2>&1 | sed 's/^/  /'; \
+	done
