@@ -2,6 +2,7 @@
 # TAPS FOR SPECIALIZED TOOLS
 # ===========================
 tap "kyoh86/tap"  # For richgo (enhanced go test output)
+tap "homebrew/cask-fonts"  # For Nerd Fonts and other fonts
 
 # ===========================
 # CORE FILE SEARCH & NAVIGATION TOOLS
@@ -60,3 +61,8 @@ cask "git-credential-manager" # Git credential helper (referenced in .gitconfig)
 cask "miniconda"              # Python environment manager (lazy loaded in zshrc)
 cask "kitty"                  # Terminal emulator (has config in dotfiles)
 cask "linearmouse"            # Mouse configuration tool (has config)
+
+# ===========================
+# FONTS
+# ===========================
+cask "font-jetbrains-mono-nerd-font"  # JetBrains Mono with Nerd Font patches (ligatures support)

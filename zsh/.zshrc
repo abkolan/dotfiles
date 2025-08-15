@@ -92,6 +92,11 @@ conda() {
 }
 
 # ===========================
+# BROOT LAUNCHER
+# ===========================
+[[ -f "$HOME/.config/broot/launcher/bash/br" ]] && source "$HOME/.config/broot/launcher/bash/br"
+
+# ===========================
 # KUBECTL LAZY LOADING
 # ===========================
 if command -v kubectl >/dev/null 2>&1; then

@@ -88,26 +88,46 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 ### Advanced Features
 | Shortcut | Action |
 |----------|--------|
-| `Cmd+Shift+O` | Open URL hints |
-| `Cmd+Shift+E` | Insert emoji |
+| `Cmd+Shift+U` | Open URL hints |
+| `Cmd+Shift+O` | Open file path hints |
+| `Cmd+Shift+E` | Unicode/emoji input |
 | `Cmd+Ctrl+Space` | Unicode input |
 | `Cmd+Shift+R` | Reload config |
 | `Cmd+Enter` | Toggle fullscreen |
 
+### Window Resizing (NEW)
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+Shift+H` | Make window narrower |
+| `Cmd+Shift+L` | Make window wider |
+| `Cmd+Shift+K` | Make window taller |
+| `Cmd+Shift+J` | Make window shorter |
+| `Cmd+Shift+0` | Reset window sizes |
+
 ## 📖 Reading Optimizations
 
 ### Font & Display Settings
-- **Font:** JetBrains Mono Nerd Font 14pt
+- **Font:** JetBrains Mono Nerd Font 14pt (with ligatures!)
 - **Line height:** 120% for comfortable reading
 - **Character spacing:** 102% to reduce eye strain
 - **Cursor:** Block shape with gentle blink
 - **Scrollback:** 10,000 lines
+- **Background opacity:** 0.98 (subtle transparency)
+- **Tab bar:** Always visible with numbered tabs
 
-### Performance Optimizations
-- Reduced input latency (2ms)
-- Hardware acceleration enabled
-- Sync to monitor refresh rate
-- Smooth cursor trails for easy tracking
+### Performance Optimizations (ENHANCED)
+- **Reduced repaint delay:** 3ms (was 5ms) - snappier response
+- **Reduced input latency:** 1ms - instant typing feedback
+- **GPU acceleration:** Enabled with modern fullscreen
+- **Sync to monitor:** Disabled for better performance
+- **Smooth cursor trails:** For easy tracking
+- **Ligatures:** Enabled for beautiful code (=>  !=  >=)
+
+### URL & Link Features (NEW)
+- **Auto-detect URLs:** Highlighted with curly underline
+- **Click to open:** Cmd+Click any URL
+- **URL hints:** Cmd+Shift+U shows all clickable URLs
+- **Path hints:** Cmd+Shift+O for file paths
 
 ## 📁 Configuration Files
 
