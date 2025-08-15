@@ -71,19 +71,14 @@ zinit ice wait'1' lucid
 zinit light Aloxaf/fzf-tab
 
 # ===========================
-# NVM LAZY LOADING
+# NODE.JS LAZY LOADING
 # ===========================
 export NVM_DIR="$HOME/.nvm"
+export ASDF_DIR="${ASDF_DIR:-$HOME/.asdf}"
 
-nvm() {
-  unfunction nvm node npm npx 2>/dev/null
-  [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-  nvm "$@"
-}
-
-node() { nvm; node "$@" }
-npm() { nvm; npm "$@" }
-npx() { nvm; npx "$@" }
+# Source lazy loading functions for Node.js tools
+# This provides lazy wrappers for npm, node, npx, and global packages
+[[ -f "$HOME/.zsh_functions_lazy" ]] && source "$HOME/.zsh_functions_lazy"
 
 # ===========================
 # CONDA LAZY LOADING

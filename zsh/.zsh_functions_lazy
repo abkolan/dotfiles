@@ -1,46 +1,475 @@
-# ===========================
-# LAZY FUNCTION WRAPPERS
-# These create stub functions that load the real implementation on first use
-# ===========================
+#!/usr/bin/env zsh
+# ============================================================================
+# LAZY-LOADED ZSH FUNCTIONS
+# These functions are defined but only loaded when first called
+# ============================================================================
 
-# List of functions to lazy-load
-lazy_functions=(
-  # File and directory operations
-  mkcd extract compress backup
-  # Search functions
-  findfile finddir findtext
-  # Git functions
-  gpush ghopen gitst
-  # System utilities
-  listening killport
-  # Development utilities
-  serve json_pretty yaml_validate
-  # Performance tools
-  benchmark-shell profile-zsh
-  # Directory analysis
-  diskusage biggestfiles dirsize
-  # Ghostty functions
-  ghostty-theme ghostty-profile ghostty-benchmark
-  # Completion helpers
-  test-completion reload-completions
-  # NVM test
-  test-nvm
-  # FZF git functions
-  fzg fzc fzb
-)
+# ============================================================================
+# NODE.JS & NPM LAZY LOADING
+# ============================================================================
 
-# Create lazy wrapper for each function
-for func in $lazy_functions; do
-  eval "$func() {
-    # Remove the lazy wrapper
-    unfunction $func
-    # Source the real functions
-    source ~/.zsh_functions
-    # Call the real function with original arguments
-    $func \"\$@\"
-  }"
+# Initialize Node environment (detects and loads version manager)
+_init_node() {
+    # Check which Node version manager is available and initialize it
+    if command -v fnm &>/dev/null; then
+        eval "$(fnm env)"
+    elif [[ -s "$NVM_DIR/nvm.sh" ]]; then
+        source "$NVM_DIR/nvm.sh"
+    elif command -v asdf &>/dev/null; then
+        if [[ -s "$ASDF_DIR/asdf.sh" ]]; then
+            source "$ASDF_DIR/asdf.sh"
+        elif [[ -s "$HOME/.asdf/asdf.sh" ]]; then
+            source "$HOME/.asdf/asdf.sh"
+        fi
+    fi
+}
+
+# Lazy wrapper for npm
+npm() {
+    unfunction npm 2>/dev/null      # Remove this wrapper function
+    _init_node                       # Initialize Node environment
+    npm "$@"                         # Call the real npm with original arguments
+}
+
+# Lazy wrapper for node
+node() {
+    unfunction node 2>/dev/null
+    _init_node
+    node "$@"
+}
+
+# Lazy wrapper for npx
+npx() {
+    unfunction npx 2>/dev/null
+    _init_node
+    npx "$@"
+}
+
+# Lazy wrappers for common global npm packages
+# Add or remove commands based on your installed global packages
+for cmd in eslint prettier typescript tsc yarn pnpm tsx bun deno; do
+    eval "$cmd() {
+        unfunction $cmd 2>/dev/null
+        _init_node
+        command $cmd \"\$@\" 2>/dev/null || {
+            echo \"$cmd not found. You may need to install it globally.\"
+            return 1
+        }
+    }"
 done
 
-# For frequently used functions, load immediately
-source <(sed -n '/^# PERFORMANCE: Quick directory creation/,/^}$/p' ~/.zsh_functions)
-source <(sed -n '/^# PERFORMANCE: Smart cd/,/^}$/p' ~/.zsh_functions)
+# ============================================================================
+# DEVELOPMENT TOOLS
+# ============================================================================
+
+# Smart project finder using fd and fzf
+project() {
+  local selected
+  local search_dirs=(
+    "$HOME/Developer"
+    "$HOME/Developer/repos"
+    "$HOME/dotfiles"
+    "$HOME/Projects"
+  )
+  
+  selected=$(fd -H -t d -d 3 '^\.git$' "${search_dirs[@]}" 2>/dev/null | \
+    sed 's/\/.git$//' | \
+    sort -u | \
+    fzf --preview 'eza -la --color=always {}' \
+        --preview-window right:50% \
+        --header 'Select a project')
+  
+  [[ -n "$selected" ]] && cd "$selected"
+}
+
+# Quick GitHub clone
+ghclone() {
+  local repo="$1"
+  local dest="${2:-$(basename "$repo" .git)}"
+  
+  if [[ ! "$repo" =~ ^https?:// ]] && [[ ! "$repo" =~ ^git@ ]]; then
+    # Assume GitHub shorthand (user/repo)
+    repo="https://github.com/${repo}.git"
+  fi
+  
+  git clone "$repo" "$dest" && cd "$dest"
+}
+
+# Smart git commit with conventional commits
+gcommit() {
+  local type
+  local scope
+  local message
+  
+  # Select commit type
+  type=$(echo "feat\nfix\nrefactor\nstyle\ndocs\ntest\nchore\nperf" | \
+    fzf --header="Select commit type" --height=10)
+  
+  [[ -z "$type" ]] && return 1
+  
+  echo -n "Scope (optional, press enter to skip): "
+  read -r scope
+  
+  echo -n "Commit message: "
+  read -r message
+  
+  if [[ -n "$scope" ]]; then
+    git commit -m "${type}(${scope}): ${message}"
+  else
+    git commit -m "${type}: ${message}"
+  fi
+}
+
+# ============================================================================
+# FILE & DIRECTORY OPERATIONS
+# ============================================================================
+
+# Interactive file deletion with preview
+trash() {
+  local files
+  files=$(fzf --multi --preview 'bat --color=always {}' \
+    --header 'Select files to trash (TAB to select multiple)')
+  
+  if [[ -n "$files" ]]; then
+    echo "$files" | while read -r file; do
+      if command -v trash &>/dev/null; then
+        command trash "$file"
+        echo "🗑️  Moved to trash: $file"
+      else
+        mkdir -p ~/.Trash
+        mv "$file" ~/.Trash/
+        echo "🗑️  Moved to ~/.Trash: $file"
+      fi
+    done
+  fi
+}
+
+# Bulk rename with preview
+bulk_rename() {
+  local tmpfile="/tmp/bulk_rename_$$"
+  
+  ls -1 > "$tmpfile"
+  local original_hash=$(md5sum "$tmpfile" | cut -d' ' -f1)
+  
+  ${EDITOR:-nvim} "$tmpfile"
+  
+  local new_hash=$(md5sum "$tmpfile" | cut -d' ' -f1)
+  
+  if [[ "$original_hash" != "$new_hash" ]]; then
+    paste <(ls -1) "$tmpfile" | while IFS=$'\t' read -r old new; do
+      if [[ "$old" != "$new" ]]; then
+        mv -v "$old" "$new"
+      fi
+    done
+  fi
+  
+  rm -f "$tmpfile"
+}
+
+# ============================================================================
+# SYSTEM MONITORING
+# ============================================================================
+
+# Enhanced system information
+sysinfo() {
+  echo "🖥️  System Information"
+  echo "===================="
+  
+  # OS Info
+  echo "📦 OS: $(uname -sr)"
+  
+  # CPU Info
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo "🔧 CPU: $(sysctl -n machdep.cpu.brand_string)"
+    echo "💻 Cores: $(sysctl -n hw.ncpu)"
+  else
+    echo "🔧 CPU: $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2)"
+    echo "💻 Cores: $(nproc)"
+  fi
+  
+  # Memory
+  if [[ "$(uname)" == "Darwin" ]]; then
+    local total_mem=$(($(sysctl -n hw.memsize) / 1024 / 1024 / 1024))
+    echo "🧠 Memory: ${total_mem}GB"
+  else
+    echo "🧠 Memory: $(free -h | awk '/^Mem:/ {print $2}')"
+  fi
+  
+  # Disk
+  echo "💾 Disk Usage:"
+  df -h / | tail -1 | awk '{print "  /: " $3 " / " $2 " (" $5 " used)"}'
+  
+  # Network
+  echo "🌐 Network:"
+  if command -v ip &>/dev/null; then
+    ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v 127.0.0.1 | head -1
+  else
+    ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print "  " $2}' | head -1
+  fi
+  
+  # Uptime
+  echo "⏰ Uptime: $(uptime | sed 's/.*up \([^,]*\).*/\1/')"
+}
+
+# Process monitor with live updates
+procmon() {
+  local refresh=${1:-2}
+  
+  while true; do
+    clear
+    echo "📊 Top Processes (CPU) - $(date '+%H:%M:%S')"
+    echo "================================"
+    ps aux | head -1
+    ps aux | sort -nrk 3,3 | head -10
+    
+    echo ""
+    echo "📊 Top Processes (Memory)"
+    echo "================================"
+    ps aux | head -1
+    ps aux | sort -nrk 4,4 | head -10
+    
+    echo ""
+    echo "Press Ctrl+C to exit..."
+    sleep "$refresh"
+  done
+}
+
+# ============================================================================
+# DOCKER UTILITIES
+# ============================================================================
+
+# Docker container shell access
+dshell() {
+  local container
+  container=$(docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}" | \
+    tail -n +2 | \
+    fzf --header="Select container" | \
+    awk '{print $1}')
+  
+  [[ -n "$container" ]] && docker exec -it "$container" /bin/bash
+}
+
+# Docker logs with follow
+dlogs() {
+  local container
+  container=$(docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}" | \
+    tail -n +2 | \
+    fzf --header="Select container for logs" | \
+    awk '{print $1}')
+  
+  [[ -n "$container" ]] && docker logs -f "$container"
+}
+
+# Docker cleanup
+dclean() {
+  echo "🧹 Docker Cleanup"
+  echo "================="
+  
+  # Remove stopped containers
+  local stopped=$(docker ps -aq -f status=exited)
+  if [[ -n "$stopped" ]]; then
+    echo "Removing stopped containers..."
+    docker rm $stopped
+  fi
+  
+  # Remove dangling images
+  local dangling=$(docker images -q -f dangling=true)
+  if [[ -n "$dangling" ]]; then
+    echo "Removing dangling images..."
+    docker rmi $dangling
+  fi
+  
+  # Remove unused volumes
+  echo "Removing unused volumes..."
+  docker volume prune -f
+  
+  # Remove unused networks
+  echo "Removing unused networks..."
+  docker network prune -f
+  
+  echo "✅ Cleanup complete!"
+}
+
+# ============================================================================
+# NETWORK UTILITIES
+# ============================================================================
+
+# Port scanner
+portscan() {
+  local host="${1:-localhost}"
+  local start_port="${2:-1}"
+  local end_port="${3:-1000}"
+  
+  echo "🔍 Scanning $host ports $start_port-$end_port..."
+  
+  for port in $(seq "$start_port" "$end_port"); do
+    timeout 1 bash -c "</dev/tcp/$host/$port" 2>/dev/null && \
+      echo "✅ Port $port is open"
+  done
+}
+
+# Check SSL certificate
+sslcheck() {
+  local domain="$1"
+  [[ -z "$domain" ]] && { echo "Usage: sslcheck domain.com"; return 1; }
+  
+  echo | openssl s_client -servername "$domain" -connect "$domain:443" 2>/dev/null | \
+    openssl x509 -noout -dates -subject -issuer
+}
+
+# ============================================================================
+# TEXT PROCESSING
+# ============================================================================
+
+# JSON prettifier with syntax highlighting
+json() {
+  if [[ -f "$1" ]]; then
+    jq '.' "$1" | bat -l json
+  else
+    echo "$1" | jq '.' | bat -l json
+  fi
+}
+
+# CSV viewer
+csv() {
+  local file="$1"
+  [[ -z "$file" ]] && { echo "Usage: csv file.csv"; return 1; }
+  
+  column -t -s, "$file" | less -S
+}
+
+# ============================================================================
+# PRODUCTIVITY TOOLS
+# ============================================================================
+
+# Note taking
+note() {
+  local notes_dir="${NOTES_DIR:-$HOME/notes}"
+  mkdir -p "$notes_dir"
+  
+  local filename
+  if [[ $# -eq 0 ]]; then
+    filename="$notes_dir/$(date +%Y-%m-%d).md"
+  else
+    filename="$notes_dir/$1.md"
+  fi
+  
+  ${EDITOR:-nvim} "$filename"
+}
+
+# Quick todo
+todo() {
+  local todo_file="${TODO_FILE:-$HOME/.todo.md}"
+  
+  if [[ $# -eq 0 ]]; then
+    if [[ -f "$todo_file" ]]; then
+      bat "$todo_file"
+    else
+      echo "No todos found. Use 'todo add <task>' to add one."
+    fi
+  else
+    case "$1" in
+      add)
+        shift
+        echo "- [ ] $*" >> "$todo_file"
+        echo "✅ Added: $*"
+        ;;
+      done)
+        shift
+        local task="$*"
+        sed -i '' "s/- \[ \] $task/- \[x\] $task/" "$todo_file"
+        echo "✅ Completed: $task"
+        ;;
+      edit)
+        ${EDITOR:-nvim} "$todo_file"
+        ;;
+      clear)
+        grep -v "\[x\]" "$todo_file" > "$todo_file.tmp"
+        mv "$todo_file.tmp" "$todo_file"
+        echo "🧹 Cleared completed tasks"
+        ;;
+      *)
+        echo "Usage: todo [add|done|edit|clear] [task]"
+        ;;
+    esac
+  fi
+}
+
+# ============================================================================
+# BACKUP & SYNC
+# ============================================================================
+
+# Smart backup with rsync
+backup() {
+  local source="${1:-.}"
+  local dest="${2:-$HOME/backups/$(date +%Y%m%d_%H%M%S)}"
+  
+  mkdir -p "$(dirname "$dest")"
+  
+  rsync -avh --progress \
+    --exclude='.git' \
+    --exclude='node_modules' \
+    --exclude='.DS_Store' \
+    --exclude='*.pyc' \
+    --exclude='__pycache__' \
+    "$source" "$dest"
+  
+  echo "✅ Backup complete: $dest"
+}
+
+# ============================================================================
+# DEVELOPMENT ENVIRONMENTS
+# ============================================================================
+
+# Python virtual environment manager
+venv() {
+  case "${1:-activate}" in
+    create)
+      python3 -m venv .venv
+      source .venv/bin/activate
+      pip install --upgrade pip
+      ;;
+    activate)
+      if [[ -d .venv ]]; then
+        source .venv/bin/activate
+      elif [[ -d venv ]]; then
+        source venv/bin/activate
+      else
+        echo "No virtual environment found"
+      fi
+      ;;
+    deactivate)
+      deactivate 2>/dev/null || echo "No active virtual environment"
+      ;;
+    *)
+      echo "Usage: venv [create|activate|deactivate]"
+      ;;
+  esac
+}
+
+# Go workspace setup
+gowork() {
+  local project="${1:-myproject}"
+  mkdir -p "$project"/{cmd,pkg,internal}
+  cd "$project"
+  go mod init "github.com/$(git config user.name)/$project"
+  echo "✅ Go workspace created: $project"
+}
+
+# ============================================================================
+# PERFORMANCE MONITORING
+# ============================================================================
+
+# Memory usage by process
+memtop() {
+  ps aux | awk '{printf "%.1f MB\t%s\n", $6/1024, $11}' | \
+    sort -rn | head -20
+}
+
+# Disk usage analyzer
+diskanalyze() {
+  local dir="${1:-.}"
+  du -h "$dir" -d 1 2>/dev/null | \
+    sort -hr | \
+    head -20
+}
