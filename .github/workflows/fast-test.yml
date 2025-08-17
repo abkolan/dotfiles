@@ -37,6 +37,10 @@ jobs:
           ./tests/install-platform-agnostic.sh
           echo "🔍 Checking installation results:"
           ls -la $HOME/.gitconfig* || echo "No .gitconfig found"
+          echo "🔍 Manual stow check:"
+          cd /home/runner/work/dotfiles/dotfiles && stow -v git || echo "Stow failed"
+          echo "🔍 After manual stow:"
+          ls -la $HOME/.gitconfig* || echo "Still no .gitconfig found"
           ls -la $HOME/ | head -10
           
       - name: Run fast validation test
