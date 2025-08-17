@@ -1,6 +1,7 @@
 # Base image with all dependencies pre-installed
 # Build this once: docker build -t dotfiles-base -f tests/Dockerfile.base .
-FROM ubuntu:22.04
+ARG BASE_IMAGE=ubuntu:22.04
+FROM ${BASE_IMAGE}
 
 # Avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
