@@ -29,9 +29,15 @@ jobs:
       - name: Install dotfiles for testing
         run: |
           echo "📦 Installing dotfiles for validation..."
+          echo "🏠 HOME directory: $HOME"
+          echo "📁 Current directory: $(pwd)"
+          echo "👤 Current user: $(whoami)"
           # Run platform-agnostic installer
           chmod +x ./tests/install-platform-agnostic.sh
           ./tests/install-platform-agnostic.sh
+          echo "🔍 Checking installation results:"
+          ls -la $HOME/.gitconfig* || echo "No .gitconfig found"
+          ls -la $HOME/ | head -10
           
       - name: Run fast validation test
         env:
