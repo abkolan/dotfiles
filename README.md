@@ -144,6 +144,35 @@ The test suite validates that `git clone → install → everything works` on fr
 
 For more details, see [tests/README.md](tests/README.md).
 
+## 📚 Component Documentation
+
+Each component in this dotfiles setup has its own detailed documentation:
+
+### Core Components
+- [**Neovim**](nvim/README.md) - Text editor configuration with LSP, plugins, and DevOps tools
+- [**ZSH**](zsh/README.md) - Shell configuration with aliases, functions, and performance optimizations
+- [**Git**](git/README.md) - Version control configuration, aliases, and workflow tools
+- [**Kitty**](kitty/README.md) - Terminal emulator configuration and themes
+
+### Development Tools
+- [**Go**](go/README.md) - Go development environment setup
+- [**Broot**](broot/README.md) - Modern tree view and file navigation
+- [**Ripgrep**](ripgrep/README.md) - Fast text search configuration
+- [**LSD**](lsd/README.md) - Modern `ls` replacement configuration
+
+### System Tools
+- [**Btop**](btop/README.md) - System monitor configuration
+- [**Ghostty**](ghostty/README.md) - GPU-accelerated terminal configuration
+- [**Linear Mouse**](linearmouse/README.md) - Mouse acceleration configuration
+
+### Utilities
+- [**Scripts**](scripts/README.md) - Automation scripts and utilities
+- [**Scratchpad**](scratchpad/README.md) - Quick notes and temporary files
+
+### Testing & CI
+- [**Tests**](tests/README.md) - Comprehensive testing framework
+- [**GitHub Actions**](tests/github-actions/README.md) - CI/CD pipeline configuration
+
 ## Sync Between Machines
 
 This repository includes a script to synchronize dotfiles between machines:
