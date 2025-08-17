@@ -83,7 +83,10 @@ run_fast_test() {
 
 # Main
 main() {
-    clear
+    # Only clear in interactive mode
+    if [[ -t 0 ]] && [[ -n "${TERM:-}" ]]; then
+        clear 2>/dev/null || true
+    fi
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     echo -e "${CYAN}              FAST DOCKER INTEGRATION TEST                      ${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
@@ -99,13 +102,20 @@ main() {
     if ! check_base_image; then
         print_info "Base image not found"
         echo ""
-        read -p "Build base image now? (y/n) " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
+        
+        # In CI or non-interactive mode, automatically build base image
+        if [[ ! -t 0 ]] || [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+            print_info "Running in CI mode - building base image automatically"
             build_base_image
         else
-            print_error "Cannot run tests without base image"
-            exit 1
+            read -p "Build base image now? (y/n) " -n 1 -r
+            echo ""
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                build_base_image
+            else
+                print_error "Cannot run tests without base image"
+                exit 1
+            fi
         fi
     else
         print_success "Base image found"
