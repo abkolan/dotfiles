@@ -56,6 +56,7 @@ brew "hyperfine"       # Command-line benchmarking tool (used in scripts)
 brew "jq"              # JSON processor (found installed)
 brew "curl"            # URL transfer tool (used in nvim install)
 brew "wget"            # Network downloader (used in nvim install)
+brew "atuin"           # Shell history database with sync and search
 
 # ===========================
 # APPLICATIONS & TOOLS

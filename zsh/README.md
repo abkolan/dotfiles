@@ -49,7 +49,7 @@ zsh/
 ├── .zsh_functions_lazy  # Lazy-loading function wrappers
 ├── .zsh_autoload/       # Modular, on-demand function modules
 │   ├── git-helpers      # Advanced git functions
-│   └── docker-helpers   # Docker utilities
+│    ── docker-helpers   # Docker utilities
 ├── .p10k.zsh            # Powerlevel10k theme configuration
 └── README.md            # This documentation
 
@@ -88,6 +88,265 @@ brew install eza tree ncdu neovim powerlevel10k
 - **Startup time**: ~58ms measured with hyperfine, plugins load in background
 - **Best for**: Performance-focused users who want instant shell
 - **Features**: Turbo mode, parallel loading, lazy functions, modular architecture
+
+## 🔍 Atuin - Advanced Shell History
+
+### What is Atuin?
+
+Atuin is a magical shell history tool that replaces your default shell history with a SQLite database-backed, searchable, and syncable history system. It's like having a time machine for your terminal commands!
+
+### Key Features
+
+- **Fuzzy Search**: Find commands instantly with fuzzy matching
+- **SQLite Database**: All history stored in a fast, queryable database
+- **Cross-Machine Sync**: Optional sync across all your machines
+- **Privacy-First**: Filters out secrets and sensitive information automatically
+- **Rich Statistics**: Analyze your command usage patterns
+- **Context-Aware**: Search by directory, host, or time period
+- **Import Existing History**: Seamlessly import your existing shell history
+
+### Quick Start with Atuin
+
+#### Basic Usage
+
+```bash
+# Search history (replaces Ctrl+R)
+Ctrl+R              # Opens interactive fuzzy search
+
+# Using aliases
+h                   # Quick history search (alias for 'atuin search')
+hs                  # Show command statistics
+hsd                 # Today's command stats
+hsw                 # This week's command stats
+hsm                 # This month's command stats
+```
+
+#### Search Interface Keybindings
+
+When you press `Ctrl+R`, you enter Atuin's search interface:
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+R` | Open search interface |
+| `Type` | Fuzzy search through history |
+| `↑/↓` or `Ctrl+P/N` | Navigate results |
+| `Enter` | Execute selected command |
+| `Tab` | Insert command without executing |
+| `Ctrl+O` | Open command in editor |
+| `Ctrl+D` | Delete selected entry |
+| `Ctrl+Y` | Copy command to clipboard |
+| `Esc` or `Ctrl+C` | Cancel search |
+
+#### Search Filters & Modifiers
+
+Atuin supports powerful search modifiers to narrow down results:
+
+```bash
+# Basic search
+docker              # Find all docker commands
+
+# Search with filters (use ':' prefix)
+:host laptop        # Commands from host "laptop"
+:user alice         # Commands by user "alice"
+:before 2024-01-01  # Commands before date
+:after 2024-01-01   # Commands after date
+:cwd /project       # Commands run in /project directory
+
+# Combine filters
+docker :after 2024-01-01 :cwd /work  # Docker commands in /work dir this year
+```
+
+### Advanced Atuin Features
+
+#### Statistics & Analytics
+
+```bash
+# View your most used commands
+hs                  # Overall statistics
+atuin stats --period day --limit 10   # Top 10 commands today
+
+# See command frequency by time
+atuin stats --period week             # Weekly breakdown
+atuin stats --period month            # Monthly breakdown
+
+# Filter stats by command prefix
+atuin stats --filter "git"            # Git command statistics
+atuin stats --filter "docker"         # Docker usage patterns
+```
+
+#### History Management
+
+```bash
+# Import existing history
+hi                  # Import from default shell history
+atuin import zsh    # Explicitly import from zsh
+atuin import bash   # Import from bash history
+
+# Clean up history
+hclean              # Remove duplicates and broken entries
+atuin history clean # Full cleanup
+
+# Delete specific entries
+# In search interface, use Ctrl+D on selected item
+
+# Export history
+atuin history list > my_history.txt   # Export all history
+atuin history list --limit 1000       # Export last 1000 commands
+```
+
+#### Sync Across Machines (Optional)
+
+```bash
+# Register for sync (free tier available)
+atuin register      # Create account
+atuin login         # Login to existing account
+
+# Manual sync
+hsync               # Sync history now
+atuin sync          # Full sync command
+
+# Check sync status
+atuin sync status   # View sync information
+```
+
+### Configuration Tips
+
+Our atuin configuration (`~/.config/atuin/config.toml`) includes:
+
+```toml
+# Performance optimizations
+update_check = false      # Faster startup
+search_mode = "fuzzy"     # Most flexible search
+inline_height = 25        # Good for standard terminals
+
+# Privacy features
+secrets_filter = true     # Auto-filter passwords
+history_filter = [        # Skip noise commands
+  "^exit$", "^clear$", "^ls$", "^cd$"
+]
+
+# Smart filtering
+cwd_filter = [           # Don't record in sensitive dirs
+  "/tmp", "/private", ".*/secret.*"
+]
+```
+
+### Practical Workflows
+
+#### Finding That Command You Ran Last Week
+
+```bash
+# Press Ctrl+R, then type what you remember
+Ctrl+R
+docker build :after 2024-01-15    # Find recent docker builds
+
+# Or use time-based search
+h :after "last monday"             # Commands since Monday
+h :before "2 hours ago"           # Recent commands
+```
+
+#### Project-Specific History
+
+```bash
+# Find commands in specific project
+h :cwd ~/projects/webapp          # All commands in webapp project
+
+# Find deployment commands
+h deploy :cwd ~/projects          # Deployment across all projects
+```
+
+#### Command Composition
+
+```bash
+# Use Tab to insert without executing
+Ctrl+R
+# Search for complex command
+# Press Tab to insert it
+# Modify the command
+# Then execute
+```
+
+#### Learning from Your Patterns
+
+```bash
+# See what you use most
+hs --limit 20                     # Top 20 commands
+
+# Find time wasters
+atuin stats | grep "^rm"          # How often you delete files
+atuin stats | grep "^git status"  # How often you check git
+
+# Discover patterns by time
+atuin stats --period day --limit 50  # Daily workflow analysis
+```
+
+### Troubleshooting Atuin
+
+#### Database Issues
+
+```bash
+# Check database location
+ls -la ~/.local/share/atuin/
+
+# Rebuild database
+atuin history rebuild             # Rebuild from scratch
+
+# Backup database
+cp ~/.local/share/atuin/history.db ~/atuin-backup.db
+```
+
+#### Search Not Working
+
+```bash
+# Verify installation
+atuin --version                   # Check version
+which atuin                       # Check path
+
+# Test search directly
+atuin search "test"               # Direct search test
+
+# Check ZSH integration
+bindkey | grep atuin              # Verify key bindings
+```
+
+#### Performance Issues
+
+```bash
+# Check database size
+du -h ~/.local/share/atuin/history.db
+
+# Optimize database
+atuin history clean               # Remove duplicates
+atuin db vacuum                   # Compact database
+
+# Disable features if needed
+# Edit ~/.config/atuin/config.toml
+# show_preview = false            # Disable preview
+# show_help = false               # Disable help
+```
+
+### Atuin vs Traditional History
+
+| Feature | Traditional History | Atuin |
+|---------|-------------------|--------|
+| **Storage** | Text file | SQLite database |
+| **Search** | Basic substring | Fuzzy, contextual |
+| **Capacity** | ~10,000 lines | Unlimited |
+| **Sync** | Manual/None | Automatic (optional) |
+| **Privacy** | None | Built-in filtering |
+| **Statistics** | None | Rich analytics |
+| **Performance** | Slows with size | Always fast |
+| **Context** | None | Directory, time, host |
+
+### Integration with Our Setup
+
+Atuin is fully integrated in our ZSH configuration:
+
+1. **Automatic initialization**: Loads in `.zshrc` if installed
+2. **Replaces Ctrl+R**: Seamlessly replaces default history search
+3. **Preserves arrow keys**: Up/down arrows still work normally
+4. **Works with aliases**: All our custom aliases are recorded
+5. **Respects privacy**: Filters secrets in commands automatically
 
 ## 🚀 Installation
 

@@ -1,0 +1,120 @@
+# ===========================
+# ATUIN CONFIGURATION
+# Optimized for performance and privacy
+# ===========================
+
+# ===========================
+# SYNC & UPDATES
+# ===========================
+update_check = false           # Disable update checks for faster startup
+sync_frequency = "15m"         # Sync every 15 minutes (if logged in)
+sync_address = "https://api.atuin.sh"
+
+# ===========================
+# SEARCH BEHAVIOR
+# ===========================
+search_mode = "fuzzy"          # fuzzy, prefix, or fulltext - fuzzy is most flexible
+filter_mode = "global"         # global, host, session, directory - start with global
+inline_height = 25             # Height of search window (good for your terminal)
+show_preview = true            # Show command preview
+show_help = true              # Show keybinding help at bottom
+exit_mode = "return-original" # Keep original behavior on exit
+
+# ===========================
+# STYLE & APPEARANCE
+# ===========================
+style = "compact"              # compact or full - compact is cleaner
+show_tabs = false             # Don't show tabs in the UI
+invert = false                # Don't invert selection
+
+# ===========================
+# HISTORY BEHAVIOR
+# ===========================
+history_format = "{time} {command} {duration}"  # Format for history display
+timezone = "local"            # Use local timezone for timestamps
+dialect = "us"                # Date format dialect
+
+# ===========================
+# PERFORMANCE
+# ===========================
+max_history_length = 100000   # Keep lots of history
+sync_interval = 300           # Seconds between sync checks
+
+# ===========================
+# PRIVACY & SECURITY
+# ===========================
+secrets_filter = true         # Filter out potential secrets
+cwd_filter = [                # Don't record commands in these directories
+  "/tmp",
+  "/private",
+  ".*/secret.*",
+  ".*/credentials.*"
+]
+
+# Filter out common typos and noise commands
+history_filter = [
+  "^\\s",                     # Commands starting with space
+  "^exit$",
+  "^clear$",
+  "^c$",
+  "^l$",
+  "^ll$",
+  "^ls$",
+  "^cd$",
+  "^pwd$",
+  "^\\.\\.+$",                # Just dots (.., ..., etc)
+  "^-",                       # Accidental dash commands
+  "^z$",                      # Bare z command
+  "^fg$",
+  "^bg$",
+  "^jobs$"
+]
+
+# Patterns that might contain secrets (won't be saved)
+secrets_regex = [
+  "password=\\S+",
+  "token=\\S+",
+  "api[_-]?key=\\S+",
+  "secret=\\S+",
+  "bearer \\S+",
+  "ssh-rsa \\S+",
+  "-----BEGIN",
+  "apikey:",
+  "api_key:",
+  "access_token=",
+  "refresh_token=",
+  "client_secret=",
+  "aws_secret_access_key=",
+  "AKIA[0-9A-Z]{16}"         # AWS access key pattern
+]
+
+# ===========================
+# IMPORT SETTINGS
+# ===========================
+auto_sync = true              # Auto sync when logged in
+db_path = "~/.local/share/atuin/history.db"
+
+# ===========================
+# KEY BINDINGS
+# ===========================
+# Ctrl+R is configured in .zshrc
+# Additional bindings can be added here if needed
+
+# ===========================
+# STATS CONFIGURATION
+# ===========================
+stats_format = "table"        # Format for stats output
+common_prefix = [             # Common prefixes to group in stats
+  "git",
+  "docker",
+  "kubectl",
+  "npm",
+  "brew",
+  "cargo"
+]
+
+# ===========================
+# NETWORK
+# ===========================
+network_connect_timeout = 5   # Timeout for network operations (seconds)
+network_timeout = 30          # Overall network timeout

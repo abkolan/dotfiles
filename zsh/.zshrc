@@ -85,8 +85,8 @@ export ASDF_DIR="${ASDF_DIR:-$HOME/.asdf}"
 # ===========================
 conda() {
   unfunction conda 2>/dev/null
-  __conda_setup="$('/Users/ab/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-  [ $? -eq 0 ] && eval "$__conda_setup" || export PATH="/Users/ab/miniconda3/bin:$PATH"
+  __conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+  [ $? -eq 0 ] && eval "$__conda_setup" || export PATH="$HOME/miniconda3/bin:$PATH"
   unset __conda_setup
   conda "$@"
 }
@@ -150,7 +150,7 @@ fi
 # ===========================
 # ZSH OPTIONS & HISTORY
 # ===========================
-# History settings
+# History settings (used as fallback if atuin not available)
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
@@ -159,6 +159,21 @@ HISTFILE=~/.zsh_history
 setopt AUTO_CD INTERACTIVE_COMMENTS
 setopt HIST_IGNORE_DUPS HIST_REDUCE_BLANKS SHARE_HISTORY EXTENDED_HISTORY
 setopt INC_APPEND_HISTORY HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS HIST_VERIFY
+
+# ===========================
+# ATUIN - Advanced Shell History
+# ===========================
+# Initialize atuin if installed (replaces default history search)
+if command -v atuin &>/dev/null; then
+  # Disable default history search bindings
+  bindkey -r '^R'
+  
+  # Initialize atuin with minimal overhead
+  eval "$(atuin init zsh --disable-up-arrow)"
+  
+  # Custom keybindings for better integration
+  bindkey '^R' _atuin_search_widget  # Keep Ctrl+R for atuin search
+fi
 
 # ===========================
 # ALIASES

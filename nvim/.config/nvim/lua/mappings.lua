@@ -5,22 +5,12 @@ local map = vim.keymap.set
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
--- DevOps specific mappings
-map("n", "<leader>dk", "<cmd>Telescope kubernetes<cr>", { desc = "Kubernetes resources" })
-map("n", "<leader>dt", "<cmd>Telescope terraform_doc<cr>", { desc = "Terraform documentation" })
-map("n", "<leader>dh", "<cmd>YAMLTelescope<cr>", { desc = "Helm values" })
-map("n", "<leader>dy", "<cmd>Telescope yaml_schema<cr>", { desc = "YAML schema" })
 
 -- Git mappings
 map("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Git diff view" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory<cr>", { desc = "Git file history" })
 map("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Close diff view" })
 
--- Testing mappings
-map("n", "<leader>tt", "<cmd>lua require('neotest').run.run()<cr>", { desc = "Run nearest test" })
-map("n", "<leader>tf", "<cmd>lua require('neotest').run.run(vim.fn.expand('%'))<cr>", { desc = "Run current file tests" })
-map("n", "<leader>ts", "<cmd>lua require('neotest').summary.toggle()<cr>", { desc = "Toggle test summary" })
-map("n", "<leader>to", "<cmd>lua require('neotest').output.open({ enter = true })<cr>", { desc = "Open test output" })
 
 -- Go specific mappings
 map("n", "<leader>gr", "<cmd>GoRun<cr>", { desc = "Go run" })
@@ -29,34 +19,13 @@ map("n", "<leader>gb", "<cmd>GoBuild<cr>", { desc = "Go build" })
 map("n", "<leader>gi", "<cmd>GoInstallDeps<cr>", { desc = "Go install dependencies" })
 map("n", "<leader>gf", "<cmd>GoFmt<cr>", { desc = "Go format" })
 
--- Terraform mappings
-map("n", "<leader>ti", "<cmd>!terraform init<cr>", { desc = "Terraform init" })
-map("n", "<leader>tp", "<cmd>!terraform plan<cr>", { desc = "Terraform plan" })
-map("n", "<leader>ta", "<cmd>!terraform apply<cr>", { desc = "Terraform apply" })
-map("n", "<leader>tv", "<cmd>!terraform validate<cr>", { desc = "Terraform validate" })
 
--- Kubernetes mappings  
-map("n", "<leader>ka", "<cmd>!kubectl apply -f %<cr>", { desc = "Kubectl apply current file" })
-map("n", "<leader>kd", "<cmd>!kubectl describe -f %<cr>", { desc = "Kubectl describe current file" })
-map("n", "<leader>kg", "<cmd>!kubectl get -f %<cr>", { desc = "Kubectl get current file" })
-map("n", "<leader>kv", "<cmd>!kubectl validate -f %<cr>", { desc = "Kubectl validate current file" })
-map("n", "<leader>kD", "<cmd>!kubectl delete -f %<cr>", { desc = "Kubectl delete current file" })
 
--- Enhanced Kubernetes file operations
-map("n", "<leader>ky", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension yaml --extension yml . k8s kubernetes manifests' })<cr>", { desc = "Find Kubernetes YAML files" })
-map("n", "<leader>kf", "<cmd>lua require('fzf-lua').live_grep({ cmd = 'rg --type yaml' })<cr>", { desc = "Grep in Kubernetes files" })
-map("n", "<leader>ks", "<cmd>!kubectl get pods,svc,deploy,configmap,secret -o wide<cr>", { desc = "Kubectl status overview" })
-
--- Docker mappings
-map("n", "<leader>db", "<cmd>!docker build -t $(basename $(pwd)) .<cr>", { desc = "Docker build" })
-map("n", "<leader>dr", "<cmd>!docker run -it $(basename $(pwd))<cr>", { desc = "Docker run" })
 
 -- Python mappings
 map("n", "<leader>pr", "<cmd>!python %<cr>", { desc = "Run Python file" })
 map("n", "<leader>pt", "<cmd>!python -m pytest<cr>", { desc = "Run pytest" })
 
--- Quick file navigation for DevOps
-map("n", "<leader>fd", "<cmd>Telescope find_files search_dirs={'./docker','./k8s','./kubernetes','./helm','./terraform'}<cr>", { desc = "Find DevOps files" })
 
 -- YAML validation
 map("n", "<leader>yv", function()
@@ -88,17 +57,13 @@ map("n", "<leader>fD", "<cmd>Telescope diagnostics<cr>", { desc = "Diagnostics" 
 map("n", "<leader>fG", "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<cr>", { desc = "Live grep with args" })
 map("n", "<leader>ft", "<cmd>lua require('configs.telescope').find_todos()<cr>", { desc = "Find TODOs" })
 
--- Monorepo specific searches
-map("n", "<leader>fms", "<cmd>lua require('configs.telescope').find_files_in_services()<cr>", { desc = "Find in services" })
-map("n", "<leader>fmp", "<cmd>lua require('configs.telescope').find_files_in_packages()<cr>", { desc = "Find in packages" })
-map("n", "<leader>fma", "<cmd>lua require('configs.telescope').find_files_in_apps()<cr>", { desc = "Find in apps" })
 
 -- File extension searches (using FZF-Lua for speed)
 map("n", "<leader>fey", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension yaml --type f' })<cr>", { desc = "Find YAML files" })
 map("n", "<leader>fej", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension json --type f' })<cr>", { desc = "Find JSON files" })
-map("n", "<leader>fet", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension tf --type f' })<cr>", { desc = "Find Terraform files" })
 map("n", "<leader>fep", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension py --type f' })<cr>", { desc = "Find Python files" })
 map("n", "<leader>feg", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension go --type f' })<cr>", { desc = "Find Go files" })
+map("n", "<leader>fes", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension sh --type f' })<cr>", { desc = "Find shell script files" })
 
 -- FZF-Lua alternative mappings (faster for huge repos)
 map("n", "<leader>Ff", "<cmd>lua require('fzf-lua').files()<cr>", { desc = "FZF files" })
@@ -128,8 +93,55 @@ map("n", "<leader>E", "<cmd>Neotree focus<cr>", { desc = "Focus Neo-tree" })
 map("n", "<leader>ge", "<cmd>Neotree git_status<cr>", { desc = "Neo-tree git status" })
 map("n", "<leader>be", "<cmd>Neotree buffers<cr>", { desc = "Neo-tree buffers" })
 
--- Enhanced Directory Navigation
-map("n", "<leader>dd", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.input('Directory: ', vim.fn.getcwd(), 'dir') })<cr>", { desc = "Navigate to directory" })
+-- Enhanced Directory Navigation (integrated with zsh fcd)
+map("n", "<leader>dd", function()
+  -- Use the same fd command as your fcd alias, starting from current working directory
+  local fzf_lua = require('fzf-lua')
+  local cwd = vim.fn.getcwd()
+  fzf_lua.fzf_exec(
+    'fd --type d --hidden --exclude .git --exclude node_modules . ' .. vim.fn.shellescape(cwd),
+    {
+      prompt = 'Directory> ',
+      preview = 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}',
+      actions = {
+        ['default'] = function(selected)
+          if selected and #selected > 0 then
+            local dir = selected[1]
+            -- Change neovim's working directory first
+            vim.cmd('cd ' .. vim.fn.fnameescape(dir))
+            vim.cmd('pwd')
+            -- Open Neo-tree in the new directory
+            vim.cmd('Neotree filesystem left dir=' .. vim.fn.fnameescape(dir))
+          end
+        end
+      }
+    }
+  )
+end, { desc = "Set Neo-tree directory (fcd + tree)" })
+
+-- Pure directory change (like your fcd alias)
+map("n", "<leader>dcd", function()
+  local fzf_lua = require('fzf-lua')
+  local cwd = vim.fn.getcwd()
+  fzf_lua.fzf_exec(
+    'fd --type d --hidden --exclude .git --exclude node_modules . ' .. vim.fn.shellescape(cwd),
+    {
+      prompt = 'Change Directory> ',
+      preview = 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}',
+      actions = {
+        ['default'] = function(selected)
+          if selected and #selected > 0 then
+            local dir = selected[1]
+            -- Just change directory like fcd
+            vim.cmd('cd ' .. vim.fn.fnameescape(dir))
+            vim.cmd('pwd')
+          end
+        end
+      }
+    }
+  )
+end, { desc = "Change directory (pure fcd)" })
+
 map("n", "<leader>dc", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.getcwd() })<cr>", { desc = "Files in current dir" })
 map("n", "<leader>dp", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('%:p:h') })<cr>", { desc = "Files in parent dir" })
 map("n", "<leader>dh", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~') })<cr>", { desc = "Files in home dir" })
@@ -155,8 +167,16 @@ map("n", "<leader>cD", "<cmd>cd ..<cr><cmd>pwd<cr>", { desc = "Change to parent 
 map("n", "<leader>cw", "<cmd>pwd<cr>", { desc = "Show working directory" })
 map("n", "<leader>ch", "<cmd>cd ~<cr><cmd>pwd<cr>", { desc = "Change to home directory" })
 
--- Fast directory bookmarks (you can customize these paths)
-map("n", "<leader>bh", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/lab/helm3') })<cr>", { desc = "Helm3 project" })
+-- Copy file path utilities
+map("n", "<leader>cp", "<cmd>let @+ = expand('%:p')<cr><cmd>echo 'Copied: ' . expand('%:p')<cr>", { desc = "Copy full file path" })
+map("n", "<leader>cf", "<cmd>let @+ = expand('%:t')<cr><cmd>echo 'Copied: ' . expand('%:t')<cr>", { desc = "Copy filename only" })
+map("n", "<leader>cr", "<cmd>let @+ = expand('%')<cr><cmd>echo 'Copied: ' . expand('%')<cr>", { desc = "Copy relative path" })
+
+-- Fast directory bookmarks - Add your custom project shortcuts here
+-- Tutorial: To add a new bookmark, use this pattern:
+-- map("n", "<leader>bX", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/path/to/your/project') })<cr>", { desc = "Your project description" })
+-- Where X is your chosen letter and ~/path/to/your/project is the directory path
+-- Examples:
 map("n", "<leader>bc", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/.config') })<cr>", { desc = "Config directory" })
 map("n", "<leader>bn", "<cmd>lua require('fzf-lua').files({ cwd = vim.fn.expand('~/.config/nvim') })<cr>", { desc = "Neovim config" })
 
@@ -271,7 +291,10 @@ map("n", "<leader>f", "<cmd>lua vim.lsp.buf.format({ async = true })<cr>", { des
 -- Diagnostics navigation
 map("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", { desc = "Previous diagnostic" })
 map("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", { desc = "Next diagnostic" })
-map("n", "<leader>d", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Show diagnostic" })
+map("n", "<leader>D", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Show diagnostic" })
+
+-- NvChad Dashboard
+map("n", "<leader>d", "<cmd>Nvdash<cr>", { desc = "Open NvChad dashboard" })
 
 -- Symbol occurrence navigation
 map("n", "*", "*zz", { desc = "Search word forward (centered)" })
@@ -300,19 +323,10 @@ map("n", "<leader>o", "<cmd>lua require('fzf-lua').lsp_document_symbols()<cr>", 
 map("n", "<leader>O", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "File outline (detailed)" })
 map("n", "<leader>wo", "<cmd>lua require('fzf-lua').lsp_workspace_symbols()<cr>", { desc = "Workspace symbols" })
 
--- SQL and Database workflows
-map("n", "<leader>sq", "<cmd>lua require('fzf-lua').files({ cmd = 'fd --extension sql --type f' })<cr>", { desc = "Find SQL files" })
-map("n", "<leader>sr", "<cmd>!mysql -u root -p < %<cr>", { desc = "Run SQL file (MySQL)" })
-map("n", "<leader>sp", "<cmd>!psql -f %<cr>", { desc = "Run SQL file (PostgreSQL)" })
 
--- Docker workflows
-map("n", "<leader>df", "<cmd>lua require('fzf-lua').files({ cmd = 'fd Dockerfile --type f' })<cr>", { desc = "Find Dockerfiles" })
-map("n", "<leader>dc", "<cmd>lua require('fzf-lua').files({ cmd = 'fd docker-compose --type f' })<cr>", { desc = "Find Docker Compose files" })
-map("n", "<leader>di", "<cmd>!docker build -t $(basename $(pwd)) .<cr>", { desc = "Docker build image" })
-map("n", "<leader>du", "<cmd>!docker-compose up -d<cr>", { desc = "Docker compose up" })
-map("n", "<leader>dd", "<cmd>!docker-compose down<cr>", { desc = "Docker compose down" })
 
--- Markdown preview
-map("n", "<leader>mp", "<cmd>MarkdownPreview<cr>", { desc = "Markdown preview" })
-map("n", "<leader>ms", "<cmd>MarkdownPreviewStop<cr>", { desc = "Stop markdown preview" })
-map("n", "<leader>mt", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Toggle markdown preview" })
+-- Markdown preview with glow and render-markdown
+map("n", "<leader>mp", "<cmd>Glow<cr>", { desc = "Glow markdown preview" })
+map("n", "<leader>mg", "<cmd>Glow!<cr>", { desc = "Toggle glow preview" })
+map("n", "<leader>mr", "<cmd>RenderMarkdown toggle<cr>", { desc = "Toggle render-markdown" })
+map("n", "<leader>mt", "<cmd>vsplit | terminal TERM=xterm-256color glow --pager %<cr>", { desc = "Glow in terminal buffer" })

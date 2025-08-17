@@ -4,7 +4,7 @@ local M = {}
 
 -- 1) Base theme and highlights
 M.base46 = {
-  theme = "catppuccin",
+  theme = "tomorrow_night",
   -- hl_override = {
   --   Comment     = { italic = true },
   --   ["@comment"] = { italic = true },

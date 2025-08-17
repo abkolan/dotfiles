@@ -445,40 +445,81 @@ return {
 
   -- Markdown preview and enhanced editing
   {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && npm install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-      vim.g.mkdp_auto_start = 0
-      vim.g.mkdp_auto_close = 1
-      vim.g.mkdp_refresh_slow = 0
-      vim.g.mkdp_command_for_global = 0
-      vim.g.mkdp_open_to_the_world = 0
-      vim.g.mkdp_open_ip = ''
-      vim.g.mkdp_browser = ''
-      vim.g.mkdp_echo_preview_url = 0
-      vim.g.mkdp_browserfunc = ''
-      vim.g.mkdp_preview_options = {
-        mkit = {},
-        katex = {},
-        uml = {},
-        maid = {},
-        disable_sync_scroll = 0,
-        sync_scroll_type = 'middle',
-        hide_yaml_meta = 1,
-        sequence_diagrams = {},
-        flowchart_diagrams = {},
-        content_editable = false,
-        disable_filename = 0
-      }
-      vim.g.mkdp_markdown_css = ''
-      vim.g.mkdp_highlight_css = ''
-      vim.g.mkdp_port = ''
-      vim.g.mkdp_page_title = '「${name}」'
-    end,
+    "ellisonleao/glow.nvim",
+    cmd = "Glow",
     ft = { "markdown" },
+    config = function()
+      require("glow").setup({
+        border = "rounded",
+        style = "dark",
+        width = 120,
+        height = 100,
+        width_ratio = 0.8,
+        height_ratio = 0.8,
+      })
+    end,
   },
+
+  -- Alternative terminal-based markdown preview with better color support
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = { "markdown" },
+    opts = {
+      headings = {
+        enable = true,
+        sign = true,
+        position = 'overlay',
+        icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
+        signs = { '󰌕 ' },
+        width = 'full',
+        left_margin = 0,
+        left_pad = 0,
+        right_pad = 0,
+        min_width = 0,
+        border = true,
+        border_virtual = false,
+        border_prefix = false,
+        above = '▄',
+        below = '▀',
+        backgrounds = {
+          'RenderMarkdownH1Bg',
+          'RenderMarkdownH2Bg',
+          'RenderMarkdownH3Bg',
+          'RenderMarkdownH4Bg',
+          'RenderMarkdownH5Bg',
+          'RenderMarkdownH6Bg',
+        },
+        foregrounds = {
+          'RenderMarkdownH1',
+          'RenderMarkdownH2',
+          'RenderMarkdownH3',
+          'RenderMarkdownH4',
+          'RenderMarkdownH5',
+          'RenderMarkdownH6',
+        },
+      },
+      code = {
+        enable = true,
+        sign = false,
+        style = 'full',
+        position = 'left',
+        language_pad = 0,
+        disable_background = { 'diff' },
+        width = 'full',
+        left_margin = 0,
+        left_pad = 0,
+        right_pad = 0,
+        min_width = 0,
+        border = 'thin',
+        above = '',
+        below = '',
+        highlight = 'RenderMarkdownCode',
+        highlight_inline = 'RenderMarkdownCodeInline',
+      },
+    },
+  },
+
 
   -- Enhanced markdown editing
   {
@@ -501,68 +542,5 @@ return {
     end,
   },
 
-  {
-    "greggh/claude-code.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    lazy = false,
-    cmd = {
-      "ClaudeCode",
-      "ClaudeCodeContinue",
-      "ClaudeCodeResume",
-      "ClaudeCodeVerbose",
-      "ClaudeCodeTab"
-    },
-    config = function()
-      -- Set up PATH to include node dynamically
-      local nvm_dir = vim.fn.expand("~/.nvm/versions/node")
-      if vim.fn.isdirectory(nvm_dir) == 1 then
-        -- Get the latest node version
-        local node_versions = vim.fn.glob(nvm_dir .. "/*", false, true)
-        if #node_versions > 0 then
-          -- Sort and get the latest version
-          table.sort(node_versions)
-          local latest_node = node_versions[#node_versions]
-          vim.env.PATH = latest_node .. "/bin:" .. vim.env.PATH
-        end
-      end
-      
-      require("claude-code").setup({
-        command = vim.fn.expand("~/.config/nvim/claude-wrapper.sh"),
-        terminal = {
-          position = "bottom",
-          size = 0.3,
-          floating = false,
-          floating_opts = {
-            relative = "editor",
-            width = 0.8,
-            height = 0.6,
-            row = 0.1,
-            col = 0.1,
-            border = "rounded",
-          },
-        },
-        file_refresh = {
-          enabled = true,
-          delay = 100,
-        },
-        git_project = {
-          use_root = true,
-        },
-        commands = {
-          continue_variant = "continue",
-          resume_variant = "resume",
-          verbose_variant = "verbose",
-        },
-      })
-    end,
-    keys = {
-      { "<C-,>", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code" },
-      { "<leader>cC", "<cmd>ClaudeCodeContinue<cr>", desc = "Continue Claude conversation" },
-      { "<leader>cV", "<cmd>ClaudeCodeVerbose<cr>", desc = "Claude verbose mode" },
-      { "<leader>cR", "<cmd>ClaudeCodeResume<cr>", desc = "Resume Claude conversation" },
-      { "<leader>cA", function() vim.fn.input("Ask Claude: ") end, desc = "Ask Claude a question" },
-      { "<leader>cT", "<cmd>ClaudeCodeTab<cr>", desc = "Open Claude in new tab" },
-    },
-  },
 
 }

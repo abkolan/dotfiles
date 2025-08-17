@@ -123,27 +123,27 @@ alias @goprojs="cd $WORKSPACE/kodex/go-projects"
 # dep: fd, fzf, bat
 # ===========================
 # Basic fzf alias with fd command to respect gitignore
-alias f="fd --type f --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf"
+alias f="fd --type f --hidden --exclude .git --exclude node_modules | fzf"
 
 # Enhanced file search with fd + fzf + bat
-alias ff="fd --type f --hidden --follow --exclude .git | /opt/homebrew/bin/fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' --bind \"ctrl-/:change-preview-window(down|hidden|)\""
+alias ff="fd --type f --hidden --follow --exclude .git | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' --bind \"ctrl-/:change-preview-window(down|hidden|)\""
 
 # fzf for files with preview window configuration
-alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
+alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
 
 # Search in file contents with rg + fzf
-alias rg="/opt/homebrew/bin/rg --color=always --line-number --no-heading --smart-case"
+alias rg="rg --color=always --line-number --no-heading --smart-case"
 
 # Search text content interactively - function moved to .zsh_functions
 
 # Change directory, using fd to find directories and exclude unwanted ones
-alias fcd='local dir=$(fd --type d --hidden --exclude .git --exclude node_modules | /opt/homebrew/bin/fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
+alias fcd='local dir=$(fd --type d --hidden --exclude .git --exclude node_modules | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
 
 # Fuzzy cd with better preview
-alias fzd="fd --type d --hidden --follow --exclude .git | /opt/homebrew/bin/fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+alias fzd="fd --type d --hidden --follow --exclude .git | fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 
 # Recent directories (requires zoxide)
-alias zz='local dir=$(zoxide query -l | /opt/homebrew/bin/fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
+alias zz='local dir=$(zoxide query -l | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
 
 # ===========================
 # 👻 GHOSTTY TERMINAL ALIASES - PERFORMANCE OPTIMIZED  
@@ -199,3 +199,16 @@ alias node-v='node --version'               # Quick Node version check
 alias npm-v='npm --version'                 # Quick NPM version check
 alias nvm-v='nvm --version'                 # Quick NVM version check
 alias nvm-ls='nvm list'                     # List installed Node versions
+
+# ===========================
+# 📚 ATUIN HISTORY DATABASE ALIASES
+# ===========================
+# Quick access to atuin features
+alias h='atuin search'                      # Quick history search
+alias hs='atuin stats'                      # Show command statistics
+alias hsd='atuin stats --period day'        # Today's command stats
+alias hsw='atuin stats --period week'       # This week's command stats
+alias hsm='atuin stats --period month'      # This month's command stats
+alias hi='atuin import auto'                # Import existing shell history
+alias hsync='atuin sync'                    # Manual sync
+alias hclean='atuin history clean'          # Clean up history
