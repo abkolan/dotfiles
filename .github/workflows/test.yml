@@ -5,6 +5,9 @@ on:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master ]
+  schedule:
+    # Run complete test suite weekly on Sundays at 3 AM UTC
+    - cron: '0 3 * * 0'
   workflow_dispatch:
     inputs:
       test_type:
@@ -33,7 +36,7 @@ jobs:
   fast-test:
     name: Fast Test (Docker)
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type != 'complete' && github.event.inputs.test_type != 'components'
+    if: github.event.inputs.test_type != 'complete' && github.event.inputs.test_type != 'components' && github.event_name != 'schedule'
     
     steps:
       - name: Checkout repository
@@ -73,7 +76,7 @@ jobs:
   complete-test:
     name: Complete Test (Pristine Docker)
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'complete'
+    if: github.event.inputs.test_type == 'complete' || github.event_name == 'schedule'
     timeout-minutes: 15
     
     steps:
@@ -98,7 +101,7 @@ jobs:
   component-tests:
     name: Component Tests (${{ matrix.os }})
     runs-on: ${{ matrix.runner }}
-    if: github.event.inputs.test_type == 'components'
+    if: github.event.inputs.test_type == 'components' || github.event_name == 'schedule'
     
     strategy:
       fail-fast: false
