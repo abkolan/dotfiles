@@ -181,12 +181,8 @@ if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
   # PERFORMANCE: Homebrew setup
   # ===========================
   if [[ -z "$HOMEBREW_PREFIX" ]]; then
-    if [[ -x "/opt/homebrew/bin/brew" ]]; then
-      export HOMEBREW_PREFIX="/opt/homebrew"
-    elif [[ -x "/usr/local/bin/brew" ]]; then
-      export HOMEBREW_PREFIX="/usr/local"
-    else
-      export HOMEBREW_PREFIX="/opt/homebrew"
+    if command -v brew >/dev/null 2>&1; then
+      export HOMEBREW_PREFIX="$(brew --prefix)"
     fi
   fi
   

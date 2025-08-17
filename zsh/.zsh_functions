@@ -648,7 +648,7 @@ fzg() {
     return 1
   fi
   
-  git ls-files | /opt/homebrew/bin/fzf --preview 'bat --style=numbers --color=always {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  git ls-files | fzf --preview 'bat --style=numbers --color=always {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
 }
 
 # Search git commits with preview
@@ -658,7 +658,7 @@ fzc() {
     return 1
   fi
   
-  git log --oneline --color=always | /opt/homebrew/bin/fzf --ansi --preview 'git show --color=always {1}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  git log --oneline --color=always | fzf --ansi --preview 'git show --color=always {1}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
 }
 
 # Search git branches with preview
@@ -668,7 +668,7 @@ fzb() {
     return 1
   fi
   
-  git branch -a --color=always | grep -v '/HEAD\s' | sort | /opt/homebrew/bin/fzf --ansi --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -20' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+  git branch -a --color=always | grep -v '/HEAD\s' | sort | fzf --ansi --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -20' --bind 'ctrl-/:change-preview-window(down|hidden|)'
 }
 
 # ===========================
@@ -683,7 +683,7 @@ rgi() {
     echo "Example: rgi \"TODO\" to search for TODO items"
     return 1
   fi
-  /opt/homebrew/bin/rg --line-number --no-heading --smart-case "$search_term" . | /opt/homebrew/bin/fzf --preview "bat --color=always --style=numbers --highlight-line {2} {1}" --delimiter ":"
+  rg --line-number --no-heading --smart-case "$search_term" . | fzf --preview "bat --color=always --style=numbers --highlight-line {2} {1}" --delimiter ":"
 }
 
 # Search files containing pattern with preview (usage: rgf "search_term")
@@ -694,5 +694,5 @@ rgf() {
     echo "Example: rgf \"function\" to find files containing 'function'"
     return 1
   fi
-  /opt/homebrew/bin/rg --files-with-matches --no-messages "$search_term" | /opt/homebrew/bin/fzf --preview "/opt/homebrew/bin/rg '$search_term' {} --color=always --context 10" --preview-window 'right:60%'
+  rg --files-with-matches --no-messages "$search_term" | fzf --preview "rg '$search_term' {} --color=always --context 10" --preview-window 'right:60%'
 }

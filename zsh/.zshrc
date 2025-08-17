@@ -110,11 +110,9 @@ fi
 # ===========================
 # ENVIRONMENT SETUP
 # ===========================
-# Homebrew (minimal check)
-if [[ -x "/opt/homebrew/bin/brew" ]]; then
-  export HOMEBREW_PREFIX="/opt/homebrew"
-elif [[ -x "/usr/local/bin/brew" ]]; then
-  export HOMEBREW_PREFIX="/usr/local"
+# Homebrew (dynamic detection)
+if command -v brew >/dev/null 2>&1; then
+  export HOMEBREW_PREFIX="$(brew --prefix)"
 fi
 
 # ===========================
