@@ -12,8 +12,7 @@ on:
 
 jobs:
   claude-review:
-    # Temporarily disabled until workflow is merged to default branch (required for security validation)
-    if: false
+    if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
     permissions:

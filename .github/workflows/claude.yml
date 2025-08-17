@@ -12,8 +12,7 @@ on:
 
 jobs:
   claude:
-    # Temporarily disabled until workflow is merged to default branch (required for security validation)
-    if: false
+    if: github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment' || github.event_name == 'issues' || github.event_name == 'pull_request_review'
     runs-on: ubuntu-latest
     permissions:
       contents: read
