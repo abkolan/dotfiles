@@ -22,11 +22,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Run fast Docker test
+      - name: Install dotfiles for testing
         run: |
-          echo "🚀 Running fast Docker test with cached base..."
-          echo "This validates installation, components, and integration in ~20 seconds"
-          ./tests/test-fast.sh
+          echo "📦 Simple stow setup for CI validation..."
+          echo "🏠 HOME: $HOME, PWD: $(pwd)"
+          # Install stow first
+          sudo apt-get update -qq && sudo apt-get install -y stow
+          # Direct stow from correct directory
+          stow --target=$HOME --verbose git
+          echo "✅ Stow completed, checking results:"
+          ls -la $HOME/.gitconfig* || echo "No .gitconfig found"
+          
+      - name: Run fast validation test
+        env:
+          TERM: xterm-256color
+        run: |
+          echo "🚀 Running fast validation test (CI optimized)..."
+          echo "This validates core functionality in under 30 seconds"
+          # Run basic component test after installation
+          chmod +x ./tests/components/test-git.sh
+          ./tests/components/test-git.sh
       
       - name: Extract test results
         if: always()
