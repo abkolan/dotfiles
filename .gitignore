@@ -1,1 +1,237 @@
+# ===========================
+# macOS System Files
+# ===========================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.AppleDouble
+.LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# ===========================
+# Editor Artifacts
+# ===========================
+.vscode/
+.vscode-server/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.netrwhist
+Session.vim
+*.sublime-workspace
+*.sublime-project
+
+# ===========================
+# ZSH Compiled Files
+# ===========================
+# Compiled ZSH files for faster loading
+*.zwc
+.zcompdump*
+.zsh_history
+.zsh_sessions/
+
+# ===========================
+# Shell & Terminal
+# ===========================
+# Bash history
+.bash_history
+# Fish history
+.fish_history
+# Local shell configs that shouldn't be shared
+.localrc
+.local_aliases
+
+# ===========================
+# Git Artifacts
+# ===========================
+# Merge and rebase artifacts
+*.orig
+*.rej
+.git-rewrite/
+# Patch files
+*.patch
+*.diff
+
+# ===========================
+# Log Files
+# ===========================
+*.log
+*.log.*
+logs/
+.nvimlog
+
+# ===========================
+# Temporary Files
+# ===========================
+.tmp/
+tmp/
+temp/
+*.tmp
+*.temp
+~*
+
+# ===========================
+# Cache Directories
+# ===========================
+.cache/
+cache/
+*_cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===========================
+# Backup Files
+# ===========================
+*.bak
+*.backup
+*.old
+*.save
+*.orig
+
+# ===========================
+# Personal Configurations
+# ===========================
+# Personal configs that shouldn't be shared
+.personal/
+.local/
+.private/
+
+# ===========================
+# Stow Conflicts
+# ===========================
+# GNU Stow conflict files
+.stow-*
+*.stow
+
+# ===========================
+# Package Managers
+# ===========================
+# Node.js
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ruby
+.bundle/
+vendor/bundle/
+
+# Go
+vendor/
+.glide/
+
+# ===========================
+# Build Artifacts
+# ===========================
+# Compiled binaries
+*.exe
+*.o
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+# Java
+*.class
+*.jar
+# Build directories
+build/
+dist/
+out/
+target/
+
+# ===========================
+# Tool-Specific
+# ===========================
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Docker
+.docker/
+
+# direnv (from Brewfile)
+.direnv/
+.envrc.local
+
+# Kubernetes
+kubeconfig.yaml
+*.kubeconfig
+
+# Neovim plugin managers
+lazy-lock.json
+packer_compiled.lua
+plugin/
+
+# ===========================
+# Security - Sensitive Files
+# ===========================
+# Environment files
+.envrc
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.envrc.example
+# Keys and certificates
+*.key
+*.pem
+*.crt
+*.cer
+*.pfx
+*.p12
+# Credentials directories
+secrets/
+credentials/
+private/
+# SSH keys (just in case)
+id_rsa
+id_rsa.pub
+id_dsa
+id_dsa.pub
+id_ecdsa
+id_ecdsa.pub
+id_ed25519
+id_ed25519.pub
+
+# ===========================
+# System Files
+# ===========================
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+# Linux
+.nfs*
+.directory
+.Trash-*

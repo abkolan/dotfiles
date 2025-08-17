@@ -8,3 +8,7 @@ helper = /usr/local/share/gcm-core/git-credential-manager
 
 [pull]
 rebase = true
+
+[include]
+path = ~/.gitconfig.d/aliases
+path = ~/.gitconfig.d/tools

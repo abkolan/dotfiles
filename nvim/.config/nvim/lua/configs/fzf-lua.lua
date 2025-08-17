@@ -1,0 +1,371 @@
+local fzf = require("fzf-lua")
+
+-- Alternative blazing fast finder with native fzf integration
+fzf.setup({
+  -- Global settings
+  global_resume = true,
+  global_resume_query = true,
+  winopts = {
+    height = 0.85,
+    width = 0.80,
+    row = 0.35,
+    col = 0.50,
+    border = "rounded",
+    fullscreen = false,
+    preview = {
+      default = "bat",
+      border = "border",
+      wrap = "nowrap",
+      hidden = "nohidden",
+      vertical = "down:45%",
+      horizontal = "right:60%",
+      layout = "flex",
+      flip_columns = 120,
+      title = true,
+      title_pos = "center",
+      scrollbar = "float",
+      scrolloff = "-2",
+      scrollchars = { "█", "" },
+      delay = 100,
+      winopts = {
+        number = true,
+        relativenumber = false,
+        cursorline = true,
+        cursorlineopt = "both",
+        cursorcolumn = false,
+        signcolumn = "no",
+        list = false,
+        foldenable = false,
+        foldmethod = "manual",
+      },
+    },
+  },
+  keymap = {
+    builtin = {
+      ["<F1>"] = "toggle-help",
+      ["<F2>"] = "toggle-fullscreen",
+      ["<F3>"] = "toggle-preview-wrap",
+      ["<F4>"] = "toggle-preview",
+      ["<F5>"] = "toggle-preview-ccw",
+      ["<F6>"] = "toggle-preview-cw",
+      ["<S-down>"] = "preview-page-down",
+      ["<S-up>"] = "preview-page-up", 
+      ["<S-left>"] = "preview-page-reset",
+    },
+    fzf = {
+      ["ctrl-z"] = "abort",
+      ["ctrl-u"] = "unix-line-discard",
+      ["ctrl-f"] = "half-page-down",
+      ["ctrl-b"] = "half-page-up",
+      ["ctrl-a"] = "beginning-of-line",
+      ["ctrl-e"] = "end-of-line",
+      ["alt-a"] = "select-all",
+      ["alt-d"] = "deselect-all",
+    },
+  },
+  actions = {
+    files = {
+      ["default"] = fzf.actions.file_edit_or_qf,
+      ["ctrl-s"] = fzf.actions.file_split,
+      ["ctrl-v"] = fzf.actions.file_vsplit,
+      ["ctrl-t"] = fzf.actions.file_tabedit,
+      ["alt-q"] = fzf.actions.file_sel_to_qf,
+      ["alt-l"] = fzf.actions.file_sel_to_ll,
+    },
+    buffers = {
+      ["default"] = fzf.actions.buf_edit,
+      ["ctrl-s"] = fzf.actions.buf_split,
+      ["ctrl-v"] = fzf.actions.buf_vsplit,
+      ["ctrl-t"] = fzf.actions.buf_tabedit,
+    }
+  },
+  fzf_opts = {
+    ["--ansi"] = "",
+    ["--info"] = "inline",
+    ["--height"] = "100%",
+    ["--layout"] = "reverse",
+    ["--border"] = "none",
+  },
+  -- Optimized for large monorepos
+  files = {
+    prompt = "Files❯ ",
+    multiprocess = true,
+    git_icons = true,
+    file_icons = true,
+    color_icons = true,
+    find_opts = [[-type f -not -path '*/\\.git/*' -printf '%P\\n']],
+    rg_opts = "--color=never --files --hidden --follow -g '!.git' -g '!node_modules' -g '!.terraform' -g '!target' -g '!build' -g '!dist'",
+    fd_opts = "--color=never --type f --hidden --follow --exclude .git --exclude node_modules --exclude .terraform --exclude target --exclude build --exclude dist",
+    actions = {
+      ["alt-i"] = { fzf.actions.toggle_ignore },
+      ["alt-h"] = { fzf.actions.toggle_hidden },
+    },
+  },
+  git = {
+    files = {
+      prompt = "GitFiles❯ ",
+      cmd = "git ls-files --exclude-standard",
+      multiprocess = true,
+      git_icons = true,
+      file_icons = true,
+      color_icons = true,
+    },
+    status = {
+      prompt = "GitStatus❯ ",
+      cmd = "git -c color.status=false status --short --untracked-files=all",
+      previewer = "git_diff",
+      file_icons = true,
+      git_icons = true,
+      color_icons = true,
+      actions = {
+        ["right"] = { fzf.actions.git_unstage, fzf.actions.resume },
+        ["left"] = { fzf.actions.git_stage, fzf.actions.resume },
+      },
+    },
+    commits = {
+      prompt = "Commits❯ ",
+      cmd = "git log --color=never --pretty=format:'%C(yellow)%h%Creset %Cgreen(%><(12)%cr%><|(12))%Creset %s %C(blue)<%an>%Creset'",
+      preview = "git show --color=always {1}",
+      actions = {
+        ["default"] = fzf.actions.git_checkout,
+      },
+    },
+    bcommits = {
+      prompt = "BCommits❯ ",
+      cmd = "git log --color=never --pretty=format:'%C(yellow)%h%Creset %Cgreen(%><(12)%cr%><|(12))%Creset %s %C(blue)<%an>%Creset' <file>",
+      preview = "git show --color=always {1} -- <file>",
+      actions = {
+        ["default"] = fzf.actions.git_buf_edit,
+        ["ctrl-s"] = fzf.actions.git_buf_split,
+        ["ctrl-v"] = fzf.actions.git_buf_vsplit,
+        ["ctrl-t"] = fzf.actions.git_buf_tabedit,
+      },
+    },
+    branches = {
+      prompt = "Branches❯ ",
+      cmd = "git branch --all --color=never",
+      preview = "git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit {1}",
+      actions = {
+        ["default"] = fzf.actions.git_switch,
+      },
+    },
+  },
+  grep = {
+    prompt = "Rg❯ ",
+    input_prompt = "Grep For❯ ",
+    multiprocess = true,
+    git_icons = false,
+    file_icons = true,
+    color_icons = true,
+    rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+    grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp -e",
+    rg_glob = true,
+    glob_flag = "--iglob",
+    glob_separator = "%s%-%-",
+    actions = {
+      ["alt-i"] = { fzf.actions.toggle_ignore },
+      ["alt-h"] = { fzf.actions.toggle_hidden },
+    },
+    no_header = false,
+    no_header_i = false,
+  },
+  args = {
+    prompt = "Args❯ ",
+    files_only = true,
+    actions = {
+      ["ctrl-x"] = { fzf.actions.arg_del, fzf.actions.resume },
+    }
+  },
+  oldfiles = {
+    prompt = "History❯ ",
+    cwd_only = true,
+    stat_file = true,
+    include_current_session = true,
+  },
+  buffers = {
+    prompt = "Buffers❯ ",
+    file_icons = true,
+    color_icons = true,
+    sort_lastused = true,
+    actions = {
+      ["ctrl-x"] = { fzf.actions.buf_del, fzf.actions.resume },
+    }
+  },
+  tabs = {
+    prompt = "Tabs❯ ",
+    tab_title = "Tab",
+    tab_marker = "<<",
+    file_icons = true,
+    color_icons = true,
+    actions = {
+      ["default"] = fzf.actions.buf_switch,
+      ["ctrl-x"] = { fzf.actions.buf_del, fzf.actions.resume },
+    },
+    fzf_opts = {
+      ["--delimiter"] = "'[\\):]'",
+      ["--with-nth"] = "2..",
+    },
+  },
+  lines = {
+    previewer = "builtin",
+    prompt = "Lines❯ ",
+    show_unlisted = true,
+    no_term_buffers = true,
+    fzf_opts = {
+      ["--delimiter"] = "'[\\]:]'",
+      ["--nth"] = "2..",
+      ["--tiebreak"] = "index",
+    },
+    actions = {
+      ["default"] = fzf.actions.buf_edit_or_qf,
+      ["alt-q"] = fzf.actions.buf_sel_to_qf,
+      ["alt-l"] = fzf.actions.buf_sel_to_ll
+    },
+  },
+  blines = {
+    previewer = "builtin",
+    prompt = "BLines❯ ",
+    show_unlisted = true,
+    no_term_buffers = true,
+    fzf_opts = {
+      ["--delimiter"] = "'[\\]:]'",
+      ["--with-nth"] = "2..",
+      ["--tiebreak"] = "index",
+    },
+    actions = {
+      ["default"] = fzf.actions.buf_edit_or_qf,
+      ["alt-q"] = fzf.actions.buf_sel_to_qf,
+      ["alt-l"] = fzf.actions.buf_sel_to_ll
+    },
+  },
+  tags = {
+    prompt = "Tags❯ ",
+    ctags_file = "tags",
+    multiprocess = true,
+    file_icons = true,
+    git_icons = false,
+    color_icons = true,
+    fzf_opts = {
+      ["--delimiter"] = "'[\\]:]'",
+      ["--with-nth"] = "2..",
+      ["--tiebreak"] = "index",
+    },
+  },
+  btags = {
+    prompt = "BTags❯ ",
+    ctags_file = "tags",
+    multiprocess = true,
+    file_icons = false,
+    git_icons = false,
+    color_icons = false,
+    fzf_opts = {
+      ["--delimiter"] = "'[\\]:]'",
+      ["--with-nth"] = "2..",
+      ["--tiebreak"] = "index",
+    },
+  },
+  colorschemes = {
+    prompt = "Colorschemes❯ ",
+    live_preview = true,
+    actions = {
+      ["default"] = fzf.actions.colorscheme,
+    },
+    winopts = {
+      height = 0.55,
+      width = 0.30,
+    },
+    post_reset_cb = function()
+      require("nvchad.utils").load_theme()
+    end,
+  },
+  quickfix = {
+    file_icons = true,
+    git_icons = false,
+  },
+  quickfix_stack = {
+    prompt = "Quickfix Stack❯ ",
+    marker = ">",
+  },
+  lsp = {
+    prompt_postfix = "❯ ",
+    cwd_only = false,
+    async_or_timeout = 5000,
+    file_icons = true,
+    git_icons = false,
+    color_icons = true,
+    includeDeclaration = true,
+    includeDefinition = true,
+    symbols = {
+      async_or_timeout = true,
+      symbol_style = 1,
+      symbol_icons = {
+        File = "󰈙",
+        Module = "",
+        Namespace = "󰌗",
+        Package = "",
+        Class = "󰌗",
+        Method = "󰆧",
+        Property = "",
+        Field = "",
+        Constructor = "",
+        Enum = "󰕘",
+        Interface = "󰕘",
+        Function = "󰊕",
+        Variable = "󰆧",
+        Constant = "󰏿",
+        String = "󰀬",
+        Number = "󰎠",
+        Boolean = "◩",
+        Array = "󰅪",
+        Object = "󰅩",
+        Key = "󰌋",
+        Null = "󰟢",
+        EnumMember = "",
+        Struct = "󰌗",
+        Event = "",
+        Operator = "󰆕",
+        TypeParameter = "󰊄",
+      },
+    },
+    code_language = {
+      lua = "lua",
+      vim = "vim",
+      python = "python",
+      javascript = "javascript",
+      typescript = "typescript",
+      go = "go",
+      rust = "rust",
+      cpp = "cpp",
+      c = "c",
+    },
+  },
+  diagnostics = {
+    prompt = "Diagnostics❯ ",
+    cwd_only = false,
+    file_icons = true,
+    git_icons = false,
+    color_icons = true,
+    diag_icons = true,
+    sign_icons = {
+      ["ERROR"] = "",
+      ["WARN"] = "",
+      ["INFO"] = "",
+      ["HINT"] = "",
+    },
+  },
+  complete_path = {
+    cmd = nil,
+    actions = {
+      ["default"] = fzf.actions.complete_insert,
+    }
+  },
+  complete_file = {
+    cmd = nil,
+    file_icons = true,
+    color_icons = true,
+    git_icons = false,
+    actions = {
+      ["default"] = fzf.actions.complete_insert,
+    }
+  },
+})

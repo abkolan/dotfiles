@@ -1,0 +1,52 @@
+#!/usr/bin/env zsh
+# Git helper functions - loaded on demand
+
+# Enhanced git status
+git-status-enhanced() {
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  echo "📊 Repository Status"
+  echo "==================="
+  echo ""
+  
+  # Branch info
+  local branch=$(git branch --show-current)
+  local remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+  echo "🌿 Branch: $branch"
+  [[ -n "$remote" ]] && echo "🔗 Remote: $remote"
+  echo ""
+  
+  # Status summary
+  local staged=$(git diff --cached --numstat | wc -l)
+  local modified=$(git diff --numstat | wc -l)
+  local untracked=$(git ls-files --others --exclude-standard | wc -l)
+  
+  echo "📈 Summary:"
+  echo "  Staged files:    $staged"
+  echo "  Modified files:  $modified"
+  echo "  Untracked files: $untracked"
+  echo ""
+  
+  # Actual status
+  git status --short
+}
+
+# Interactive rebase helper
+git-rebase-interactive() {
+  local commits=${1:-10}
+  git rebase -i HEAD~$commits
+}
+
+# Find commits by message
+git-find-commit() {
+  local query="$1"
+  if [[ -z "$query" ]]; then
+    echo "Usage: git-find-commit <search-term>"
+    return 1
+  fi
+  
+  git log --all --grep="$query" --oneline
+}

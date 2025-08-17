@@ -1,0 +1,308 @@
+#!/usr/bin/env zsh
+# ============================================================================
+# ADVANCED ZSH COMPLETION CONFIGURATION
+# Enhanced completions with smart caching and fuzzy matching
+# ============================================================================
+
+# ============================================================================
+# COMPLETION INITIALIZATION
+# ============================================================================
+
+# Load completion system
+autoload -Uz compinit
+autoload -Uz bashcompinit && bashcompinit
+
+# Smart completion cache management
+_zinit_compinit() {
+  local zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+  local zcompdump_lock="${zcompdump}.lock"
+  
+  # Check if another process is already updating
+  if [[ -f "$zcompdump_lock" ]]; then
+    local lock_age=$(($(date +%s) - $(stat -f %m "$zcompdump_lock" 2>/dev/null || echo 0)))
+    if [[ $lock_age -gt 300 ]]; then  # Remove stale lock after 5 minutes
+      rm -f "$zcompdump_lock"
+    else
+      compinit -C  # Skip check if locked
+      return
+    fi
+  fi
+  
+  # Update if older than 24 hours
+  if [[ $(find "$zcompdump" -mtime +1 -print 2>/dev/null) ]]; then
+    touch "$zcompdump_lock"
+    compinit
+    rm -f "$zcompdump_lock"
+    
+    # Compile for faster loading
+    [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
+  else
+    compinit -C
+  fi
+}
+
+_zinit_compinit
+
+# ============================================================================
+# COMPLETION STYLES
+# ============================================================================
+
+# Group completions by category
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format $'\n%F{yellow}%B%d%b%f'
+zstyle ':completion:*:messages' format '%F{purple}%d%f'
+zstyle ':completion:*:warnings' format '%F{red}No matches found%f'
+zstyle ':completion:*:corrections' format '%F{green}%d (errors: %e)%f'
+
+# Enhanced matching
+zstyle ':completion:*' matcher-list \
+  'm:{a-zA-Z}={A-Za-z}' \
+  'r:|[._-]=* r:|=*' \
+  'l:|=* r:|=*'
+
+# Menu selection
+zstyle ':completion:*' menu select interactive
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+
+# Caching
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.cache/zsh/completions
+mkdir -p ~/.cache/zsh/completions
+
+# ============================================================================
+# FILE & DIRECTORY COMPLETIONS
+# ============================================================================
+
+# Better directory completion
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' accept-exact-dirs true
+
+# File sorting
+zstyle ':completion:*' file-sort modification reverse
+
+# Ignore patterns
+zstyle ':completion:*:*:*:*:*' ignored-patterns \
+  '*.pyc' '*.pyo' '*.bak' '*~' '.DS_Store' '__pycache__'
+
+# Smart case matching for files
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# ============================================================================
+# COMMAND SPECIFIC COMPLETIONS
+# ============================================================================
+
+# Git completions
+zstyle ':completion:*:*:git:*' script ~/.config/git/git-completion.bash
+zstyle ':completion:*:git-checkout:*' sort false
+zstyle ':completion:*:git-*:*' tag-order \
+  'common-commands:common commands' \
+  'all-commands:all commands' \
+  'alias-commands:aliases'
+
+# Docker completions
+zstyle ':completion:*:*:docker:*' option-stacking yes
+zstyle ':completion:*:*:docker-*:*' option-stacking yes
+
+# SSH/SCP completions from known_hosts and config
+zstyle ':completion:*:(ssh|scp|sftp|rsync):*' hosts \
+  ${${${(f)"$(cat ~/.ssh/known_hosts 2>/dev/null)"}%%[# ]*}//,/ } \
+  ${${(f)"$(cat ~/.ssh/config 2>/dev/null | grep '^Host' | cut -d' ' -f2-)"}// /}
+
+# Kill command completion
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+
+# Man pages sections
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.*' insert-sections true
+
+# ============================================================================
+# SMART COMPLETIONS
+# ============================================================================
+
+# Fuzzy completion for paths
+_fuzzy_complete_path() {
+  local matches
+  matches=(${(f)"$(fd --type f --hidden --follow --exclude .git . 2>/dev/null | fzf -m)"})
+  
+  if [[ -n "$matches" ]]; then
+    LBUFFER="${LBUFFER}${matches}"
+  fi
+  zle reset-prompt
+}
+zle -N _fuzzy_complete_path
+bindkey '^T' _fuzzy_complete_path
+
+# Smart cd completion
+_smart_cd() {
+  local dir
+  dir=$(fd --type d --hidden --follow --exclude .git . 2>/dev/null | \
+    fzf --preview 'eza --tree --level=2 --color=always {}')
+  
+  if [[ -n "$dir" ]]; then
+    cd "$dir"
+    zle accept-line
+  fi
+  zle reset-prompt
+}
+zle -N _smart_cd
+bindkey '^G' _smart_cd
+
+# History completion
+_history_complete() {
+  local selected
+  selected=$(fc -l 1 | fzf --tac --no-sort | sed 's/^ *[0-9]* *//')
+  
+  if [[ -n "$selected" ]]; then
+    LBUFFER="$selected"
+  fi
+  zle reset-prompt
+}
+zle -N _history_complete
+bindkey '^R' _history_complete
+
+# ============================================================================
+# COMPLETION FUNCTIONS
+# ============================================================================
+
+# Complete from history
+_complete_from_history() {
+  local word="${LBUFFER##* }"
+  local completions=(${(f)"$(fc -l 1 | grep "$word" | sed 's/^ *[0-9]* *//' | sort -u)"})
+  
+  if [[ ${#completions[@]} -gt 0 ]]; then
+    compadd -a completions
+  fi
+}
+
+# Complete aliases
+_complete_aliases() {
+  local aliases=(${(k)aliases})
+  compadd -a aliases
+}
+
+# Complete functions
+_complete_functions() {
+  local funcs=(${(k)functions})
+  compadd -a funcs
+}
+
+# ============================================================================
+# CUSTOM COMPLETIONS
+# ============================================================================
+
+# npm scripts completion
+_npm_scripts() {
+  if [[ -f package.json ]]; then
+    local scripts=$(jq -r '.scripts | keys[]' package.json 2>/dev/null)
+    compadd -a scripts
+  fi
+}
+compdef _npm_scripts npm
+
+# Makefile targets
+_make_targets() {
+  if [[ -f Makefile ]]; then
+    local targets=$(grep -E '^[a-zA-Z0-9_-]+:' Makefile | cut -d: -f1)
+    compadd -a targets
+  fi
+}
+compdef _make_targets make
+
+# Python modules
+_python_modules() {
+  local modules=$(python3 -c "import pkgutil; print('\n'.join([m.name for m in pkgutil.iter_modules()])")
+  compadd -a modules
+}
+
+# Go packages
+_go_packages() {
+  if [[ -f go.mod ]]; then
+    local packages=$(go list ./... 2>/dev/null)
+    compadd -a packages
+  fi
+}
+
+# ============================================================================
+# DYNAMIC COMPLETIONS
+# ============================================================================
+
+# AWS CLI completion
+if command -v aws_completer &>/dev/null; then
+  complete -C aws_completer aws
+fi
+
+# Terraform completion
+if command -v terraform &>/dev/null; then
+  complete -o nospace -C $(which terraform) terraform
+fi
+
+# kubectl completion
+if command -v kubectl &>/dev/null; then
+  source <(kubectl completion zsh)
+fi
+
+# helm completion
+if command -v helm &>/dev/null; then
+  source <(helm completion zsh)
+fi
+
+# ============================================================================
+# COMPLETION KEYBINDINGS
+# ============================================================================
+
+# Expand or complete with tab
+bindkey '^I' expand-or-complete
+
+# Complete word from history
+bindkey '^[/' _complete_from_history
+
+# Menu selection keybindings
+zmodload zsh/complist
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect '^[[Z' reverse-menu-complete
+
+# ============================================================================
+# FZF TAB COMPLETION
+# ============================================================================
+
+if [[ -n "$ZINIT_HOME" ]]; then
+  # FZF-tab configuration
+  zstyle ':fzf-tab:*' fzf-command fzf
+  zstyle ':fzf-tab:*' fzf-preview 'eza -la --color=always $realpath 2>/dev/null || ls -la $realpath'
+  zstyle ':fzf-tab:*' popup-pad 30 0
+  zstyle ':fzf-tab:*' fzf-flags --height=50% --layout=reverse --border --preview-window=right:60%:wrap
+  zstyle ':fzf-tab:*' switch-group ',' '.'
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --level=2 --color=always $realpath'
+  zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always $realpath 2>/dev/null || eza -la --color=always $realpath 2>/dev/null || ls -la $realpath'
+fi
+
+# ============================================================================
+# COMPLETION HELPERS
+# ============================================================================
+
+# Function to test completion system
+test_completion() {
+  echo "Testing ZSH completion system..."
+  echo "Current completion settings:"
+  echo "  Cache: $(zstyle -L ':completion:*' use-cache)"
+  echo "  Menu: $(zstyle -L ':completion:*' menu)"
+  echo "  Matchers: $(zstyle -L ':completion:*' matcher-list)"
+  echo ""
+  echo "Available completions for current directory:"
+  print -l *(N)
+}
+
+# Function to reload completions
+reload_completions() {
+  echo "Reloading completion system..."
+  rm -f ~/.zcompdump*
+  autoload -Uz compinit && compinit
+  echo "Completion system reloaded!"
+}

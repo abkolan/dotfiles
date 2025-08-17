@@ -1,6 +1,37 @@
+# Performance and display options
 --hidden
 --follow
 --smart-case
+--max-columns=150
+--max-columns-preview
 
---glob
-!.git/
+# Output formatting
+--line-number
+--no-heading
+
+# Exclude common build/cache directories
+--glob=!.git/
+--glob=!node_modules/
+--glob=!target/
+--glob=!dist/
+--glob=!build/
+--glob=!.next/
+--glob=!coverage/
+--glob=!*.min.*
+--glob=!package-lock.json
+--glob=!yarn.lock
+--glob=!Cargo.lock
+
+# Exclude binary and media files
+--glob=!*.jpg
+--glob=!*.jpeg
+--glob=!*.png
+--glob=!*.gif
+--glob=!*.svg
+--glob=!*.ico
+--glob=!*.pdf
+--glob=!*.zip
+--glob=!*.tar.gz
+--glob=!*.woff*
+--glob=!*.ttf
+--glob=!*.eot

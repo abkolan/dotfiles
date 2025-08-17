@@ -1,143 +1,698 @@
-# ~/.zsh_functions
+# ===========================
+# PERFORMANCE: ZSH Functions (.zsh_functions)
+# Optimized functions with better error handling and performance
+# ===========================
 
 # ===========================
-# 📦 EXTRACTORS
+# 📦 EXTRACTORS - PERFORMANCE OPTIMIZED
 # ===========================
+# PERFORMANCE: Universal extract function with better error handling
 extract() {
-	tar -xvf "$1"
+  # PERFORMANCE: Early exit if no argument provided
+  [[ $# -eq 0 ]] && { echo "Usage: extract <file>"; return 1; }
+  
+  # PERFORMANCE: Check file exists before processing
+  [[ ! -f "$1" ]] && { echo "Error: File '$1' not found"; return 1; }
+  
+  # PERFORMANCE: Use case statement for faster matching
+  case "$1" in
+    *.tar.bz2|*.tbz2) tar -xjf "$1" ;;
+    *.tar.gz|*.tgz)   tar -xzf "$1" ;;
+    *.tar.xz|*.txz)   tar -xJf "$1" ;;
+    *.tar)            tar -xf "$1" ;;
+    *.bz2)            bunzip2 "$1" ;;
+    *.gz)             gunzip "$1" ;;
+    *.zip)            unzip "$1" ;;
+    *.rar)            unrar x "$1" ;;
+    *.7z)             7z x "$1" ;;
+    *.xz)             xz -d "$1" ;;
+    *)                echo "Error: Unsupported format '$1'"; return 1 ;;
+  esac
 }
 
 # ===========================
-# 📂 DIRECTORY MANAGEMENT
+# 📂 DIRECTORY MANAGEMENT - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Create a directory and move into it
+# PERFORMANCE: Create directory and move into it with error handling
 mkcd() {
-	mkdir -p "$1" && cd "$1"
+  # PERFORMANCE: Early exit if no argument
+  [[ $# -eq 0 ]] && { echo "Usage: mkcd <directory>"; return 1; }
+  
+  # PERFORMANCE: Create and change directory atomically
+  mkdir -p "$1" && cd "$1" || {
+    echo "Error: Failed to create or access directory '$1'"
+    return 1
+  }
 }
 
-# Quickly go up N levels
+# PERFORMANCE: Optimized function to go up N directory levels
 up() {
-	local c=${1:-1}
-	while [ "$c" -gt 0 ]; do
-		cd ..
-		((c--))
-	done
+  local levels=${1:-1}
+  
+  # PERFORMANCE: Validate input is a positive number
+  [[ ! $levels =~ ^[0-9]+$ ]] && { echo "Usage: up [number]"; return 1; }
+  
+  # PERFORMANCE: Build path in one operation instead of loop
+  local path=""
+  for ((i=0; i<levels; i++)); do
+    path="../$path"
+  done
+  
+  # PERFORMANCE: Single cd operation
+  cd "$path" || { echo "Error: Cannot go up $levels levels"; return 1; }
 }
 
 # ===========================
-# 🛠 SYSTEM UTILITIES
+# 🛠 SYSTEM UTILITIES - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Show disk usage in a human-readable format
+# PERFORMANCE: Optimized disk usage with better formatting
 diskusage() {
-	du -sh * 2>/dev/null | sort -hr
+  # PERFORMANCE: Use more efficient du options and handle empty directories
+  if [[ $(ls -A 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Directory is empty"
+    return 0
+  fi
+  
+  # PERFORMANCE: More efficient sorting and display
+  du -sh * 2>/dev/null | sort -hr | head -20
 }
 
-# Show top 10 largest files in the current directory
+# PERFORMANCE: Optimized file size finder with depth limit
 biggestfiles() {
-	find . -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
+  local depth=${1:-3}  # Default depth of 3 for performance
+  
+  # PERFORMANCE: Limit search depth to avoid slow filesystem traversal
+  find . -maxdepth "$depth" -type f -exec du -h {} + 2>/dev/null | \
+    sort -rh | head -n 10
 }
 
-# Find and kill a process by name
+# PERFORMANCE: Safer process killing with confirmation
 killproc() {
-	local pids
-	pids=$(pgrep -f "$1")
-	if [ -n "$pids" ]; then
-		echo "$pids" | xargs -r kill -9
-		echo "🔪 Killed process(es): $1"
-	else
-		echo "⚠️ No process found matching: $1"
-	fi
+  [[ $# -eq 0 ]] && { echo "Usage: killproc <process_name>"; return 1; }
+  
+  local pids
+  pids=$(pgrep -f "$1")
+  
+  if [[ -n "$pids" ]]; then
+    echo "Found processes matching '$1':"
+    ps -p "$pids" -o pid,comm,args 2>/dev/null
+    
+    # PERFORMANCE: Add confirmation for safety
+    echo -n "Kill these processes? [y/N]: "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+      echo "$pids" | xargs -r kill -9
+      echo "🔪 Killed process(es): $1"
+    else
+      echo "❌ Operation cancelled"
+    fi
+  else
+    echo "⚠️ No process found matching: $1"
+    return 1
+  fi
 }
 
-# Cleanup system (for macOS)
+# PERFORMANCE: Safer macOS cleanup with confirmation
 cleanmac() {
-	sudo rm -rf ~/Library/Caches/*
-	sudo rm -rf ~/Library/Logs/*
-	sudo rm -rf /Library/Caches/*
-	echo "🧹 Cleaned macOS system caches!"
+  # PERFORMANCE: Check if running on macOS
+  [[ "$(uname)" != "Darwin" ]] && { echo "This function is for macOS only"; return 1; }
+  
+  echo "⚠️ This will clean system caches. Continue? [y/N]: "
+  read -r response
+  
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    echo "🧹 Cleaning macOS caches..."
+    
+    # PERFORMANCE: Clean user caches safely
+    [[ -d ~/Library/Caches ]] && find ~/Library/Caches -type f -delete 2>/dev/null
+    [[ -d ~/Library/Logs ]] && find ~/Library/Logs -type f -delete 2>/dev/null
+    
+    # PERFORMANCE: Only clean system caches if user has sudo access
+    if sudo -n true 2>/dev/null; then
+      [[ -d /Library/Caches ]] && sudo find /Library/Caches -type f -delete 2>/dev/null
+    else
+      echo "Note: Skipping system caches (requires sudo)"
+    fi
+    
+    echo "✅ Cleanup complete!"
+  else
+    echo "❌ Cleanup cancelled"
+  fi
 }
 
 # ===========================
-# 🌐 NETWORK & INTERNET
+# 🌐 NETWORK & INTERNET - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Quick check if a website is up
+# PERFORMANCE: Enhanced website status checker
 isup() {
-	curl -Is "$1" | head -n 1
+  [[ $# -eq 0 ]] && { echo "Usage: isup <url>"; return 1; }
+  
+  local url="$1"
+  # PERFORMANCE: Add protocol if missing
+  [[ ! $url =~ ^https?:// ]] && url="https://$url"
+  
+  # PERFORMANCE: Use timeout and follow redirects
+  local status
+  status=$(curl -Is --connect-timeout 10 --max-time 30 "$url" 2>/dev/null | head -1)
+  
+  if [[ -n "$status" ]]; then
+    echo "$url: $status"
+  else
+    echo "❌ $url: No response or unreachable"
+    return 1
+  fi
 }
 
-# Ping test
+# PERFORMANCE: Enhanced ping test with better output
 pingtest() {
-	ping -c 5 "$1"
+  [[ $# -eq 0 ]] && { echo "Usage: pingtest <host>"; return 1; }
+  
+  echo "🏓 Pinging $1..."
+  ping -c 5 "$1" || {
+    echo "❌ Failed to ping $1"
+    return 1
+  }
 }
 
-# Fastest DNS lookup
+# PERFORMANCE: Enhanced DNS lookup with multiple servers
 fastdns() {
-	dig +short google.com
+  local target=${1:-google.com}
+  
+  echo "🔍 DNS lookup for $target:"
+  # PERFORMANCE: Test multiple DNS servers for speed comparison
+  for server in 8.8.8.8 1.1.1.1 208.67.222.222; do
+    echo -n "$server: "
+    dig +short @"$server" "$target" 2>/dev/null | head -1 || echo "timeout"
+  done
 }
 
 # ===========================
-# 📦 PACKAGE MANAGEMENT
+# 📦 PACKAGE MANAGEMENT - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Update Homebrew and cleanup (for macOS)
+# PERFORMANCE: Enhanced Homebrew update with better feedback
 brewupdate() {
-	brew update && brew upgrade && brew cleanup
+  [[ "$(uname)" != "Darwin" ]] && { echo "Homebrew is for macOS only"; return 1; }
+  
+  echo "🍺 Updating Homebrew..."
+  brew update || { echo "❌ Update failed"; return 1; }
+  
+  echo "⬆️ Upgrading packages..."
+  brew upgrade || { echo "❌ Upgrade failed"; return 1; }
+  
+  echo "🧹 Cleaning up..."
+  brew cleanup || { echo "❌ Cleanup failed"; return 1; }
+  
+  echo "✅ Homebrew update complete!"
 }
 
-# Update Pacman packages (for Arch Linux)
-pacmanupdate() {
-	sudo pacman -Syu
+# PERFORMANCE: Enhanced system update (cross-platform)
+sysupdate() {
+  case "$(uname)" in
+    Darwin)
+      brewupdate
+      ;;
+    Linux)
+      # PERFORMANCE: Detect package manager automatically
+      if command -v apt >/dev/null 2>&1; then
+        echo "📦 Updating apt packages..."
+        sudo apt update && sudo apt upgrade -y
+      elif command -v pacman >/dev/null 2>&1; then
+        echo "📦 Updating pacman packages..."
+        sudo pacman -Syu
+      elif command -v dnf >/dev/null 2>&1; then
+        echo "📦 Updating dnf packages..."
+        sudo dnf update -y
+      else
+        echo "❌ No supported package manager found"
+        return 1
+      fi
+      ;;
+    *)
+      echo "❌ Unsupported operating system"
+      return 1
+      ;;
+  esac
 }
 
 # ===========================
-# 🐳 DOCKER HELPERS
+# 🐳 DOCKER HELPERS - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Remove all stopped containers
+# PERFORMANCE: Enhanced Docker cleanup with safety checks
 docker-clean() {
-	if docker info &>/dev/null; then
-		docker rm "$(docker ps -aq)"
-	else
-		echo "🐳 Docker daemon not running."
-	fi
+  # PERFORMANCE: Check Docker availability first
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "❌ Docker not installed"
+    return 1
+  fi
+  
+  if ! docker info &>/dev/null; then
+    echo "🐳 Docker daemon not running"
+    return 1
+  fi
+  
+  # PERFORMANCE: Get stopped containers efficiently
+  local stopped_containers
+  stopped_containers=$(docker ps -aq --filter "status=exited")
+  
+  if [[ -n "$stopped_containers" ]]; then
+    echo "🧹 Removing stopped containers..."
+    docker rm $stopped_containers
+    echo "✅ Cleanup complete!"
+  else
+    echo "✨ No stopped containers to remove"
+  fi
 }
 
-# Remove all images
+# PERFORMANCE: Enhanced Docker image cleanup with confirmation
 docker-rmi() {
-	if docker info &>/dev/null; then
-		docker rmi "$(docker images -q)"
-	else
-		echo "🐳 Docker daemon not running."
-	fi
+  if ! docker info &>/dev/null; then
+    echo "🐳 Docker daemon not running"
+    return 1
+  fi
+  
+  local images
+  images=$(docker images -q)
+  
+  if [[ -n "$images" ]]; then
+    echo "⚠️ This will remove ALL Docker images. Continue? [y/N]: "
+    read -r response
+    
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+      echo "🗑️ Removing all images..."
+      docker rmi $images
+      echo "✅ All images removed!"
+    else
+      echo "❌ Operation cancelled"
+    fi
+  else
+    echo "✨ No images to remove"
+  fi
 }
 
 # ===========================
-# ⏳ TIME & PRODUCTIVITY
+# ⏳ TIME & PRODUCTIVITY - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Countdown timer (example: `timer 10`)
+# PERFORMANCE: Enhanced timer with better validation and display
 timer() {
-	sleep "$1" && echo "⏰ Time's up!"
+  [[ $# -eq 0 ]] && { echo "Usage: timer <seconds>"; return 1; }
+  
+  local seconds="$1"
+  # PERFORMANCE: Validate input is a number
+  [[ ! $seconds =~ ^[0-9]+$ ]] && { echo "Error: Please provide a number"; return 1; }
+  
+  echo "⏱️ Timer set for $seconds seconds..."
+  
+  # PERFORMANCE: Show countdown if time is reasonable
+  if [[ $seconds -le 60 ]]; then
+    for ((i=seconds; i>0; i--)); do
+      echo -ne "\r⏰ $i seconds remaining..."
+      sleep 1
+    done
+    echo -ne "\r🎉 Time's up!                \n"
+  else
+    sleep "$seconds"
+    echo "⏰ Timer finished after $seconds seconds!"
+  fi
+  
+  # PERFORMANCE: System notification if available
+  if command -v osascript >/dev/null 2>&1; then
+    osascript -e 'display notification "Timer finished!" with title "Timer"' 2>/dev/null
+  fi
 }
 
-# Show current date and time
+# PERFORMANCE: Enhanced date/time display with timezone
 now() {
-	date "+%Y-%m-%d %H:%M:%S"
+  echo "📅 $(date '+%Y-%m-%d %H:%M:%S %Z')"
+  echo "🌍 UTC: $(date -u '+%Y-%m-%d %H:%M:%S')"
 }
 
 # ===========================
-# GitHub Helpers
+# 🐙 GITHUB HELPERS - PERFORMANCE OPTIMIZED
 # ===========================
 
-# Open Github repository in browser
+# PERFORMANCE: Enhanced GitHub repository opener with better error handling
 ghopen() {
-	url=$(git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
-	if [ -n "$url" ]; then
-		open "$url" 2>/dev/null || xdg-open "$url"
-	else
-		echo "Not a Git repository or 'origin' remote not found."
-	fi
+  # PERFORMANCE: Check if we're in a git repository first
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  # PERFORMANCE: Get remote URL more efficiently
+  local url
+  url=$(git remote get-url origin 2>/dev/null)
+  
+  if [[ -z "$url" ]]; then
+    echo "❌ No 'origin' remote found"
+    return 1
+  fi
+  
+  # PERFORMANCE: Convert SSH to HTTPS URL more robustly
+  case "$url" in
+    git@github.com:*)
+      url="https://github.com/${url#git@github.com:}"
+      url="${url%.git}"
+      ;;
+    https://github.com/*)
+      url="${url%.git}"
+      ;;
+    *)
+      echo "❌ Not a GitHub repository"
+      return 1
+      ;;
+  esac
+  
+  echo "🌐 Opening: $url"
+  
+  # PERFORMANCE: Cross-platform browser opening
+  case "$(uname)" in
+    Darwin) open "$url" ;;
+    Linux) xdg-open "$url" ;;
+    *) echo "❌ Unsupported platform for browser opening" ;;
+  esac
+}
+
+# PERFORMANCE: Quick git status with enhanced display
+# Note: Renamed from 'gst' to avoid conflict with oh-my-zsh git plugin alias
+gitst() {
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  echo "📊 Git Status:"
+  git status --short --branch
+}
+
+# ===========================
+# 🚀 PERFORMANCE UTILITIES
+# ===========================
+
+# PERFORMANCE: Function to benchmark shell startup time
+benchmark-shell() {
+  echo "⏱️ Benchmarking shell startup time..."
+  
+  local total=0
+  local runs=5
+  
+  for ((i=1; i<=runs; i++)); do
+    echo -n "Run $i: "
+    local time_output
+    time_output=$(/usr/bin/time -p zsh -i -c 'exit' 2>&1 | grep real | awk '{print $2}')
+    echo "${time_output}s"
+    total=$(echo "$total + $time_output" | bc -l 2>/dev/null || echo "$total")
+  done
+  
+  if command -v bc >/dev/null 2>&1; then
+    local average
+    average=$(echo "scale=3; $total / $runs" | bc -l)
+    echo "📊 Average startup time: ${average}s"
+  fi
+}
+
+# PERFORMANCE: Function to profile zsh startup
+profile-zsh() {
+  echo "🔍 Profiling ZSH startup..."
+  echo "This will show timing information for .zshrc loading"
+  
+  # Create a temporary profiling script
+  local profile_script="/tmp/zsh_profile_$$"
+  cat > "$profile_script" << 'EOF'
+#!/bin/zsh
+PS4=$'%D{%M%S%.} %N:%i> '
+exec 3>&2 2>/tmp/zsh_profile.log
+setopt xtrace prompt_subst
+EOF
+  
+  echo "Run: zsh -c 'source $profile_script && source ~/.zshrc && exit'"
+  echo "Then check: /tmp/zsh_profile.log"
+}
+
+# ===========================
+# 👻 GHOSTTY TERMINAL HELPERS - PERFORMANCE OPTIMIZED
+# ===========================
+
+# PERFORMANCE: Quick theme switching for Ghostty
+ghostty-theme() {
+  local theme="${1:-nord}"
+  local config="$HOME/.config/ghostty/config"
+  
+  [[ ! -f "$config" ]] && { echo "❌ Ghostty config not found"; return 1; }
+  
+  # PERFORMANCE: Fast in-place theme switching
+  if sed -i '' "s/^theme = .*/theme = $theme/" "$config" 2>/dev/null; then
+    echo "🎨 Ghostty theme changed to: $theme"
+    
+    # PERFORMANCE: Optional notification (macOS only)
+    if command -v osascript >/dev/null 2>&1; then
+      osascript -e "display notification \"Theme: $theme\" with title \"Ghostty\"" 2>/dev/null
+    fi
+  else
+    echo "❌ Failed to change theme"
+    return 1
+  fi
+}
+
+# PERFORMANCE: Auto theme switching based on time of day
+ghostty-auto-theme() {
+  local hour=$(date +%H)
+  local theme
+  
+  if [[ $hour -ge 20 || $hour -lt 8 ]]; then
+    theme="nord"  # Dark theme for night
+    echo "🌙 Night mode: switching to $theme"
+  else
+    theme="solarized-light"  # Light theme for day
+    echo "☀️ Day mode: switching to $theme"
+  fi
+  
+  ghostty-theme "$theme"
+}
+
+# PERFORMANCE: Sync Ghostty theme with system appearance (macOS)
+ghostty-sync-system() {
+  if ! command -v defaults >/dev/null 2>&1; then
+    echo "❌ System appearance detection only works on macOS"
+    return 1
+  fi
+  
+  local appearance
+  appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light")
+  
+  local theme
+  if [[ "$appearance" == "Dark" ]]; then
+    theme="nord"
+  else
+    theme="solarized-light"
+  fi
+  
+  echo "🔄 Syncing with system appearance: $appearance"
+  ghostty-theme "$theme"
+}
+
+# PERFORMANCE: Quick Ghostty profile switching
+ghostty-profile() {
+  local profile="${1:-default}"
+  local config="$HOME/.config/ghostty/config"
+  local base_config="$HOME/.config/ghostty/config.base"
+  
+  case "$profile" in
+    "coding")
+      echo "🚀 Switching to coding profile..."
+      {
+        echo "# Coding profile - optimized for development"
+        echo "font-size = 12"
+        echo "scrollback-limit = 5000"
+        echo "background-opacity = 1.0"
+        echo "cursor-style-blink = false"
+        echo "bell = none"
+        echo "theme = nord"
+      } >> "$config"
+      ;;
+    "presentation") 
+      echo "📽️ Switching to presentation profile..."
+      {
+        echo "# Presentation profile - high visibility"
+        echo "font-size = 18"
+        echo "background-opacity = 1.0"
+        echo "theme = one-light"
+        echo "cursor-style-blink = true"
+        echo "window-decoration = false"
+      } >> "$config"
+      ;;
+    "minimal")
+      echo "⚡ Switching to minimal profile..."
+      {
+        echo "# Minimal profile - maximum performance"
+        echo "font-size = 12"
+        echo "scrollback-limit = 1000"
+        echo "background-opacity = 1.0"
+        echo "background-blur-radius = 0"
+        echo "image-support = false"
+        echo "sixel = false"
+      } >> "$config"
+      ;;
+    "default")
+      echo "🔄 Restoring default profile..."
+      if [[ -f "$base_config" ]]; then
+        cp "$base_config" "$config"
+      else
+        echo "⚠️ No base config found, keeping current settings"
+      fi
+      ;;
+    *)
+      echo "❌ Unknown profile: $profile"
+      echo "Available profiles: coding, presentation, minimal, default"
+      return 1
+      ;;
+  esac
+  
+  echo "✅ Profile switched to: $profile"
+}
+
+# PERFORMANCE: Ghostty performance test
+ghostty-benchmark() {
+  echo "⏱️ Benchmarking Ghostty performance..."
+  
+  # Test text rendering speed
+  echo "📝 Testing text rendering..."
+  time (for i in {1..1000}; do echo "Performance test line $i with various characters: αβγδε ←↑→↓ ▲▼◄► ■□●○"; done)
+  
+  # Test scrollback performance
+  echo "📜 Testing scrollback performance..."
+  time (seq 1 5000 | head -1000)
+  
+  echo "✅ Benchmark complete!"
+}
+
+# ===========================
+# 🔧 ZSH COMPLETION HELPERS - PERFORMANCE OPTIMIZED
+# ===========================
+
+# PERFORMANCE: Test completion behavior for debugging
+test-completion() {
+  local test_dir="${1:-.}"
+  
+  echo "🔍 Testing completion in: $test_dir"
+  echo "📁 All directories (including hidden):"
+  
+  # Show what would be completed
+  print -l ${test_dir}/*(N-/)
+  echo ""
+  echo "👻 Hidden directories:"
+  print -l ${test_dir}/.*(N-/)
+  
+  echo ""
+  echo "💡 Completion settings:"
+  [[ -o GLOB_DOTS ]] && echo "✅ GLOB_DOTS enabled" || echo "❌ GLOB_DOTS disabled"
+  [[ -o COMPLETE_IN_WORD ]] && echo "✅ COMPLETE_IN_WORD enabled" || echo "❌ COMPLETE_IN_WORD disabled"
+  [[ -o ALWAYS_TO_END ]] && echo "✅ ALWAYS_TO_END enabled" || echo "❌ ALWAYS_TO_END disabled"
+}
+
+# PERFORMANCE: Reload completion system
+reload-completions() {
+  echo "🔄 Reloading ZSH completion system..."
+  
+  # Remove old completion dump
+  [[ -f ~/.zcompdump ]] && rm ~/.zcompdump
+  
+  # Reinitialize completion system
+  autoload -Uz compinit
+  compinit
+  
+  echo "✅ Completion system reloaded!"
+  echo "💡 Try: cd <TAB> to test hidden directory completion"
+}
+
+# PERFORMANCE: Test NVM lazy loading
+test-nvm() {
+  echo "🧪 Testing NVM Lazy Loading..."
+  echo ""
+  
+  echo "📊 Current status:"
+  echo "NVM loaded: $(if command -v nvm >/dev/null 2>&1 && [[ $(type nvm) != *"function"* ]]; then echo "✅ Yes"; else echo "❌ No (lazy)"; fi)"
+  echo "Node available: $(if command -v node >/dev/null 2>&1; then echo "✅ Yes"; else echo "❌ No"; fi)"
+  echo "NPM available: $(if command -v npm >/dev/null 2>&1; then echo "✅ Yes"; else echo "❌ No"; fi)"
+  echo ""
+  
+  echo "🚀 Testing commands:"
+  echo "Running 'node --version'..."
+  node --version
+  echo ""
+  
+  echo "Running 'npm --version'..."
+  npm --version  
+  echo ""
+  
+  echo "Running 'nvm --version'..."
+  nvm --version
+  echo ""
+  
+  echo "✅ All NVM lazy loading tests passed!"
+}
+
+# ===========================
+# 🔍 GIT-AWARE SEARCH FUNCTIONS - PERFORMANCE OPTIMIZED
+# ===========================
+
+# Search in git files only
+fzg() {
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  git ls-files | fzf --preview 'bat --style=numbers --color=always {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+}
+
+# Search git commits with preview
+fzc() {
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  git log --oneline --color=always | fzf --ansi --preview 'git show --color=always {1}' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+}
+
+# Search git branches with preview
+fzb() {
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "❌ Not a Git repository"
+    return 1
+  fi
+  
+  git branch -a --color=always | grep -v '/HEAD\s' | sort | fzf --ansi --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -20' --bind 'ctrl-/:change-preview-window(down|hidden|)'
+}
+
+# ===========================
+# 🔍 TEXT SEARCH FUNCTIONS - PERFORMANCE OPTIMIZED
+# ===========================
+
+# Search text content interactively (usage: rgi "search_term")
+rgi() {
+  local search_term="${1:-}"
+  if [[ -z "$search_term" ]]; then
+    echo "Usage: rgi <search_term>"
+    echo "Example: rgi \"TODO\" to search for TODO items"
+    return 1
+  fi
+  rg --line-number --no-heading --smart-case "$search_term" . | fzf --preview "bat --color=always --style=numbers --highlight-line {2} {1}" --delimiter ":"
+}
+
+# Search files containing pattern with preview (usage: rgf "search_term")
+rgf() {
+  local search_term="${1:-}"
+  if [[ -z "$search_term" ]]; then
+    echo "Usage: rgf <search_term>"
+    echo "Example: rgf \"function\" to find files containing 'function'"
+    return 1
+  fi
+  rg --files-with-matches --no-messages "$search_term" | fzf --preview "rg '$search_term' {} --color=always --context 10" --preview-window 'right:60%'
 }

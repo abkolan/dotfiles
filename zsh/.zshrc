@@ -1,111 +1,203 @@
-# Powerlevel10k instant prompt (keep near top)
+# ===========================
+# OPTIMIZED ZINIT-ONLY ZSH CONFIGURATION
+# Target: < 50ms startup time
+# ===========================
+
+# Enable Powerlevel10k instant prompt (MUST be first)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Prevent config from running in IntelliJ shells
-if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
+# Skip all initialization in non-interactive environments
+[[ -o interactive ]] || return
+[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return
 
-  export ZSH="$HOME/.oh-my-zsh"
-  ZSH_THEME="robbyrussell"
+# ===========================
+# ZINIT INSTALLATION & SETUP
+# ===========================
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-  CASE_SENSITIVE="true"
-  ENABLE_CORRECTION="true"
-
-  plugins=(
-    git
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    you-should-use
-  )
-
-  source "$ZSH/oh-my-zsh.sh"
-
-  # Editor
-  export VISUAL=nvim
-  export EDITOR="$VISUAL"
-
-  # Source env/config
-  [ -f "$HOME/.zshenv" ] && source "$HOME/.zshenv"
-  [ -f "$HOME/.zsh_aliases" ] && source "$HOME/.zsh_aliases"
-  [ -f "$HOME/.zsh_functions" ] && source "$HOME/.zsh_functions"
-
-  # PATH setup
-  export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-  export PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
-  export PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
-  export PATH="$PATH:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
-  export PATH="$PATH:/Library/Apple/usr/bin"
-
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
-  export PATH="$PATH:$(go env GOPATH)/bin"
-
-  # Conda init (portable)
-  if command -v conda >/dev/null 2>&1; then
-    __conda_setup="$(conda 'shell.zsh' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-    elif [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
-# . "$HOME/anaconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
-    else
-# export PATH="$HOME/anaconda3/bin:$PATH"  # commented out by conda initialize
-    fi
-    unset __conda_setup
-  fi
-
-  export HOMEBREW_AUTO_UPDATE_SECS=86400
+# Auto-install Zinit if not present
+if [[ ! -d "$ZINIT_HOME" ]]; then
+  print -P "%F{33}▓▒░ %F{220}Installing %F{33}ZINIT%F{220} (zdharma-continuum/zinit)…%f"
+  command mkdir -p "$(dirname $ZINIT_HOME)"
+  command git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME" && \
+    print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+    print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
 
-# Docker CLI completions
-[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
-autoload -Uz compinit
-compinit
+# Source Zinit
+source "${ZINIT_HOME}/zinit.zsh"
 
-# Powerlevel10k theme
-[[ -f "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
-  source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
+# ===========================
+# ZINIT OPTIMIZATIONS
+# ===========================
+zstyle ':zinit:*' use-cache yes
+zstyle ':zinit:*' cache-dir ~/.cache/zinit
 
-[[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
+# ===========================
+# THEME: Powerlevel10k (optimized loading)
+# ===========================
+zinit ice depth=1 atload'[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh'
+zinit light romkatv/powerlevel10k
 
-# z (jump around)
-# [[ -f "$(brew --prefix)/etc/profile.d/z.sh" ]] && source "$(brew --prefix)/etc/profile.d/z.sh"
-eval "$(zoxide init zsh)"
+# ===========================
+# TURBO MODE PLUGINS (loaded after prompt appears)
+# Using wait'0a', '0b', '0c' for staged loading
+# ===========================
 
-# Ripgrep config
-export RIPGREP_CONFIG_PATH="$HOME/.config/.ripgreprc"
+# Git support - load immediately after prompt
+zinit ice wait'0a' lucid
+zinit snippet OMZP::git
 
-# broot launcher
+# Fast syntax highlighting - load after git
+zinit ice wait'0b' lucid atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
+zinit light zdharma-continuum/fast-syntax-highlighting
+
+# Autosuggestions - load with syntax highlighting
+zinit ice wait'0b' lucid atload"!_zsh_autosuggest_start"
+zinit load zsh-users/zsh-autosuggestions
+
+# History substring search - load slightly later
+zinit ice wait'0c' lucid atload'bindkey "^[[A" history-substring-search-up; bindkey "^[[B" history-substring-search-down'
+zinit light zsh-users/zsh-history-substring-search
+
+# Additional completions - load after 1 second
+zinit ice wait'1' lucid blockf atpull'zinit creinstall -q .'
+zinit light zsh-users/zsh-completions
+
+# FZF tab completion - load after 1 second
+zinit ice wait'1' lucid
+zinit light Aloxaf/fzf-tab
+
+# ===========================
+# NODE.JS LAZY LOADING
+# ===========================
+export NVM_DIR="$HOME/.nvm"
+export ASDF_DIR="${ASDF_DIR:-$HOME/.asdf}"
+
+# Source lazy loading functions for Node.js tools
+# This provides lazy wrappers for npm, node, npx, and global packages
+[[ -f "$HOME/.zsh_functions_lazy" ]] && source "$HOME/.zsh_functions_lazy"
+
+# ===========================
+# CONDA LAZY LOADING
+# ===========================
+conda() {
+  unfunction conda 2>/dev/null
+  __conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+  [ $? -eq 0 ] && eval "$__conda_setup" || export PATH="$HOME/miniconda3/bin:$PATH"
+  unset __conda_setup
+  conda "$@"
+}
+
+# ===========================
+# BROOT LAUNCHER
+# ===========================
 [[ -f "$HOME/.config/broot/launcher/bash/br" ]] && source "$HOME/.config/broot/launcher/bash/br"
 
-# kubectl completions
-# Enable kubectl completion in Zsh
-autoload -Uz compinit
-compinit
-
-# Source kubectl completion
-source <(kubectl completion zsh)
-
-# Alias 'k' for kubectl
-alias k=kubectl
-
-# Enable completion for 'k' alias
-compdef __start_kubectl k
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/ab/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/ab/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/ab/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/ab/anaconda3/bin:$PATH"
-    fi
+# ===========================
+# KUBECTL LAZY LOADING
+# ===========================
+if command -v kubectl >/dev/null 2>&1; then
+  kubectl() {
+    unfunction kubectl
+    source <(command kubectl completion zsh)
+    command kubectl "$@"
+  }
 fi
-unset __conda_setup
-# <<< conda initialize <<<
 
+# ===========================
+# ENVIRONMENT SETUP
+# ===========================
+# Homebrew (dynamic detection)
+if command -v brew >/dev/null 2>&1; then
+  export HOMEBREW_PREFIX="$(brew --prefix)"
+fi
+
+# ===========================
+# OPTIMIZED COMPLETION
+# ===========================
+autoload -Uz compinit
+zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+
+# Only refresh dump once per day
+if [[ $(date +'%j') != $(stat -f '%Sm' -t '%j' $zcompdump 2>/dev/null || echo 0) ]]; then
+  compinit
+  # Compile for faster loading
+  [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
+else
+  compinit -C
+fi
+
+# Minimal completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' menu select
+
+# ===========================
+# OTHER TOOLS (DEFERRED)
+# ===========================
+# Zoxide (if installed)
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+# FZF (if installed)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# ===========================
+# ZSH OPTIONS & HISTORY
+# ===========================
+# History settings (used as fallback if atuin not available)
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+
+# Set ZSH options
+setopt AUTO_CD INTERACTIVE_COMMENTS
+setopt HIST_IGNORE_DUPS HIST_REDUCE_BLANKS SHARE_HISTORY EXTENDED_HISTORY
+setopt INC_APPEND_HISTORY HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS HIST_VERIFY
+
+# ===========================
+# ATUIN - Advanced Shell History
+# ===========================
+# Initialize atuin if installed (replaces default history search)
+if command -v atuin &>/dev/null; then
+  # Disable default history search bindings
+  bindkey -r '^R'
+  
+  # Initialize atuin with minimal overhead
+  eval "$(atuin init zsh --disable-up-arrow)"
+  
+  # Custom keybindings for better integration
+  bindkey '^R' _atuin_search_widget  # Keep Ctrl+R for atuin search
+fi
+
+# ===========================
+# ALIASES
+# ===========================
+alias k='kubectl'
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias gco='git checkout'
+alias gb='git branch'
+alias gd='git diff'
+
+# Source user aliases if exists
+[[ -f "$HOME/.zsh_aliases" ]] && source "$HOME/.zsh_aliases"
+
+# ===========================
+# TOOL INTEGRATIONS
+# ===========================
+# Direnv - automatic environment loading (only if installed)
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
+# Zoxide - smarter cd command (if installed)
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"

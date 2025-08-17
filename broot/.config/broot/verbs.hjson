@@ -145,6 +145,18 @@ verbs: [
     #     execution: ":toggle_git_status"
     # }
 
+    # Toggle hidden files with Alt+H
+    {
+        key: alt-h
+        execution: ":toggle_hidden"
+    }
+
+    # Toggle fold/unfold all directories
+    {
+        key: alt-f
+        execution: ":toggle_tree"
+    }
+
     # You can reproduce the bindings of Norton Commander
     # on copying or moving to the other panel:
     # {

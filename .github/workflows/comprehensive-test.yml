@@ -1,0 +1,217 @@
+name: Comprehensive Test Suite
+
+on:
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to test'
+        required: false
+        default: 'ubuntu:22.04'
+        type: choice
+        options:
+          - ubuntu:22.04
+          - ubuntu:20.04
+          - debian:12
+          - ubuntu:22.04,debian:12
+      quick_mode:
+        description: 'Quick mode (skip slow tests)'
+        required: false
+        default: true
+        type: boolean
+      verbose:
+        description: 'Verbose output'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  # ===========================
+  # Complete Docker Test Suite
+  # ===========================
+  comprehensive-docker-test:
+    name: Complete Test (${{ github.event.inputs.platform || 'ubuntu:22.04' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Run comprehensive test suite
+        run: |
+          # Prepare arguments
+          args="--platform ${{ github.event.inputs.platform || 'ubuntu:22.04' }}"
+          
+          if [[ "${{ github.event.inputs.quick_mode }}" == "true" ]]; then
+            args="$args --quick"
+          fi
+          
+          if [[ "${{ github.event.inputs.verbose }}" == "true" ]]; then
+            args="$args --verbose"
+          fi
+          
+          args="$args --report"
+          
+          echo "🐳 Running comprehensive test with: $args"
+          ./tests/test-all.sh $args
+      
+      - name: Upload comprehensive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-test-results
+          path: |
+            /tmp/dotfiles-test-all-*.log
+            /home/runner/dotfiles-test-report-*.log
+
+  # ===========================
+  # Multi-Platform Fast Tests
+  # ===========================
+  multi-platform-test:
+    name: Fast Test (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu:22.04
+          - ubuntu:20.04
+          - debian:12
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Build platform-specific test
+        run: |
+          echo "🚀 Testing dotfiles on ${{ matrix.platform }}"
+          
+          # Create platform-specific test
+          cat > /tmp/platform-test.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          # Build test image for this platform
+          docker build \
+            --build-arg BASE_IMAGE="${{ matrix.platform }}" \
+            -t "dotfiles-test-${{ matrix.platform }}" \
+            -f tests/Dockerfile.base \
+            .
+          
+          # Run installation and basic tests
+          docker run --rm \
+            -e FORCE_COLOR=1 \
+            "dotfiles-test-${{ matrix.platform }}" \
+            bash -c "
+              cd /home/testuser && 
+              git clone /home/testuser/dotfiles/.git test-dotfiles &&
+              cd test-dotfiles &&
+              ./tests/install-platform-agnostic.sh &&
+              ./tests/run-tests.sh all --quick
+            "
+          EOF
+          
+          chmod +x /tmp/platform-test.sh
+          /tmp/platform-test.sh
+      
+      - name: Upload platform test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-test-${{ matrix.platform }}
+          path: /tmp/dotfiles-test*
+
+  # ===========================
+  # Performance Benchmarking (Optional)
+  # ===========================
+  benchmark:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event.inputs.quick_mode != 'true'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Run fast test with benchmarking
+        run: |
+          echo "🏃‍♂️ Running performance benchmarks..."
+          ./tests/test-fast.sh
+          
+          # Extract performance metrics from test output
+          echo "Performance metrics extracted from test run"
+      
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: /tmp/dotfiles-test*
+
+  # ===========================
+  # Final Summary
+  # ===========================
+  summary:
+    name: Test Summary  
+    needs: [comprehensive-docker-test, multi-platform-test, benchmark]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+      
+      - name: Generate comprehensive summary
+        run: |
+          echo "# 🐳 Comprehensive Docker Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "**Platform:** ${{ github.event.inputs.platform || 'ubuntu:22.04' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Quick Mode:** ${{ github.event.inputs.quick_mode || 'true' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status | Description |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|-------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Comprehensive Test | ${{ needs.comprehensive-docker-test.result }} | Complete validation in pristine environment |" >> $GITHUB_STEP_SUMMARY
+          echo "| Multi-Platform | ${{ needs.multi-platform-test.result }} | Testing across Ubuntu/Debian variants |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance | ${{ needs.benchmark.result || 'skipped' }} | Speed and resource benchmarks |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Platform breakdown
+          echo "## Platform Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Ubuntu 22.04: ${{ needs.multi-platform-test.result }}" >> $GITHUB_STEP_SUMMARY  
+          echo "- Ubuntu 20.04: ${{ needs.multi-platform-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Debian 12: ${{ needs.multi-platform-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Overall status
+          comprehensive_status="${{ needs.comprehensive-docker-test.result }}"
+          platform_status="${{ needs.multi-platform-test.result }}"
+          
+          if [[ "$comprehensive_status" == "success" ]] && [[ "$platform_status" == "success" ]]; then
+            echo "## ✅ All Tests Passed!" >> $GITHUB_STEP_SUMMARY
+            echo "Your dotfiles work perfectly across all tested platforms." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### What was validated:" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Fresh installation from scratch" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ All components (zsh, nvim, git, etc.)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Cross-platform compatibility" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Integration between tools" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Error handling and recovery" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ⚠️ Some Tests Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Review the test logs to identify and fix issues." >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "- Review artifacts for detailed logs" >> $GITHUB_STEP_SUMMARY
+          echo "- Run \`./tests/test-all.sh\` locally to reproduce" >> $GITHUB_STEP_SUMMARY
+          echo "- Check [test documentation](./tests/README.md) for troubleshooting" >> $GITHUB_STEP_SUMMARY

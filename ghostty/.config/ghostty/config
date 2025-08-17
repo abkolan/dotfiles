@@ -1,10 +1,84 @@
-theme = iTerm2 Dark Background
-font-family = JetBrainsMonoNL NFM Regular
-font-size = 16
-cursor-style = block
-cursor-style-blink = true
-shell-integration-features = no-cursor
-window-height = 30 
-window-width = 100
+# ===========================
+# GHOSTTY CONFIGURATION - MINIMAL & VALID
+# Only using documented, valid configuration options
+# ===========================
 
-# Key bindings
+# ===========================
+# APPEARANCE & THEME
+# ===========================
+theme = dracula
+#background-opacity = 0.95
+
+# ===========================
+# FONT CONFIGURATION
+# ===========================
+font-family = "JetBrains Mono"
+font-size = 14
+
+# ===========================
+# CURSOR CONFIGURATION
+# ===========================
+cursor-style = block
+cursor-style-blink = false
+
+# ===========================
+# WINDOW & LAYOUT
+# ===========================
+window-width = 120
+window-height = 35
+window-decoration = true
+
+# ===========================
+# PERFORMANCE SETTINGS
+# ===========================
+confirm-close-surface = false
+quit-after-last-window-closed = true
+shell-integration = zsh
+
+# ===========================
+# SCROLLBACK
+# ===========================
+scrollback-limit = 10000
+
+# ===========================
+# MOUSE & INTERACTION
+# ===========================
+mouse-hide-while-typing = true
+
+# ===========================
+# MACOS SETTINGS
+# ===========================
+macos-option-as-alt = true
+macos-titlebar-style = tabs
+
+# ===========================
+# RESIZE BEHAVIOR
+# ===========================
+resize-overlay = never
+resize-overlay-position = center
+# resize-overlay-duration removed - using default since resize-overlay = never
+
+# ===========================
+# CLIPBOARD
+# ===========================
+clipboard-read = ask
+clipboard-write = allow
+
+# ===========================
+# KEYBINDINGS
+# ===========================
+# Essential keybindings only
+keybind = cmd+t=new_tab
+keybind = cmd+w=close_surface
+keybind = cmd+n=new_window
+keybind = cmd+1=goto_tab:1
+keybind = cmd+2=goto_tab:2
+keybind = cmd+3=goto_tab:3
+keybind = cmd+4=goto_tab:4
+keybind = cmd+5=goto_tab:5
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+zero=reset_font_size
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+keybind = shift+enter=text:\n

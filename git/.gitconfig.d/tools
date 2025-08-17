@@ -1,0 +1,30 @@
+[diff]
+    tool = nvimdiff
+    algorithm = histogram
+    colorMoved = default
+
+[merge]
+    tool = nvimdiff
+    conflictstyle = diff3
+
+[difftool "nvimdiff"]
+    cmd = nvim -d $LOCAL $REMOTE
+
+[mergetool "nvimdiff"]
+    cmd = nvim -d $LOCAL $MERGED $REMOTE
+    
+[core]
+    # Use delta for better diffs
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+
+[delta]
+    navigate = true
+    light = false
+    side-by-side = true
+    line-numbers = true
+
+[rebase]
+    autoStash = true

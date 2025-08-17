@@ -1,0 +1,13 @@
+# Database configurations
+# Copy this file to .envrc and update with your actual credentials
+# Run 'direnv allow' after creating .envrc
+
+# MySQL connection string
+export DB_MYSQL_DSN="root:YOUR_PASSWORD@tcp(127.0.0.1:3306)/dbname"
+
+# PostgreSQL connection string  
+export DB_POSTGRES_DSN="host=127.0.0.1 port=5432 user=postgres password=YOUR_PASSWORD dbname=dbname sslmode=disable"
+
+# Add other sensitive environment variables here
+# export API_KEY="your-api-key"
+# export SECRET_TOKEN="your-secret-token"
