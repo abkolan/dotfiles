@@ -42,7 +42,15 @@ build_base_image() {
     echo -e "${YELLOW}This will take a few minutes but only needs to be done once.${NC}"
     
     if docker buildx version &>/dev/null; then
-        docker buildx build --load -t dotfiles-base -f "$SCRIPT_DIR/Dockerfile.base" "$DOTFILES_DIR"
+        # Use GitHub Actions cache if in CI environment
+        if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+            docker buildx build --load -t dotfiles-base \
+                --cache-from type=gha \
+                --cache-to type=gha,mode=max \
+                -f "$SCRIPT_DIR/Dockerfile.base" "$DOTFILES_DIR"
+        else
+            docker buildx build --load -t dotfiles-base -f "$SCRIPT_DIR/Dockerfile.base" "$DOTFILES_DIR"
+        fi
     else
         docker build -t dotfiles-base -f "$SCRIPT_DIR/Dockerfile.base" "$DOTFILES_DIR"
     fi
@@ -62,7 +70,15 @@ run_fast_test() {
     
     # Build test image using base (this is fast - only copies files)
     if docker buildx version &>/dev/null; then
-        docker buildx build --load -t dotfiles-test -f "$SCRIPT_DIR/Dockerfile.fast" "$DOTFILES_DIR"
+        # Use GitHub Actions cache if in CI environment
+        if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+            docker buildx build --load -t dotfiles-test \
+                --cache-from type=gha \
+                --cache-to type=gha,mode=max \
+                -f "$SCRIPT_DIR/Dockerfile.fast" "$DOTFILES_DIR"
+        else
+            docker buildx build --load -t dotfiles-test -f "$SCRIPT_DIR/Dockerfile.fast" "$DOTFILES_DIR"
+        fi
     else
         docker build -t dotfiles-test -f "$SCRIPT_DIR/Dockerfile.fast" "$DOTFILES_DIR"
     fi
