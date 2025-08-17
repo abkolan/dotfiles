@@ -83,7 +83,10 @@ run_fast_test() {
 
 # Main
 main() {
-    clear
+    # Check if TERM is set and if we can clear the terminal
+    if [ -n "${TERM:-}" ] && [ "$TERM" != "dumb" ] && command -v clear >/dev/null 2>&1; then
+        clear
+    fi
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     echo -e "${CYAN}              FAST DOCKER INTEGRATION TEST                      ${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
