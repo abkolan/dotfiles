@@ -50,8 +50,8 @@ zinit light romkatv/powerlevel10k
 zinit ice wait'0a' lucid
 zinit snippet OMZP::git
 
-# Fast syntax highlighting - load after git
-zinit ice wait'0b' lucid atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
+# Fast syntax highlighting - load after git (avoid double compinit)
+zinit ice wait'0b' lucid
 zinit light zdharma-continuum/fast-syntax-highlighting
 
 # Autosuggestions - load with syntax highlighting
@@ -116,16 +116,15 @@ if command -v brew >/dev/null 2>&1; then
 fi
 
 # ===========================
-# OPTIMIZED COMPLETION
+# OPTIMIZED COMPLETION (portable cache)
 # ===========================
 autoload -Uz compinit
-zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+local _zcdump="${ZDOTDIR:-$HOME}/.zcompdump"
 
-# Only refresh dump once per day
-if [[ $(date +'%j') != $(stat -f '%Sm' -t '%j' $zcompdump 2>/dev/null || echo 0) ]]; then
+# Rebuild dump if missing or older than 24 hours; otherwise trust cache
+if [[ ! -f ${_zcdump} || ${_zcdump}(#qN.mh+24) ]]; then
   compinit
-  # Compile for faster loading
-  [[ -f "$zcompdump" && ! -f "$zcompdump.zwc" ]] && zcompile "$zcompdump"
+  [[ -f ${_zcdump} ]] && zcompile -Uz -- ${_zcdump} 2>/dev/null || true
 else
   compinit -C
 fi
@@ -137,10 +136,9 @@ zstyle ':completion:*' menu select
 # ===========================
 # OTHER TOOLS (DEFERRED)
 # ===========================
+
 # Zoxide (if installed)
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # FZF (if installed)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -176,22 +174,13 @@ fi
 # ===========================
 # ALIASES
 # ===========================
-alias k='kubectl'
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-alias g='git'
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gpl='git pull'
-alias gco='git checkout'
-alias gb='git branch'
-alias gd='git diff'
+
 
 # Source user aliases if exists
 [[ -f "$HOME/.zsh_aliases" ]] && source "$HOME/.zsh_aliases"
+
+# Source user functions if exists
+[[ -f "$HOME/.zsh_functions" ]] && source "$HOME/.zsh_functions"
 
 # ===========================
 # TOOL INTEGRATIONS
@@ -199,5 +188,4 @@ alias gd='git diff'
 # Direnv - automatic environment loading (only if installed)
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
-# Zoxide - smarter cd command (if installed)
-command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
+# (duplicate avoided) zoxide already initialized above if available

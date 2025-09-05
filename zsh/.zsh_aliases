@@ -56,10 +56,16 @@ alias vi="nvim"
 alias vim="nvim"
 
 # ===========================
-# golang  
-# dep: richgo
+# golang
+# Make 'go test' pretty if richgo is available; don't break other subcommands
 # ===========================
-alias go=richgo # Run go tests with colored highlighting
+go() {
+  if [[ "$1" == "test" ]] && command -v richgo >/dev/null 2>&1; then
+    command richgo "$@"
+  else
+    command go "$@"
+  fi
+}
 # ===========================
 # 🐳 DOCKER ALIASES
 # dep: docker
@@ -137,16 +143,25 @@ alias rg="rg --color=always --line-number --no-heading --smart-case"
 # Search text content interactively - function moved to .zsh_functions
 
 # Change directory, using fd to find directories and exclude unwanted ones
-alias fcd='local dir=$(fd --type d --hidden --exclude .git --exclude node_modules | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
+fcd() {
+  local dir
+  dir=$(fd --type d --hidden --exclude .git --exclude node_modules | \
+    fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}")
+  [[ -n "$dir" ]] && cd "$dir"
+}
 
-# Fuzzy cd with better preview
-alias fzd="fd --type d --hidden --follow --exclude .git | fzf --preview 'eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+
 
 # Recent directories (requires zoxide)
-alias zz='local dir=$(zoxide query -l | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}") && [[ -n "$dir" ]] && cd "$dir"'
+zz() {
+  local dir
+  dir=$(zoxide query -l | \
+    fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}")
+  [[ -n "$dir" ]] && cd "$dir"
+}
 
 # ===========================
-# 👻 GHOSTTY TERMINAL ALIASES - PERFORMANCE OPTIMIZED  
+# 👻 GHOSTTY TERMINAL ALIASES - PERFORMANCE OPTIMIZED
 # ===========================
 # PERFORMANCE: Quick Ghostty theme switching
 alias gt='ghostty-theme'                    # Quick theme change
@@ -212,3 +227,19 @@ alias hsm='atuin stats --period month'      # This month's command stats
 alias hi='atuin import auto'                # Import existing shell history
 alias hsync='atuin sync'                    # Manual sync
 alias hclean='atuin history clean'          # Clean up history
+
+alias in='_init_node'
+
+# ===========================
+# 🐙 GIT & KUBECTL ALIASES
+# ===========================
+alias k='kubectl'
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias gco='git checkout'
+alias gb='git branch'
+alias gd='git diff'

@@ -7,7 +7,7 @@
 # PERFORMANCE: Workspace configuration
 export WORKSPACE="$HOME/Developer/repos"
 
-# PERFORMANCE: Homebrew configuration  
+# PERFORMANCE: Homebrew configuration
 export HOMEBREW_AUTO_UPDATE_SECS=86400
 # PERFORMANCE: Disable Homebrew analytics for faster operations
 export HOMEBREW_NO_ANALYTICS=1
@@ -29,6 +29,9 @@ export LC_ALL=en_US.UTF-8
 # PERFORMANCE: Essential tool configurations
 export RIPGREP_CONFIG_PATH="$HOME/.config/.ripgreprc"
 
+# PERFORMANCE: Configure pager for better git diff display with delta
+export LESS="-R"
+
 # PERFORMANCE: Prevent PATH duplicates (critical for performance)
 typeset -U PATH
 
@@ -41,13 +44,13 @@ typeset -U PATH
 if [[ "$(uname)" == "Darwin" ]]; then
   # macOS: Core paths that should always exist
   PATH="/usr/bin:/bin:/usr/sbin:/sbin"
-  
+
   # Add optional paths if they exist
   [[ -d "/opt/homebrew/bin" ]] && PATH="/opt/homebrew/bin:$PATH"
   [[ -d "/usr/local/bin" ]] && PATH="/usr/local/bin:$PATH"
   [[ -d "/System/Cryptexes/App/usr/bin" ]] && PATH="$PATH:/System/Cryptexes/App/usr/bin"
   [[ -d "/Library/Apple/usr/bin" ]] && PATH="$PATH:/Library/Apple/usr/bin"
-  
+
   # Add cryptex paths only if they exist (version-specific)
   for cryptex_path in \
     "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin" \
@@ -92,3 +95,6 @@ export FZF_CTRL_R_OPTS='--preview "echo {}" --preview-window down:3:hidden:wrap 
 
 # PERFORMANCE: Export the constructed PATH
 export PATH
+
+# Claude Token limit
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000

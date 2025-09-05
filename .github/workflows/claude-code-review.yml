@@ -1,3 +1,16 @@
+# =============================================================================
+# Claude AI Code Review Workflow
+#
+# This workflow uses the Anthropic Claude AI to automatically review code
+# when a pull request is opened or updated. It provides feedback on code
+
+# quality, potential bugs, and adherence to best practices.
+#
+# This service is opt-in and requires a secret (CLAUDE_CODE_OAUTH_TOKEN)
+# to be configured in the repository settings. If you do not wish to use this
+# feature, you can safely delete this file.
+# =============================================================================
+
 name: Claude Code Review
 
 on:
@@ -71,4 +84,3 @@ jobs:
           # if: |
           #   !contains(github.event.pull_request.title, '[skip-review]') &&
           #   !contains(github.event.pull_request.title, '[WIP]')
-

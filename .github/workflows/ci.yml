@@ -1,0 +1,91 @@
+# =============================================================================
+# Consolidated CI Workflow for Dotfiles
+#
+# This single workflow handles all continuous integration checks for the
+# repository. It is designed to be the sole entry point for CI, replacing
+# multiple redundant workflow files.
+#
+# Key Features:
+# - Single, unified workflow for all CI scenarios.
+# - Runs fast tests on branch pushes for quick feedback.
+# - Runs comprehensive tests on pull requests and merges to main.
+# - Supports scheduled runs to catch regressions.
+# - Allows manual triggering for debugging or validation.
+# - Uses a matrix strategy to test on both Ubuntu and macOS.
+#
+# =============================================================================
+
+name: "CI"
+
+on:
+  # Trigger on pushes to any branch
+  push:
+    branches:
+      - "main"
+      - "**"
+
+  # Trigger on pull requests targeting the main branch
+  pull_request:
+    branches:
+      - "main"
+
+  # Allow manual triggering from the GitHub UI
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Test scope to run"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - "all"
+          - "fast"
+
+  # Run on a weekly schedule (every Monday at 3 AM UTC)
+  schedule:
+    - cron: "0 3 * * 1"
+
+jobs:
+  test:
+    name: "Test on ${{ matrix.os }}"
+    runs-on: "${{ matrix.os }}"
+
+    strategy:
+      # Run tests on both Ubuntu and macOS to ensure cross-platform compatibility
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      # Don't cancel other jobs if one fails
+      fail-fast: false
+
+    steps:
+      - name: "📥 Checkout repository"
+        uses: "actions/checkout@v4"
+
+      - name: "🔧 Set up test environment"
+        # This step would include installing dependencies like zsh, git, etc.
+        # For now, we assume the runners have the necessary tools.
+        run: |
+          echo "Setting up environment on ${{ matrix.os }}..."
+          # Example for Ubuntu: sudo apt-get update && sudo apt-get install -y zsh
+          # Example for macOS: brew install zsh
+          # The provided test scripts seem self-contained, so this is a placeholder.
+
+      - name: "🏃 Determine test scope"
+        id: get_scope
+        run: |
+          # Default to 'all' for scheduled runs and pull requests
+          SCOPE="all"
+          # Use 'fast' for pushes to non-main branches
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" != "refs/heads/main" ]]; then
+            SCOPE="fast"
+          fi
+          # For manual runs, use the user's selected scope
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            SCOPE="${{ github.event.inputs.scope }}"
+          fi
+          echo "scope=$SCOPE" >> $GITHUB_OUTPUT
+
+      - name: "🧪 Run tests"
+        run: |
+          chmod +x tests/run-tests.sh
+          ./tests/run-tests.sh --scope ${{ steps.get_scope.outputs.scope }}
