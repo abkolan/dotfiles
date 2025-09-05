@@ -6,7 +6,7 @@
 # Color Output
 # ===========================
 # Smart color detection - support Docker, CI, and piped output
-if [ -t 1 ] || [ -n "$FORCE_COLOR" ] || [[ "$TERM" == *"color"* ]]; then
+if [ -t 1 ] || [ -n "${FORCE_COLOR-}" ] || [[ "$TERM" == *"color"* ]]; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
     YELLOW='\033[1;33m'
