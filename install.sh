@@ -87,10 +87,12 @@ STOW_ORDER=(
     "zsh"       # Shell config
     "nvim"      # Neovim
     "kitty"     # Terminal
+    "ghostty"   # GPU terminal
     "ripgrep"   # Search tool
     "lsd"       # ls replacement
     "btop"      # System monitor
     "broot"     # File manager
+    "atuin"     # Shell history
     "go"        # Go config
     "linearmouse" # Mouse config
 )
