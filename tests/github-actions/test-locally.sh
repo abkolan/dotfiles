@@ -18,16 +18,16 @@ NC='\033[0m'
 install_act() {
     echo -e "${CYAN}Installing act (GitHub Actions local runner)...${NC}"
     
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        if command -v brew &> /dev/null; then
-            brew install act
-        else
-            curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
-        fi
+    if [[ "$OSTYPE" != "darwin"* ]]; then
+        echo -e "${RED}act bootstrap helper supports macOS only${NC}"
+        exit 1
+    fi
+
+    if command -v brew &> /dev/null; then
+        brew install act
     else
-        # Linux
-        curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+        echo -e "${RED}Homebrew is required to install act automatically${NC}"
+        exit 1
     fi
     
     echo -e "${GREEN}✅ act installed successfully${NC}"

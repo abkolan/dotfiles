@@ -11,11 +11,7 @@ alias c="clear" # Clear terminal
 # 📂 DIRECTORY LISTING ALIASES
 # ===========================
 # Traditional ls (original command)
-if [[ "$(uname)" == "Darwin" ]]; then
-  alias ls="ls -G"           # macOS with colors
-else
-  alias ls="ls --color=auto" # Linux with colors
-fi
+alias ls="ls -G"           # macOS with colors
 
 alias ll="ls -lah"         # Long format, human-readable sizes, show hidden files
 alias la="ls -A"           # List all except `.` and `..`

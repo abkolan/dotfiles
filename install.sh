@@ -15,7 +15,7 @@ echo "🚀 Starting dotfiles installation..."
 
 # 1. Check OS
 if [[ "$OSTYPE" != "darwin"* ]]; then
-    echo -e "${RED}This script is designed for macOS. Modify for Linux if needed.${NC}"
+    echo -e "${RED}This script supports macOS only.${NC}"
     exit 1
 fi
 

@@ -33,7 +33,7 @@ This ZSH configuration is built for developers who want:
 - **Powerful file search** with ripgrep, fd, and fzf integration
 - **Git-aware workflows** with interactive branch/commit browsing
 - **Modern tool integrations** (Docker, Kubernetes, Node.js, Python)
-- **Cross-platform compatibility** (macOS, Linux)
+- **macOS-optimized workflows**
 - **Performance-first approach** with minimal overhead
 - **Choice of plugin managers** - Oh My Zsh (familiar) or Zinit (blazing fast)
 
@@ -610,7 +610,7 @@ brewupdate           # Update, upgrade, and clean
 #### `sysupdate`
 Cross-platform system update.
 ```bash
-sysupdate           # Updates packages on macOS/Linux
+sysupdate           # Updates packages on macOS
 ```
 
 ### 🐳 Docker Functions

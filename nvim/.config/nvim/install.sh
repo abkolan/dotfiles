@@ -14,55 +14,31 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Check if running on macOS or Linux
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macos"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="linux"
-else
+# macOS only
+if [[ "$OSTYPE" != "darwin"* ]]; then
     echo -e "${RED}❌ Unsupported OS: $OSTYPE${NC}"
     exit 1
 fi
 
-echo -e "${BLUE}🔍 Detected OS: $OS${NC}"
+echo -e "${BLUE}🔍 Detected OS: macOS${NC}"
 
 # Install dependencies
 install_dependencies() {
     echo -e "${BLUE}📦 Installing dependencies...${NC}"
     
-    if [[ "$OS" == "macos" ]]; then
-        # macOS with Homebrew
-        if ! command -v brew &> /dev/null; then
-            echo -e "${YELLOW}🍺 Installing Homebrew...${NC}"
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        fi
-        
-        echo -e "${BLUE}📦 Installing packages via Homebrew...${NC}"
-        brew install neovim fd ripgrep fzf git curl wget
-        
-        # Optional DevOps tools
-        if command -v kubectl &> /dev/null; then
-            echo -e "${GREEN}✅ kubectl already installed${NC}"
-        else
-            echo -e "${YELLOW}⚠️  kubectl not found. Install manually if needed for Kubernetes workflows${NC}"
-        fi
-        
-    elif [[ "$OS" == "linux" ]]; then
-        # Linux with apt (Ubuntu/Debian)
-        if command -v apt &> /dev/null; then
-            echo -e "${BLUE}📦 Installing packages via apt...${NC}"
-            sudo apt update
-            sudo apt install -y neovim fd-find ripgrep fzf git curl wget build-essential
-            
-            # Create fd symlink if needed
-            if ! command -v fd &> /dev/null && command -v fdfind &> /dev/null; then
-                sudo ln -s $(which fdfind) /usr/local/bin/fd
-            fi
-        else
-            echo -e "${RED}❌ Unsupported Linux distribution. Please install manually:${NC}"
-            echo "  - neovim, fd, ripgrep, fzf, git, curl, wget"
-            exit 1
-        fi
+    if ! command -v brew &> /dev/null; then
+        echo -e "${YELLOW}🍺 Installing Homebrew...${NC}"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+
+    echo -e "${BLUE}📦 Installing packages via Homebrew...${NC}"
+    brew install neovim fd ripgrep fzf git curl wget
+
+    # Optional DevOps tools
+    if command -v kubectl &> /dev/null; then
+        echo -e "${GREEN}✅ kubectl already installed${NC}"
+    else
+        echo -e "${YELLOW}⚠️  kubectl not found. Install manually if needed for Kubernetes workflows${NC}"
     fi
 }
 
@@ -70,12 +46,7 @@ install_dependencies() {
 install_nodejs() {
     if ! command -v node &> /dev/null; then
         echo -e "${BLUE}📦 Installing Node.js...${NC}"
-        if [[ "$OS" == "macos" ]]; then
-            brew install node
-        elif [[ "$OS" == "linux" ]]; then
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-        fi
+        brew install node
     else
         echo -e "${GREEN}✅ Node.js already installed${NC}"
     fi

@@ -48,14 +48,13 @@ export HOME="$TEST_HOME"
 
 echo -e "${GREEN}✓${NC} Fresh clone simulated"
 
-# Run the setup script
-echo -e "\n${CYAN}Step 2: Running setup.sh...${NC}"
-if [[ -f "setup.sh" ]]; then
-    # Run setup in non-interactive mode
-    bash setup.sh
+# Run the macOS installer helper
+echo -e "\n${CYAN}Step 2: Running tests/install-platform-agnostic.sh...${NC}"
+if [[ -f "tests/install-platform-agnostic.sh" ]]; then
+    bash tests/install-platform-agnostic.sh
     SETUP_RESULT=$?
 else
-    echo -e "${RED}✗${NC} setup.sh not found!"
+    echo -e "${RED}✗${NC} tests/install-platform-agnostic.sh not found!"
     exit 1
 fi
 

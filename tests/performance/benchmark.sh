@@ -34,18 +34,11 @@ get_timestamp() {
 
 measure_ms() {
     local start end duration_ns duration_ms
-    
-    # macOS and Linux compatible timing
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        start=$(python3 -c 'import time; print(int(time.time() * 1000000000))')
-        "$@" >/dev/null 2>&1
-        end=$(python3 -c 'import time; print(int(time.time() * 1000000000))')
-    else
-        start=$(date +%s%N)
-        "$@" >/dev/null 2>&1
-        end=$(date +%s%N)
-    fi
-    
+
+    start=$(python3 -c 'import time; print(int(time.time() * 1000000000))')
+    "$@" >/dev/null 2>&1
+    end=$(python3 -c 'import time; print(int(time.time() * 1000000000))')
+
     duration_ns=$((end - start))
     duration_ms=$((duration_ns / 1000000))
     echo "$duration_ms"

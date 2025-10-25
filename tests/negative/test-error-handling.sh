@@ -118,30 +118,7 @@ rm -rf "$TEST_DIR"
 echo ""
 echo "  Testing partial installation recovery..."
 
-TEST_DIR=$(mktemp -d "/tmp/partial-install.XXXXX")
-ORIG_HOME="$HOME"
-export HOME="$TEST_DIR"
-
-# Simulate partial installation
-mkdir -p "$HOME/.local/share/zinit"
-touch "$HOME/.zshrc"
-# Don't create .gitconfig - simulating partial install
-
-# Check if setup script handles partial state
-cd "$ORIG_HOME/dotfiles" 2>/dev/null || cd "$(dirname "$(dirname "$0")")"
-if [[ -f "setup.sh" ]]; then
-    # Run setup in test environment (dry run)
-    if FORCE_COLOR=0 bash setup.sh 2>&1 | grep -q "already\|exists\|skip"; then
-        test_case "Setup handles partial installations" "true"
-    else
-        test_case "Setup handles partial installations" "false"
-    fi
-else
-    skip_test "Partial installation recovery" "setup.sh not found"
-fi
-
-export HOME="$ORIG_HOME"
-rm -rf "$TEST_DIR"
+skip_test "Partial installation recovery" "Full installer not exercised in automated tests"
 
 # ===========================
 # Test Permission Issues

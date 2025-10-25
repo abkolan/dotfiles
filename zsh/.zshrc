@@ -189,3 +189,5 @@ fi
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
 # (duplicate avoided) zoxide already initialized above if available
+
+. "$HOME/.local/bin/env"

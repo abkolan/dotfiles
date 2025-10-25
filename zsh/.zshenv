@@ -40,28 +40,22 @@ typeset -U PATH
 # Build PATH efficiently with minimal external calls
 # ===========================
 
-# PERFORMANCE: Build PATH dynamically with existence checks to minimize overhead
-if [[ "$(uname)" == "Darwin" ]]; then
-  # macOS: Core paths that should always exist
-  PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+# PERFORMANCE: Build PATH dynamically with existence checks (macOS only)
+PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
-  # Add optional paths if they exist
-  [[ -d "/opt/homebrew/bin" ]] && PATH="/opt/homebrew/bin:$PATH"
-  [[ -d "/usr/local/bin" ]] && PATH="/usr/local/bin:$PATH"
-  [[ -d "/System/Cryptexes/App/usr/bin" ]] && PATH="$PATH:/System/Cryptexes/App/usr/bin"
-  [[ -d "/Library/Apple/usr/bin" ]] && PATH="$PATH:/Library/Apple/usr/bin"
+# Add optional paths if they exist
+[[ -d "/opt/homebrew/bin" ]] && PATH="/opt/homebrew/bin:$PATH"
+[[ -d "/usr/local/bin" ]] && PATH="/usr/local/bin:$PATH"
+[[ -d "/System/Cryptexes/App/usr/bin" ]] && PATH="$PATH:/System/Cryptexes/App/usr/bin"
+[[ -d "/Library/Apple/usr/bin" ]] && PATH="$PATH:/Library/Apple/usr/bin"
 
-  # Add cryptex paths only if they exist (version-specific)
-  for cryptex_path in \
-    "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin" \
-    "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin" \
-    "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"; do
-    [[ -d "$cryptex_path" ]] && PATH="$PATH:$cryptex_path"
-  done
-else
-  # Linux/other: Standard paths only
-  PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-fi
+# Add cryptex paths only if they exist (version-specific)
+for cryptex_path in \
+  "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin" \
+  "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin" \
+  "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"; do
+  [[ -d "$cryptex_path" ]] && PATH="$PATH:$cryptex_path"
+done
 
 # PERFORMANCE: Add Go PATH with error handling and caching
 if command -v go >/dev/null 2>&1; then

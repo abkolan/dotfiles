@@ -209,33 +209,14 @@ brewupdate() {
   echo "✅ Homebrew update complete!"
 }
 
-# PERFORMANCE: Enhanced system update (cross-platform)
+# PERFORMANCE: Enhanced system update (macOS only)
 sysupdate() {
-  case "$(uname)" in
-    Darwin)
-      brewupdate
-      ;;
-    Linux)
-      # PERFORMANCE: Detect package manager automatically
-      if command -v apt >/dev/null 2>&1; then
-        echo "📦 Updating apt packages..."
-        sudo apt update && sudo apt upgrade -y
-      elif command -v pacman >/dev/null 2>&1; then
-        echo "📦 Updating pacman packages..."
-        sudo pacman -Syu
-      elif command -v dnf >/dev/null 2>&1; then
-        echo "📦 Updating dnf packages..."
-        sudo dnf update -y
-      else
-        echo "❌ No supported package manager found"
-        return 1
-      fi
-      ;;
-    *)
-      echo "❌ Unsupported operating system"
-      return 1
-      ;;
-  esac
+  if [[ "$(uname)" != "Darwin" ]]; then
+    echo "❌ Unsupported operating system"
+    return 1
+  fi
+
+  brewupdate
 }
 
 # ===========================
@@ -370,12 +351,12 @@ ghopen() {
   
   echo "🌐 Opening: $url"
   
-  # PERFORMANCE: Cross-platform browser opening
-  case "$(uname)" in
-    Darwin) open "$url" ;; 
-    Linux) xdg-open "$url" ;; 
-    *) echo "❌ Unsupported platform for browser opening" ;; 
-  esac
+  # PERFORMANCE: macOS browser opening
+  if [[ "$(uname)" == "Darwin" ]]; then
+    open "$url"
+  else
+    echo "❌ Unsupported platform for browser opening"
+  fi
 }
 
 # PERFORMANCE: Quick git status with enhanced display

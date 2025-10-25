@@ -23,75 +23,41 @@ My personal dotfiles setup optimized for DevOps workflows, managed with GNU Stow
 
 ## Installation
 
-### 🚀 Quick Start (Recommended)
-
-Clone and run the setup script - it handles everything automatically:
+### 🚀 Quick Start (macOS only)
 
 ```bash
 git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./setup.sh
+./install.sh
 ```
 
-That's it! The script will:
-- ✅ Install all dependencies (Homebrew, packages, tools)
-- ✅ Set up ZSH with Zinit and plugins
-- ✅ Configure Neovim with plugins
-- ✅ Link all dotfiles with GNU Stow
-- ✅ Fix any hardcoded paths
-- ✅ Verify everything works
+The installer handles everything for macOS:
+- ✅ Ensures Homebrew and required CLI tools are available
+- ✅ Sets up ZSH with Zinit and plugins
+- ✅ Configures Neovim and syncs plugins
+- ✅ Links dotfiles with GNU Stow
+- ✅ Fixes hardcoded `/Users/ab` paths
 
 ### Manual Installation
 
-If you prefer to install manually:
+Prefer to install by hand?
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
-   ```
-
-2. Install GNU Stow:
-   ```bash
-   # macOS
-   brew install stow
-   
-   # Debian/Ubuntu
-   sudo apt-get install stow
-   ```
-
-3. Use Stow to create symlinks:
-   ```bash
-   cd ~/dotfiles
-   stow zsh nvim git
-   ```
+```bash
+git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+brew install stow
+stow zsh nvim git
+```
 
 ## 🧪 Testing
 
-This repository includes a comprehensive, platform-agnostic test suite to ensure your dotfiles work correctly across different environments.
+This repository includes a macOS-focused test suite to ensure the dotfiles stay healthy.
 
 ### Quick Start
 
-Run all tests:
+Run the fast sanity suite:
 ```bash
-./tests/run-tests.sh
-```
-
-### Testing Individual Components
-
-Test specific configurations independently:
-
-```bash
-# Test ZSH configuration
-./tests/run-tests.sh zsh
-
-# Test Neovim configuration  
-./tests/run-tests.sh nvim
-
-# Test Kitty terminal (macOS only)
-./tests/run-tests.sh kitty
-
-# Test Git configuration
-./tests/run-tests.sh git
+./tests/run-tests.sh --scope fast
 ```
 
 ### Testing Options
@@ -100,14 +66,8 @@ Test specific configurations independently:
 # Run with verbose output for debugging
 ./tests/run-tests.sh --verbose
 
-# Test in Docker container (Linux environment)
-./tests/run-tests.sh --docker
-
-# Test fresh installation first, then run tests
+# Bootstrap dependencies before running tests (macOS only)
 ./tests/run-tests.sh --install
-
-# FAST Docker testing (after first run)
-./tests/test-fast.sh        # ~20 seconds vs 2-3 minutes
 ```
 
 ### 🚀 Fast Integration Testing
@@ -119,15 +79,15 @@ For rapid iteration, use the fast test script:
 ./tests/test-fast.sh
 
 # Subsequent runs (~20 seconds)
-./tests/test-fast.sh zsh    # Test specific component
-./tests/test-fast.sh all    # Test everything
+./tests/test-fast.sh zsh
+./tests/test-fast.sh all
 ```
 
 The fast test uses a pre-built Docker base image with all dependencies cached.
 
 ### What Gets Tested
 
-- **ZSH**: Startup performance (<150ms macOS, <500ms Linux/Docker), plugin loading, aliases, completions
+- **ZSH**: Startup performance (<150ms), plugin loading, aliases, completions
 - **Neovim**: Configuration syntax, plugin loading, LSP setup, performance
 - **Kitty**: Terminal configuration, themes, fonts, key mappings (macOS)
 - **Git**: User config, aliases, tools integration, hooks
@@ -135,12 +95,7 @@ The fast test uses a pre-built Docker base image with all dependencies cached.
 
 ### CI/CD Testing
 
-Tests run automatically on every pull request via GitHub Actions on:
-- macOS (latest)
-- Ubuntu (latest)
-- Docker container (isolated Linux environment)
-
-The test suite validates that `git clone → install → everything works` on fresh systems.
+Tests run automatically on macOS runners via GitHub Actions, validating that `git clone → install → everything works` on a clean machine.
 
 For more details, see [tests/README.md](tests/README.md).
 

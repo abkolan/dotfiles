@@ -64,7 +64,6 @@ chmod +x install.sh
 ```bash
 # 1. Install dependencies
 # macOS: brew install neovim fd ripgrep fzf git curl wget node
-# Linux: sudo apt install neovim fd-find ripgrep fzf git curl wget nodejs npm
 
 # 2. Copy config to ~/.config/nvim/
 cp -r . ~/.config/nvim/

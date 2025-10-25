@@ -18,11 +18,7 @@ There are several ways to test GitHub Actions before merging to your repository.
 ### Installation
 
 ```bash
-# macOS
 brew install act
-
-# Linux
-curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
 
 # Or use our helper script
 ./tests/github-actions/test-locally.sh
