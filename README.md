@@ -48,27 +48,6 @@ brew install stow
 stow zsh nvim git
 ```
 
-## 🧪 Testing
-
-This repository includes a test suite for macOS:
-
-```bash
-# Fast sanity tests
-./tests/run-tests.sh --scope fast
-
-# Full test suite
-./tests/run-tests.sh --scope all
-```
-
-Tests verify:
-- ZSH startup performance (<150ms)
-- Neovim headless health
-- Configuration syntax
-- LSP setup
-- Alias and completion functionality
-
-See [tests/README.md](tests/README.md) for details.
-
 ## 📚 Component Documentation
 
 ### Core Components
