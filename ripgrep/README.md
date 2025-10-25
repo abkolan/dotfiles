@@ -1,4 +1,4 @@
-# Ripgrep Configuration
+# 🔍 Ripgrep Configuration
 
 ## Overview
 [Ripgrep (rg)](https://github.com/BurntSushi/ripgrep) is a blazingly fast recursive text search tool that respects .gitignore files and provides excellent performance for code searching.

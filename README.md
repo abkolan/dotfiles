@@ -1,49 +1,48 @@
-# 🚀 My Dotfiles
+# Dotfiles
 
-My personal dotfiles setup optimized for DevOps workflows, managed with GNU Stow.
+Personal dotfiles setup optimized for DevOps workflows, managed with GNU Stow.
 
 ## 📦 What's Included
 
-### 🔧 Neovim Configuration
-- **Lightning-fast navigation** with FZF and Telescope
-- **Kubernetes LSP support** with auto-schema validation  
-- **Multi-file management** (splits, tabs, buffers)
-- **DevOps workflows** (Terraform, Docker, Go, Python, Helm)
-- **Auto-installing LSP servers** for zero-config setup
-- **Git integration** with diff views
-- **Harpoon** for instant file switching
+### Core Tools
+- **Neovim** - Lightning-fast navigation with FZF and Telescope, LSP support, DevOps workflows
+- **ZSH** - Extended shell with custom aliases, functions, and performance optimizations
+- **Git** - Version control configuration with delta diffs and workflow aliases
+- **Kitty** - Terminal emulator with theme system and keyboard shortcuts
 
-### 🐚 Shell & Terminal (if added)
-- [**zsh**](https://www.zsh.org/) - Extended shell with improvements
-- Custom aliases and functions for DevOps workflows
+### Development Tools
+- **Go** - Development environment with linter configuration
+- **Atuin** - Advanced shell history with fuzzy search and sync
+- **Broot** - Interactive directory tree navigation
+- **Ripgrep** - Fast text search with configuration
+- **LSD** - Modern ls replacement
 
-### 🛠️ Development Tools
-- [**git**](https://git-scm.com/) - Version control configuration
-- Modern CLI tools (fd, ripgrep, fzf)
+### System Tools
+- **Btop** - Resource monitor with beautiful TUI
+- **Ghostty** - GPU-accelerated terminal emulator
+- **LinearMouse** - Mouse acceleration configuration
 
-## Installation
+## 🚀 Installation
 
-### 🚀 Quick Start (macOS only)
+### Quick Start (macOS)
 
 ```bash
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+git clone <your-repo-url> ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
 
-The installer handles everything for macOS:
-- ✅ Ensures Homebrew and required CLI tools are available
-- ✅ Sets up ZSH with Zinit and plugins
-- ✅ Configures Neovim and syncs plugins
-- ✅ Links dotfiles with GNU Stow
-- ✅ Fixes hardcoded `/Users/ab` paths
+The installer handles:
+- Homebrew and CLI tools installation
+- ZSH setup with Zinit and plugins
+- Neovim configuration and plugin sync
+- GNU Stow symlink creation
+- Path fixes for your environment
 
 ### Manual Installation
 
-Prefer to install by hand?
-
 ```bash
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+git clone <your-repo-url> ~/dotfiles
 cd ~/dotfiles
 brew install stow
 stow zsh nvim git
@@ -51,111 +50,65 @@ stow zsh nvim git
 
 ## 🧪 Testing
 
-This repository includes a macOS-focused test suite to ensure the dotfiles stay healthy.
+This repository includes a test suite for macOS:
 
-### Quick Start
-
-Run the fast sanity suite:
 ```bash
+# Fast sanity tests
 ./tests/run-tests.sh --scope fast
+
+# Full test suite
+./tests/run-tests.sh --scope all
 ```
 
-### Testing Options
+Tests verify:
+- ZSH startup performance (<150ms)
+- Neovim headless health
+- Configuration syntax
+- LSP setup
+- Alias and completion functionality
 
-```bash
-# Run with verbose output for debugging
-./tests/run-tests.sh --verbose
-
-# Bootstrap dependencies before running tests (macOS only)
-./tests/run-tests.sh --install
-```
-
-### 🚀 Fast Integration Testing
-
-For rapid iteration, use the fast test script:
-
-```bash
-# First time setup (builds base image, ~2-3 minutes)
-./tests/test-fast.sh
-
-# Subsequent runs (~20 seconds)
-./tests/test-fast.sh zsh
-./tests/test-fast.sh all
-```
-
-The fast test uses a pre-built Docker base image with all dependencies cached.
-
-### What Gets Tested
-
-- **ZSH**: Startup performance (<150ms), plugin loading, aliases, completions
-- **Neovim**: Configuration syntax, plugin loading, LSP setup, performance
-- **Kitty**: Terminal configuration, themes, fonts, key mappings (macOS)
-- **Git**: User config, aliases, tools integration, hooks
-- **Integration**: Cross-component functionality, aliases, performance
-
-### CI/CD Testing
-
-Tests run automatically on macOS runners via GitHub Actions, validating that `git clone → install → everything works` on a clean machine.
-
-For more details, see [tests/README.md](tests/README.md).
+See [tests/README.md](tests/README.md) for details.
 
 ## 📚 Component Documentation
 
-Each component in this dotfiles setup has its own detailed documentation:
-
 ### Core Components
-- [**Neovim**](nvim/README.md) - Text editor configuration with LSP, plugins, and DevOps tools
-- [**ZSH**](zsh/README.md) - Shell configuration with aliases, functions, and performance optimizations
-- [**Git**](git/README.md) - Version control configuration, aliases, and workflow tools
-- [**Kitty**](kitty/README.md) - Terminal emulator configuration and themes
+- [**Neovim**](nvim/README.md) - Text editor with LSP, plugins, and DevOps tools
+- [**ZSH**](zsh/README.md) - Shell with aliases, functions, and performance features
+- [**Git**](git/README.md) - Version control configuration and aliases
+- [**Kitty**](kitty/README.md) - Terminal emulator configuration
+- [**Atuin**](atuin/README.md) - Advanced shell history
 
 ### Development Tools
-- [**Go**](go/README.md) - Go development environment setup
-- [**Broot**](broot/README.md) - Modern tree view and file navigation
-- [**Ripgrep**](ripgrep/README.md) - Fast text search configuration
-- [**LSD**](lsd/README.md) - Modern `ls` replacement configuration
+- [**Go**](go/README.md) - Go development environment
+- [**Broot**](broot/README.md) - Tree view and file navigation
+- [**Ripgrep**](ripgrep/README.md) - Text search configuration
+- [**LSD**](lsd/README.md) - Modern ls replacement
 
 ### System Tools
-- [**Btop**](btop/README.md) - System monitor configuration
-- [**Ghostty**](ghostty/README.md) - GPU-accelerated terminal configuration
-- [**Linear Mouse**](linearmouse/README.md) - Mouse acceleration configuration
+- [**Btop**](btop/README.md) - System monitor
+- [**Ghostty**](ghostty/README.md) - GPU-accelerated terminal
+- [**LinearMouse**](linearmouse/README.md) - Mouse configuration
 
 ### Utilities
 - [**Scripts**](scripts/README.md) - Automation scripts and utilities
-- [**Scratchpad**](scratchpad/README.md) - Quick notes and temporary files
+- [**Scratchpad**](scratchpad/README.md) - Notes and temporary files
 
-### Testing & CI
-- [**Tests**](tests/README.md) - Comprehensive testing framework
-- [**GitHub Actions**](tests/github-actions/README.md) - CI/CD pipeline configuration
+## 🔄 Sync Between Machines
 
-## Sync Between Machines
-
-This repository includes a script to synchronize dotfiles between machines:
+Synchronize dotfiles across machines:
 
 ```bash
-#!/bin/bash
-# sync.sh - Simple dotfiles sync
-
-# Pull latest changes
-cd ~/dotfiles && git pull
-
-# Install/update packages
-brew bundle
-
-# Stow all configs (except .git and scripts)
-for dir in */; do
-  dir=${dir%/}
-  if [[ "$dir" != ".git" && "$dir" != "scripts" ]]; then
-    stow -R "$dir"
-  fi
-done
-
-echo "✅ Sync complete!"
+~/dotfiles/scripts/sync.sh
 ```
 
-### Usage:
+This script:
+- Pulls latest changes from git
+- Runs `brew bundle` to sync packages
+- Re-stows all configurations
 
-**On primary machine (when adding new tools):**
+### Workflow
+
+**Adding new tools:**
 ```bash
 brew install new-tool
 cd ~/dotfiles
@@ -165,11 +118,18 @@ git commit -m "Add new-tool"
 git push
 ```
 
-**On secondary machine (to sync):**
+**Syncing to other machines:**
 ```bash
-~/dotfiles/sync.sh
+~/dotfiles/scripts/sync.sh
 ```
+
+## 💡 Tips
+
+- Run `./scripts/health-check.sh` after installation to verify setup
+- Use `./scripts/benchmark.sh` to check shell startup performance
+- See component READMEs for detailed configuration options
+- Backup configs with `./scripts/backup-configs.sh` before major changes
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see LICENSE file for details.

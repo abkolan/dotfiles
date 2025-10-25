@@ -1,4 +1,4 @@
-# Scratchpad
+# 📝 Scratchpad
 
 ## Overview
 A workspace for temporary files, notes, experiments, and work-in-progress documentation. This directory serves as a staging area for ideas and configurations before they're finalized.

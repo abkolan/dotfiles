@@ -1,4 +1,4 @@
-# LSD Configuration
+# 📁 LSD Configuration
 
 ## Overview
 [LSD (LSDeluxe)](https://github.com/lsd-rs/lsd) is a modern replacement for the `ls` command with colors, icons, tree-view, and more. It's like `ls` on steroids.

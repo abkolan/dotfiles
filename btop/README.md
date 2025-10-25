@@ -1,4 +1,4 @@
-# Btop Configuration
+# 📊 Btop Configuration
 
 ## Overview
 [Btop](https://github.com/aristocratos/btop) is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. It's a modern replacement for htop with a beautiful TUI interface.

@@ -1,4 +1,4 @@
-# Ghostty Configuration
+# 👻 Ghostty Configuration
 
 ## Overview
 [Ghostty](https://github.com/mitchellh/ghostty) is a fast, feature-rich, and cross-platform terminal emulator written in Zig. It focuses on performance and correctness while providing modern terminal features.

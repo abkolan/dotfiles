@@ -1,4 +1,4 @@
-# LinearMouse Configuration
+# 🖱️ LinearMouse Configuration
 
 ## Overview
 [LinearMouse](https://linearmouse.app/) is a macOS app that provides Windows-like mouse acceleration and customization. It allows per-device configuration and fixes macOS's non-linear mouse acceleration curve.

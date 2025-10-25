@@ -1,4 +1,4 @@
-# Broot Configuration
+# 🌲 Broot Configuration
 
 ## Overview
 [Broot](https://github.com/Canop/broot) is a new way to navigate directory trees, designed to get you where you need to go with minimal keystrokes. This configuration optimizes broot for use with Kitty terminal and includes custom keybindings.
