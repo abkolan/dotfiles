@@ -270,13 +270,11 @@ telescope.setup({
   },
 })
 
--- Load extensions
+-- Load extensions (terraform and yaml_schema are loaded by their respective plugins)
 telescope.load_extension("fzf")
 telescope.load_extension("live_grep_args")
 telescope.load_extension("file_browser")
 telescope.load_extension("undo")
-telescope.load_extension("terraform")
-telescope.load_extension("yaml_schema")
 
 -- Custom functions for monorepo navigation
 local M = {}

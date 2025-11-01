@@ -53,7 +53,7 @@ o.relativenumber = true
 o.termguicolors = true
 o.signcolumn = "yes"
 o.colorcolumn = "80,120"
-o.wrap = false
+o.wrap = true
 o.linebreak = true
 
 -- Fold settings for UFO

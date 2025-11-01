@@ -39,15 +39,6 @@ The installer handles:
 - GNU Stow symlink creation
 - Path fixes for your environment
 
-### Manual Installation
-
-```bash
-git clone <your-repo-url> ~/dotfiles
-cd ~/dotfiles
-brew install stow
-stow zsh nvim git
-```
-
 ## 📚 Component Documentation
 
 ### Core Components
@@ -109,6 +100,3 @@ git push
 - See component READMEs for detailed configuration options
 - Backup configs with `./scripts/backup-configs.sh` before major changes
 
-## License
-
-MIT License - see LICENSE file for details.

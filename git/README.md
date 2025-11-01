@@ -22,7 +22,6 @@ stow git
 - `.gitconfig` - Main Git configuration with user info and includes
 - `.gitconfig.d/aliases` - All Git aliases
 - `.gitconfig.d/tools` - Tool configurations (delta, etc.)
-- `.gitignore_global` - Global ignore patterns
 
 ## 📋 Git Aliases
 
@@ -96,16 +95,6 @@ Install delta:
 ```bash
 brew install git-delta
 ```
-
-## 🚫 Global Gitignore
-
-Automatically ignores:
-- `.DS_Store` (macOS)
-- `*.swp`, `*.swo` (Vim)
-- `.idea/` (JetBrains IDEs)
-- `node_modules/`
-- `__pycache__/`
-- `.env` files
 
 ## ⚙️ Configuration Highlights
 

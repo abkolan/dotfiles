@@ -235,3 +235,7 @@ $RECYCLE.BIN/
 .nfs*
 .directory
 .Trash-*
+# ===========================
+# AI stuff
+# ===========================
+.gemini-clipboard

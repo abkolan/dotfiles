@@ -55,9 +55,22 @@ function M.setup()
           url = "https://www.schemastore.org/api/json/catalog.json",
         },
         schemas = {
-          -- Kubernetes - this will match ANY yaml file that has apiVersion and kind
-          ["kubernetes"] = "*.yaml",
-          ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.0-standalone-strict/all.json"] = "*.yaml",
+          -- Kubernetes
+          ["kubernetes"] = "*kubernetes*.yaml",
+          -- Istio
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/virtualservice.json"] = "*virtualservice*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/gateway.json"] = "*gateway*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/serviceentry.json"] = "*serviceentry*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/destinationrule.json"] = "*destinationrule*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/envoyfilter.json"] = "*envoyfilter*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/sidecar.json"] = "*sidecar*.yaml",
+          ["https://raw.githubusercontent.com.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/workloadentry.json"] = "*workloadentry*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/workloadgroup.json"] = "*workloadgroup*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/security/v1beta1/authorizationpolicy.json"] = "*authorizationpolicy*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/security/v1beta1/requestauthentication.json"] = "*requestauthentication*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/security/v1beta1/peerauthentication.json"] = "*peerauthentication*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/telemetry/v1alpha1/telemetry.json"] = "*telemetry*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/extensions/v1alpha1/wasmplugin.json"] = "*wasmplugin*.yaml",
         },
         completion = true,
         hover = true,
