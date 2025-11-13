@@ -56,7 +56,7 @@ function M.setup()
         },
         schemas = {
           -- Kubernetes
-          ["kubernetes"] = "*kubernetes*.yaml",
+          ["kubernetes"] = {"*kubernetes*.yaml", "*istiooperator*.yaml"},
           -- Istio
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/virtualservice.json"] = "*virtualservice*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/gateway.json"] = "*gateway*.yaml",
@@ -64,7 +64,7 @@ function M.setup()
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/destinationrule.json"] = "*destinationrule*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/envoyfilter.json"] = "*envoyfilter*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/sidecar.json"] = "*sidecar*.yaml",
-          ["https://raw.githubusercontent.com.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/workloadentry.json"] = "*workloadentry*.yaml",
+          ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/workloadentry.json"] = "*workloadentry*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/networking/v1alpha3/workloadgroup.json"] = "*workloadgroup*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/security/v1beta1/authorizationpolicy.json"] = "*authorizationpolicy*.yaml",
           ["https://raw.githubusercontent.com/istio/api/master/jsonschema/schemas/istio/security/v1beta1/requestauthentication.json"] = "*requestauthentication*.yaml",

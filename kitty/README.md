@@ -1,6 +1,40 @@
-# Kitty Terminal Configuration
+# 🐱 Kitty Terminal Configuration
 
 Fully optimized Kitty terminal setup for macOS with reading-optimized themes, smart keyboard shortcuts, and Neovim compatibility.
+
+## Overview
+
+- Dual-theme workflow with instant toggles and automatic stroke weight adjustments
+- macOS-first keybindings that preserve native text navigation while unlocking Neovim Alt combos
+- Display tweaks for long-form reading and Retina panels (line height, spacing, cursor)
+- Modular configuration split across “.conf” files for easy experimentation
+
+## Prerequisites
+
+- Install Kitty via Homebrew: `brew install --cask kitty`
+- Install JetBrains Mono Nerd Font (handled during `./install.sh`, or grab from [nerdfonts.com](https://www.nerdfonts.com/font-downloads))
+- Ensure the shared shell helpers from this repo are loaded (`.zsh_functions_lazy`) so the theme aliases are available
+
+## Setup
+
+```bash
+cd ~/dotfiles
+stow kitty              # symlinks ~/.config/kitty -> ~/dotfiles/kitty/.config/kitty
+kitty +kitten themes     # optional: preview shipped themes
+```
+
+After stowing, reload Kitty (`Ctrl+Shift+F5`) to pick up changes. Any edits under `~/dotfiles/kitty/.config/kitty` immediately apply to `~/.config/kitty/`.
+
+## Directory Layout
+
+| Path | Purpose |
+|------|---------|
+| `kitty/.config/kitty/kitty.conf` | Main configuration hub that includes the other modules |
+| `kitty/.config/kitty/current-theme.conf` | Auto-generated file for the active theme |
+| `kitty/.config/kitty/themes/*.conf` | Optimized dark/light theme definitions |
+| `kitty/.config/kitty/macos-shortcuts.conf` | All keyboard shortcuts grouped by feature |
+| `kitty/.config/kitty/reading-optimizations.conf` | Rendering tweaks for long sessions |
+| `kitty/.config/kitty/theme-specific-settings.conf` | Gamma and text composition overrides per theme |
 
 ## 🎨 Theme System
 
@@ -127,15 +161,18 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 
 ## 📁 Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `kitty.conf` | Main configuration |
-| `current-theme.conf` | Active theme (auto-updated) |
-| `themes/tomorrow-night-optimized.conf` | Dark theme |
-| `themes/github-light.conf` | Light theme |
-| `macos-shortcuts.conf` | All keyboard shortcuts |
-| `reading-optimizations.conf` | Display optimizations |
-| `theme-specific-settings.conf` | Text rendering guide |
+`kitty.conf` sits at the root of the config directory and includes the other modules so they stay small and focused:
+
+```
+include current-theme.conf
+include macos-shortcuts.conf
+include reading-optimizations.conf
+include theme-specific-settings.conf
+```
+
+- Theme files live under `themes/` and are swapped by the helper aliases (`dark`, `light`, `tt`).
+- `current-theme.conf` is rewritten automatically by the theme switcher; expect it to show up as modified after toggling themes.
+- Keep custom overrides in their own `.conf` and add another `include` so changes stay merge-friendly.
 
 ## 🔧 Customization Tips
 

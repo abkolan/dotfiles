@@ -191,3 +191,6 @@ command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 # (duplicate avoided) zoxide already initialized above if available
 
 . "$HOME/.local/bin/env"
+
+# Created by `pipx` on 2025-11-01 03:35:06
+export PATH="$PATH:/Users/ab/Library/Python/3.9/bin"
