@@ -7,7 +7,27 @@ Fully optimized Kitty terminal setup for macOS with reading-optimized themes, sm
 - Dual-theme workflow with instant toggles and automatic stroke weight adjustments
 - macOS-first keybindings that preserve native text navigation while unlocking Neovim Alt combos
 - Display tweaks for long-form reading and Retina panels (line height, spacing, cursor)
-- Modular configuration split across “.conf” files for easy experimentation
+- Modular configuration split across ".conf" files for easy experimentation
+
+## ✨ Recent Refinements (2025)
+
+### Configuration Improvements
+- **Resolved inconsistencies** between main config and reading-optimizations.conf
+- **Optimized scrollback** from 50,000 to 10,000 lines for better memory usage
+- **Balanced performance** settings (8ms repaint, 2ms input) for optimal responsiveness without excessive CPU
+- **Enabled sync to monitor** to prevent screen tearing during scrolling
+
+### New Features
+- **Enhanced font rendering** with JetBrains Mono features (+zero for dotted zero, +cv14 for better ampersand)
+- **Desktop notifications** for long-running commands (30+ seconds)
+- **Window close confirmation** prevents accidental closure of multiple tabs/windows
+- **Fuzzy search** in scrollback with fzf (falls back to less if fzf not installed)
+
+### New Keyboard Shortcuts
+- **Tab organization:** Cmd+Shift+←/→ to move tabs left/right
+- **Window management:** Cmd+Option+1-9 to jump to specific windows (like tab jumping)
+- **Window detachment:** Cmd+Shift+N to detach window to new tab
+- **Session management:** Cmd+Ctrl+S to save session, Cmd+Ctrl+L for session info
 
 ## Prerequisites
 
@@ -80,6 +100,7 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 | `Cmd+Shift+]` | Next tab |
 | `Cmd+Shift+[` | Previous tab |
 | `Cmd+Shift+T` | Set tab title |
+| `Cmd+Shift+←/→` | **NEW:** Move tab left/right |
 
 ### Window Management (Splits/Panes)
 | Shortcut | Action |
@@ -87,8 +108,10 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 | `Cmd+D` | Split vertically (new window to the right) |
 | `Cmd+Shift+D` | Split horizontally (new window below) |
 | `Cmd+Option+↑/↓/←/→` | Navigate between windows |
+| `Cmd+Option+1-9` | **NEW:** Jump to specific window (like tabs) |
 | `Cmd+Ctrl+↑/↓/←/→` | Resize current window |
 | `Cmd+Shift+W` | Close current window |
+| `Cmd+Shift+N` | **NEW:** Detach window to new tab |
 
 ### Layout Management
 | Shortcut | Action |
@@ -113,7 +136,7 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 | `Cmd+↑/↓` | Page up/down |
 | `Cmd+Home/End` | Scroll to top/bottom |
 | `Option+↑/↓` | Line by line scrolling |
-| `Cmd+F` | Search in scrollback |
+| `Cmd+F` | **ENHANCED:** Fuzzy search in scrollback with fzf |
 | `Cmd+K` | Clear screen and scrollback |
 
 ### Advanced Features
@@ -125,6 +148,8 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 | `Cmd+Ctrl+Space` | Unicode input |
 | `Cmd+Shift+R` | Reload config |
 | `Cmd+Enter` | Toggle fullscreen |
+| `Cmd+Ctrl+S` | **NEW:** Save current session |
+| `Cmd+Ctrl+L` | **NEW:** Load session info |
 
 ### Window Resizing (Vim-style)
 | Shortcut | Action |
@@ -138,20 +163,23 @@ This setup preserves your macOS workflow while providing Alt functionality for N
 
 ### Font & Display Settings
 - **Font:** JetBrains Mono Nerd Font 14pt (with ligatures)
+- **Font features:** Enhanced zero with dot (+zero) and better ampersand (+cv14) for improved character distinction
 - **Line height:** 120% for comfortable reading
 - **Character spacing:** 102% to reduce eye strain
 - **Cursor:** Block shape with gentle blink
-- **Scrollback:** 10,000 lines
+- **Scrollback:** 10,000 lines (optimized from 50,000 for better performance)
 - **Background opacity:** 0.98 (subtle transparency)
 - **Tab bar:** Always visible with numbered tabs
+- **Window close confirmation:** Prevents accidental closure when multiple tabs/windows are open
 
 ### Performance Optimizations
-- **Reduced repaint delay:** 3ms (snappier response)
-- **Reduced input latency:** 1ms (instant typing feedback)
+- **Balanced repaint delay:** 8ms (good balance of responsiveness and CPU usage)
+- **Low input latency:** 2ms (very responsive typing feedback)
 - **GPU acceleration:** Enabled with modern fullscreen
-- **Sync to monitor:** Disabled for better performance
+- **Sync to monitor:** Enabled to prevent screen tearing
 - **Smooth cursor trails:** For easy tracking
 - **Ligatures:** Enabled for beautiful code (`=>`, `!=`, `>=`)
+- **Desktop notifications:** Shows notification when long-running commands finish (30+ seconds)
 
 ### URL & Link Features
 - **Auto-detect URLs:** Highlighted with curly underline

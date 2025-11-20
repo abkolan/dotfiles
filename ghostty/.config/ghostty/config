@@ -12,8 +12,14 @@ theme = dracula
 # ===========================
 # FONT CONFIGURATION
 # ===========================
-font-family = "JetBrains Mono"
+font-family = "JetBrainsMono Nerd Font Mono"
 font-size = 14
+adjust-cell-height = 20%
+adjust-cell-width = 2%
+
+# Retina display font rendering (equivalent to kitty's macos_thicken_font 0.25)
+font-thicken = true
+font-thicken-strength = 70
 
 # ===========================
 # CURSOR CONFIGURATION
