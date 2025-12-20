@@ -7,6 +7,7 @@
 # APPEARANCE & THEME
 # ===========================
 theme = dracula
+shell-integration = zsh
 #background-opacity = 0.95
 
 # ===========================
@@ -50,6 +51,8 @@ scrollback-limit = 10000
 # MOUSE & INTERACTION
 # ===========================
 mouse-hide-while-typing = true
+link-url = true
+clipboard-trim-trailing-spaces = true
 
 # ===========================
 # MACOS SETTINGS
@@ -70,6 +73,11 @@ resize-overlay-position = center
 clipboard-read = ask
 clipboard-write = allow
 
+# ===========================
+# SHADERS
+# ===========================
+custom-shader-animation = always
+custom-shader = shaders/cursor_tail.glsl
 # ===========================
 # KEYBINDINGS
 # ===========================
