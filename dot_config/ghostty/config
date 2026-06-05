@@ -43,7 +43,6 @@ split-divider-color = #ff8800
 confirm-close-surface = always
 quit-after-last-window-closed = true
 shell-integration = zsh
-command = /opt/homebrew/bin/zellij -l welcome
 
 # ===========================
 # SCROLLBACK
