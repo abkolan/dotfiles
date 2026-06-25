@@ -109,13 +109,6 @@ cache/
 .private/
 
 # ===========================
-# Stow Conflicts
-# ===========================
-# GNU Stow conflict files
-.stow-*
-*.stow
-
-# ===========================
 # Package Managers
 # ===========================
 # Node.js

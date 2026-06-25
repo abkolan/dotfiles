@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-This repository is a chezmoi-managed dotfiles repo. The source directory uses chezmoi naming conventions: `dot_` prefix for dotfiles, `.tmpl` suffix for templates. There are no stow packages.
+This repository is a chezmoi-managed dotfiles repo. The source directory uses chezmoi naming conventions: `dot_` prefix for dotfiles, `.tmpl` suffix for templates.
 
 Source directory layout:
 - `dot_config/` -- maps to `~/.config/` (nvim, kitty, ghostty, atuin, etc.)
