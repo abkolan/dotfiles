@@ -5,7 +5,7 @@
 # ===========================
 
 # PERFORMANCE: Workspace configuration
-export WORKSPACE="$HOME/Developer/repos"
+export WORKSPACE="{{ .workspacePath | replace "~" "$HOME" }}"
 
 # PERFORMANCE: Homebrew configuration
 export HOMEBREW_AUTO_UPDATE_SECS=86400

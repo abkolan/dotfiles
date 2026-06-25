@@ -323,7 +323,7 @@ Note: The OMZ git plugin (loaded via Zinit) provides many additional git aliases
 |---|---|---|
 | `@dot` | `cd $HOME/dotfiles` | Go to dotfiles repo |
 | `@dev` | `cd $HOME/Developer` | Go to Developer directory |
-| `@workspace` | `cd $WORKSPACE` | Go to workspace (~/Developer/repos) |
+| `@workspace` | `cd $WORKSPACE` | Go to workspace (~/repos) |
 | `@kodex` | `cd $WORKSPACE/kodex` | Go to kodex directory |
 | `@goprojs` | `cd $WORKSPACE/kodex/go-projects` | Go to Go projects |
 
@@ -565,7 +565,7 @@ Functions are split across three files based on loading strategy:
 | `cc [dir] [-- args]` | `.zsh_functions` | Launch Claude Code, optionally in a target directory |
 | `claude-yolo [session-id]` | `.zsh_functions` | Resume a Claude Code session with `--dangerously-skip-permissions` (opens picker if no ID) |
 | `cx [dir] [-- args]` | `.zsh_functions` | Launch Codex, optionally in a target directory |
-| `project` | `.zsh_functions_lazy` | Fuzzy project finder across Developer/repos/dotfiles/Projects |
+| `project` | `.zsh_functions_lazy` | Fuzzy project finder across workspace/dotfiles/Projects |
 | `ghclone <repo> [dest]` | `.zsh_functions_lazy` | Clone a GitHub repo (accepts `user/repo` shorthand) and cd into it |
 | `gcommit` | `.zsh_functions_lazy` | Interactive conventional commit (type via fzf, optional scope) |
 | `venv [create\|activate\|deactivate]` | `.zsh_functions_lazy` | Python virtual environment manager |
@@ -763,7 +763,7 @@ Key environment variables set in `.zshenv`:
 
 | Variable | Value | Purpose |
 |---|---|---|
-| `WORKSPACE` | `$HOME/Developer/repos` | Default workspace root |
+| `WORKSPACE` | `$HOME/repos` | Default workspace root |
 | `EDITOR` | `nvim` | Default editor |
 | `VISUAL` | `nvim` | Default visual editor |
 | `LANG` | `en_US.UTF-8` | Locale |

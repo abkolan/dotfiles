@@ -163,8 +163,7 @@ done
 project() {
   local selected
   local search_dirs=(
-    "$HOME/Developer"
-    "$HOME/Developer/repos"
+    "$WORKSPACE"
     "$HOME/dotfiles"
     "$HOME/Projects"
   )
