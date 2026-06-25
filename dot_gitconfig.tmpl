@@ -1,6 +1,15 @@
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
+
+# Per-account identity, selected by the repo's remote URL (the gh-<account>
+# alias). Plain git@github.com defaults to abkolan, matching ~/.ssh/config.
+[includeIf "hasconfig:remote.*.url:gh-abkolan:*/**"]
+	path = ~/.gitconfig-abkolan
+[includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
+	path = ~/.gitconfig-abkolan
+[includeIf "hasconfig:remote.*.url:gh-abhilast:*/**"]
+	path = ~/.gitconfig-abhilast
 [pull]
 rebase = true
 
