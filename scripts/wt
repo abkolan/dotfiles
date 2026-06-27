@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="${WT_ROOT:-$HOME/repos/skates}"
+ROOT_DIR="${WT_ROOT:-${WORKSPACE:-$HOME/repos}}"
 REMOTE_BASE="${WT_REMOTE_BASE:-origin/main}"
 
 usage() {

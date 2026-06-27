@@ -28,13 +28,16 @@ echo "Brew bundle complete"
 echo "Installing packages via apt..."
 sudo apt-get update -qq
 
-# Read package list, skip blank lines
+# Read package list, skipping blank lines and comments
 PACKAGES=$(cat <<'APTFILE'
 {{ include "Aptfile" }}
 APTFILE
 )
 
-echo "$PACKAGES" | grep -v '^$' | xargs sudo apt-get install -y -qq
+PACKAGES=$(printf '%s\n' "$PACKAGES" | grep -vE '^\s*(#|$)' || true)
+if [[ -n "$PACKAGES" ]]; then
+  echo "$PACKAGES" | xargs sudo apt-get install -y -qq
+fi
 
 echo "Apt packages installed"
 

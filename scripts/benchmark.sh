@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 echo "📊 ZSH Performance Benchmark"
 echo "============================"
 
@@ -10,19 +12,13 @@ else
     echo "Install hyperfine for better benchmarking: brew install hyperfine"
     echo "Falling back to basic timing..."
     
-    # Cold start (clear cache)
-    echo "Cold start times:"
-    for i in {1..5}; do
-        /usr/bin/time -p zsh -i -c 'exit' 2>&1 | grep real | awk '{print "  Run '$i': " $2 "s"}'
-    done
-    
-    # Warm start
-    echo -e "\nWarm start times:"
-    for i in {1..5}; do
-        /usr/bin/time -p zsh -i -c 'exit' 2>&1 | grep real | awk '{print "  Run '$i': " $2 "s"}'
+    # Startup times (no real cold/warm split without cache control)
+    echo "Startup times (10 runs):"
+    for i in {1..10}; do
+        /usr/bin/time -p zsh -i -c 'exit' 2>&1 | grep real | awk -v i="$i" '{print "  Run " i ": " $2 "s"}'
     done
 fi
 
 # Plugin load times
 echo -e "\nPlugin load analysis:"
-PROFILE_STARTUP=true zsh -i -c 'exit' 2>&1 | grep -E "^[0-9]+" | head -10
+PROFILE_STARTUP=true zsh -i -c 'exit' 2>&1 | grep -E "^[0-9]+" | head -10 || true
