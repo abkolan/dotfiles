@@ -1,6 +1,5 @@
 {{- $email := promptStringOnce . "email" "Git email address" -}}
 {{- $name := promptStringOnce . "name" "Git user name" -}}
-{{- $isWork := promptBoolOnce . "isWork" "Is this a work machine" -}}
 {{- $workspacePath := promptStringOnce . "workspacePath" "Workspace path (default: ~/repos)" -}}
 {{- $abkolanEmail := promptStringOnce . "abkolanEmail" "Git email for the abkolan GitHub account" -}}
 {{- $abhilastEmail := promptStringOnce . "abhilastEmail" "Git email for the abhilast GitHub account" -}}
@@ -8,7 +7,6 @@
 [data]
   email = {{ $email | quote }}
   name = {{ $name | quote }}
-  isWork = {{ $isWork }}
   workspacePath = {{ $workspacePath | quote }}
   abkolanEmail = {{ $abkolanEmail | quote }}
   abhilastEmail = {{ $abhilastEmail | quote }}
