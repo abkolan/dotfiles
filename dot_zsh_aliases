@@ -120,7 +120,7 @@ alias cef="code ~/.zsh_functions" # Open Zsh functions in VS Code
 # ===========================
 # 🔥 Personal CONFIGURATIONS
 # ===========================
-alias @dot="cd $HOME/dotfiles"
+alias @dot="cd $HOME/.local/share/chezmoi"   # chezmoi dotfiles source
 alias @dev="cd $HOME/Developer"
 alias @workspace="cd $WORKSPACE"
 alias @kodex="cd $WORKSPACE/kodex"
@@ -140,7 +140,7 @@ alias ff="fd --type f --hidden --follow --exclude .git | fzf --preview 'bat --st
 alias fzf-files="fd --type f --hidden --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --line-range :500 {}' --preview-window=right:60%:wrap"
 
 # Search in file contents with rg + fzf
-alias rg="rg --color=always --line-number --no-heading --smart-case"
+alias rg="rg --color=auto --line-number --no-heading --smart-case"
 
 # Search text content interactively - function moved to .zsh_functions
 
@@ -169,7 +169,7 @@ zz() {
 alias gt='ghostty-theme'                    # Quick theme change
 alias gta='ghostty-auto-theme'               # Auto theme based on time
 alias gts='ghostty-sync-system'              # Sync with system theme
-alias gtl='~/dotfiles/scripts/ghostty-theme-switcher.sh --list'  # List themes
+alias gtl='ghostty-theme-switcher.sh --list'  # List themes (script on PATH via .zshenv)
 
 # PERFORMANCE: Ghostty profile management
 # Keep `gp` reserved for `git push` below.
@@ -258,7 +258,7 @@ alias gco='git checkout'
 alias gb='git branch'
 alias gd='git diff'
 
-# CKA exam shortcuts
-export do="--dry-run=client -o yaml"
-export now="--force --grace-period 0"
+# CKA exam shortcuts (shell-local; not exported, to avoid shadowing in child procs)
+do="--dry-run=client -o yaml"
+now="--force --grace-period 0"
 alias kn='kubectl config set-context --current --namespace'

@@ -164,7 +164,7 @@ project() {
   local selected
   local search_dirs=(
     "$WORKSPACE"
-    "$HOME/dotfiles"
+    "$HOME/.local/share/chezmoi"
     "$HOME/Projects"
   )
   

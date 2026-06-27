@@ -45,17 +45,14 @@ typeset -U PATH
 # Start from predictable system defaults so exec zsh/exec zsh -l stay consistent
 PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
-# Prefer Homebrew (Apple Silicon) and keep PATH ordering stable
-__ensure_brew_shellenv() {
-  local brew_bin="/opt/homebrew/bin/brew"
-  if [[ -x "$brew_bin" ]]; then
-    eval "$("$brew_bin" shellenv)"
-  elif command -v brew >/dev/null 2>&1; then
-    eval "$(brew shellenv)"
-  fi
-}
-
-__ensure_brew_shellenv
+# Prefer Homebrew (Apple Silicon). Static exports avoid forking
+# `brew shellenv` on every shell/subshell (~15ms each); values are stable.
+export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+export HOMEBREW_REPOSITORY="/opt/homebrew"
+export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:"
+export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
+PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 [[ -d "/System/Cryptexes/App/usr/bin" ]] && PATH="$PATH:/System/Cryptexes/App/usr/bin"
 [[ -d "/Library/Apple/usr/bin" ]] && PATH="$PATH:/Library/Apple/usr/bin"
@@ -68,58 +65,25 @@ for cryptex_path in \
   [[ -d "$cryptex_path" ]] && PATH="$PATH:$cryptex_path"
 done
 
-# PERFORMANCE: Add Go PATH with error handling and caching
-if command -v go >/dev/null 2>&1; then
-  # Cache GOPATH to avoid repeated calls
-  export GOPATH="${GOPATH:-$(go env GOPATH 2>/dev/null || echo "$HOME/go")}"
-  PATH="$PATH:$GOPATH/bin"
-fi
+# PERFORMANCE: Go PATH (use default GOPATH; avoid forking `go env` per shell)
+export GOPATH="${GOPATH:-$HOME/go}"
+[[ -d "$GOPATH/bin" ]] && PATH="$PATH:$GOPATH/bin"
 
 # PERFORMANCE: Source Cargo environment if it exists
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
-# ===========================
-# FZF CONFIGURATION - PERFORMANCE OPTIMIZED
-# ===========================
-# Theme-aware colors (Gruvbox palette, macOS system appearance)
-FZF_COLOR_LIGHT='fg:#3c3836,fg+:#282828,bg:#fbf1c7,bg+:#ebdbb2,hl:#b57614,hl+:#af3a03,info:#076678,prompt:#427b58,pointer:#9d0006,marker:#af3a03,spinner:#076678,header:#665c54,border:#bdae93'
-FZF_COLOR_DARK='fg:#ebdbb2,fg+:#fbf1c7,bg:#282828,bg+:#3c3836,hl:#fabd2f,hl+:#fe8019,info:#83a598,prompt:#b8bb26,pointer:#fb4934,marker:#fe8019,spinner:#8ec07c,header:#a89984,border:#504945'
-FZF_THEME_COLOR="$FZF_COLOR_LIGHT"
-
-if [[ "$OSTYPE" == darwin* ]] && command -v defaults >/dev/null 2>&1; then
-  if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
-    FZF_THEME_COLOR="$FZF_COLOR_DARK"
-  fi
-fi
-
-export FZF_THEME_COLOR
-export FZF_THEME_OPTS="--color=${FZF_THEME_COLOR}"
-
-# Default command uses fd for better performance and respects .gitignore
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-
-# Default options with optimized preview and keybindings
-export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --preview-window=right:60% --bind \"ctrl-/:change-preview-window(down|hidden|)\" --bind ctrl-u:preview-page-up --bind ctrl-d:preview-page-down ${FZF_THEME_OPTS}"
-
-# Ctrl+T command for file selection
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS="--preview \"bat --style=numbers --color=always --line-range :500 {}\" ${FZF_THEME_OPTS}"
-
-# Alt+C command for directory selection
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-export FZF_ALT_C_OPTS="--preview \"eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}\" ${FZF_THEME_OPTS}"
-
-# Ctrl+R command for history search
-export FZF_CTRL_R_OPTS="--preview \"echo {}\" --preview-window down:3:hidden:wrap --bind \"ctrl-/:toggle-preview\" ${FZF_THEME_OPTS}"
+# FZF configuration lives in ~/.zshrc (interactive-only). It used to run a
+# `defaults read` fork here in ~/.zshenv on every shell, and was overridden by
+# the static theme in ~/.zshrc anyway.
 
 # PERFORMANCE: Export the constructed PATH
 export PATH
 
-# Dotfiles helper scripts
-[[ -d "$HOME/dotfiles/scripts" ]] && PATH="$PATH:$HOME/dotfiles/scripts"
+# Dotfiles helper scripts (chezmoi source dir)
+[[ -d "{{ .chezmoi.sourceDir }}/scripts" ]] && PATH="$PATH:{{ .chezmoi.sourceDir }}/scripts"
 
 # Bun
-PATH="$PATH:$HOME/.bun/bin"
+[[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
 
 # Claude Token limit
 export CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000

@@ -107,10 +107,7 @@ fi
 # ===========================
 # ENVIRONMENT SETUP
 # ===========================
-# Homebrew (dynamic detection)
-if command -v brew >/dev/null 2>&1; then
-  export HOMEBREW_PREFIX="$(brew --prefix)"
-fi
+# HOMEBREW_PREFIX is exported statically in ~/.zshenv (no fork needed here).
 
 # ===========================
 # OPTIMIZED COMPLETION (portable cache)
@@ -132,6 +129,15 @@ zstyle ':completion:*' menu select
 
 # Gruvbox Dark theme for fzf (from junegunn/fzf ADVANCED.md)
 export FZF_THEME_COLOR="bg+:#3c3836,bg:#32302f,spinner:#fb4934,hl:#928374,fg:#ebdbb2,header:#928374,info:#8ec07c,pointer:#fb4934,marker:#fb4934,fg+:#ebdbb2,prompt:#fb4934,hl+:#fb4934"
+
+# FZF default command + options (moved here from ~/.zshenv; interactive-only)
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --preview-window=right:60% --bind \"ctrl-/:change-preview-window(down|hidden|)\" --bind ctrl-u:preview-page-up --bind ctrl-d:preview-page-down --color=$FZF_THEME_COLOR"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview \"bat --style=numbers --color=always --line-range :500 {}\" --color=$FZF_THEME_COLOR"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+export FZF_ALT_C_OPTS="--preview \"eza --tree --level=2 --color=always {} 2>/dev/null || ls -la {}\" --color=$FZF_THEME_COLOR"
+export FZF_CTRL_R_OPTS="--preview \"echo {}\" --preview-window down:3:hidden:wrap --bind \"ctrl-/:toggle-preview\" --color=$FZF_THEME_COLOR"
 
 # FZF-tab completion styling (inherits system-aware fzf color palette)
 zstyle ':fzf-tab:*' fzf-command fzf
@@ -191,19 +197,31 @@ fi
 # Source user functions if exists
 [[ -f "$HOME/.zsh_functions" ]] && source "$HOME/.zsh_functions"
 
+# Source autoload helper functions (docker/git helpers in ~/.zsh_autoload)
+if [[ -d "$HOME/.zsh_autoload" ]]; then
+  for _helper in "$HOME/.zsh_autoload"/*(.N); do
+    source "$_helper"
+  done
+  unset _helper
+fi
+
 # ===========================
 # TOOL INTEGRATIONS
 # ===========================
 # Direnv - automatic environment loading (only if installed)
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
-# (duplicate avoided) zoxide already initialized above if available
+[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
-. "$HOME/.local/bin/env"
-
-# AWS CLI autocomplete
-autoload bashcompinit && bashcompinit
-complete -C '/opt/homebrew/bin/aws_completer' aws
+# AWS CLI autocomplete (lazy — bashcompinit + completion load on first `aws`)
+if [[ -x "${HOMEBREW_PREFIX:-/opt/homebrew}/bin/aws_completer" ]]; then
+  aws() {
+    unfunction aws
+    autoload -Uz bashcompinit && bashcompinit
+    complete -C "${HOMEBREW_PREFIX:-/opt/homebrew}/bin/aws_completer" aws
+    command aws "$@"
+  }
+fi
 
 # bun completions
-[ -s "/Users/ab/.bun/_bun" ] && source "/Users/ab/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
