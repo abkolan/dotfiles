@@ -18,6 +18,7 @@ return {
 
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "williamboman/mason.nvim",
     },
@@ -37,6 +38,7 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
       highlight = { enable = true },
       ensure_installed = {
@@ -96,6 +98,7 @@ return {
 
   {
     "lewis6991/gitsigns.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
       current_line_blame = true,
       current_line_blame_opts = {
@@ -162,7 +165,6 @@ return {
     config = function()
       require("go").setup()
     end,
-    event = {"CmdlineEnter"},
     ft = {"go", 'gomod'},
     build = ':lua require("go.install").update_all_sync()'
   },
@@ -224,26 +226,17 @@ return {
       "rcarriga/nvim-dap-ui",
     },
     config = function()
-      -- Try to get pipenv python path
-      local function get_python_path()
-        local handle = io.popen("pipenv --venv 2>/dev/null")
-        if handle then
-          local venv_path = handle:read("*a"):gsub("%s+", "")
-          handle:close()
-          if venv_path ~= "" then
-            return venv_path .. "/bin/python"
-          end
-        end
-        -- Fallback to debugpy from mason
-        return vim.fn.expand("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
-      end
-
-      require("dap-python").setup(get_python_path())
+      -- Shared pipenv/python resolver; fall back to debugpy from mason.
+      local get_python_path = require("configs.python")
+      require("dap-python").setup(get_python_path({
+        fallback = vim.fn.expand("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"),
+      }))
     end,
   },
 
   {
     "nvim-neotest/neotest",
+    ft = { "python", "go" },
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
@@ -253,25 +246,15 @@ return {
       "nvim-neotest/neotest-go",
     },
     config = function()
-      -- Get pipenv python path for tests
-      local function get_python_path()
-        local handle = io.popen("pipenv --venv 2>/dev/null")
-        if handle then
-          local venv_path = handle:read("*a"):gsub("%s+", "")
-          handle:close()
-          if venv_path ~= "" then
-            return venv_path .. "/bin/python"
-          end
-        end
-        return "python"
-      end
+      -- Shared pipenv/python resolver; fall back to bare "python" for tests.
+      local get_python_path = require("configs.python")
 
       require("neotest").setup({
         adapters = {
           require("neotest-python")({
             dap = { justMyCode = false },
             runner = "pytest",
-            python = get_python_path(),
+            python = get_python_path({ fallback = "python" }),
           }),
           require("neotest-go")({
             experimental = {
@@ -286,6 +269,7 @@ return {
 
   {
     "L3MON4D3/LuaSnip",
+    event = "InsertEnter",
     config = function()
       require "configs.snippets"
     end,
@@ -294,6 +278,10 @@ return {
   -- Advanced Search and Navigation for Monorepos
   {
     "nvim-telescope/telescope.nvim",
+    -- Loads on the :Telescope command. The <leader>f… mappings that call
+    -- require('configs.telescope') / require('telescope') directly also trigger
+    -- lazy's module-require auto-load, so no explicit `keys` are needed.
+    cmd = "Telescope",
     dependencies = {
       "nvim-lua/plenary.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
@@ -308,6 +296,9 @@ return {
 
   {
     "ibhagwan/fzf-lua",
+    -- Loads on :FzfLua; the many mappings that call require('fzf-lua') directly
+    -- also trigger lazy's module-require auto-load.
+    cmd = "FzfLua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require "configs.fzf-lua"
@@ -315,13 +306,9 @@ return {
   },
 
   {
-    "junegunn/fzf.vim",
-    dependencies = { "junegunn/fzf" },
-  },
-
-  {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
+    cmd = "Neotree",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
@@ -335,6 +322,7 @@ return {
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
+    event = "VeryLazy",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require "configs.harpoon"
@@ -441,6 +429,7 @@ return {
 
   {
     "lewis6991/satellite.nvim",
+    event = "BufReadPost",
     opts = {
       current_only = false,
       winblend = 50,
@@ -564,6 +553,7 @@ return {
 
   {
     "kevinhwang91/nvim-ufo",
+    event = "BufReadPost",
     dependencies = "kevinhwang91/promise-async",
     config = function()
       require "configs.ufo"

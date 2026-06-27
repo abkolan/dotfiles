@@ -43,18 +43,6 @@ M.plugins = {
       },
     },
   },
-  -- Fuzzy‑finder (Lua-native)
-  ["ibhagwan/fzf-lua"] = {
-    requires = { "nvim-tree/nvim-web-devicons" },
-    cmd      = { "FzfLua", "Files", "Buffers" },
-    config   = function() require("configs.fzf-lua") end,
-  },
-  -- 3) Statusline
-  ["nvim-lualine/lualine.nvim"] = {
-    requires = "nvim-tree/nvim-web-devicons",
-    event    = "VimEnter",
-    config   = function() require("configs.lualine") end,
-  },
   -- 5) Indent guides (disabled)
   ["lukas-reineke/indent-blankline.nvim"] = {
     enabled = false,

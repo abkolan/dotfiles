@@ -24,33 +24,13 @@ for _, lsp in ipairs(servers) do
 end
 
 -- Python specific configuration
--- Helper function to get pipenv python path from a specific directory
-local function get_python_path(workspace)
-  local cwd = workspace or vim.fn.getcwd()
-
-  -- Try pipenv first (run in the workspace directory)
-  local cmd = string.format("cd '%s' && pipenv --venv 2>/dev/null", cwd)
-  local handle = io.popen(cmd)
-  if handle then
-    local venv_path = handle:read("*a"):gsub("%s+", "")
-    handle:close()
-    if venv_path ~= "" and venv_path ~= "nil" then
-      local python_path = venv_path .. "/bin/python"
-      -- Verify the python executable exists
-      if vim.fn.filereadable(python_path) == 1 then
-        return python_path
-      end
-    end
-  end
-
-  -- Fallback to system python
-  return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
-end
+-- Shared helper for resolving the pipenv/system python path.
+local get_python_path = require("configs.python")
 
 vim.lsp.config("pyright", {
   on_new_config = function(config, root_dir)
     -- Dynamically set python path based on workspace root
-    local python_path = get_python_path(root_dir)
+    local python_path = get_python_path({ workspace = root_dir or vim.fn.getcwd(), verify = true })
     config.settings.python = config.settings.python or {}
     config.settings.python.pythonPath = python_path
   end,

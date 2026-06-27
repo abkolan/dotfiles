@@ -8,16 +8,12 @@ local options = {
     python = { "black", "isort" },
     go = { "goimports", "gofmt" },
     terraform = { "terraform_fmt" },
-    tf = { "terraform_fmt" },
     yaml = { "prettier" },
-    yml = { "prettier" },
     json = { "prettier" },
     javascript = { "prettier" },
     typescript = { "prettier" },
     markdown = { "prettier" },
     sh = { "shfmt" },
-    bash = { "shfmt" },
-    dockerfile = { "dockerls" },
   },
 
   format_on_save = {

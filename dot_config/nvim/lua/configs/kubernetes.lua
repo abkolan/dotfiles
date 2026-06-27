@@ -40,24 +40,11 @@ function M.is_kubernetes_yaml(bufnr)
   return false
 end
 
--- Setup autocommand for YAML files
+-- Setup user commands for Kubernetes YAML.
+-- Note: yamlls auto-attaches to yaml buffers via filetype, and the schema
+-- matching in configs/yamlls.lua (plus filetype.lua's yaml.kubernetes detection)
+-- already covers Kubernetes manifests, so no manual client attach is needed.
 function M.setup()
-  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = {"*.yaml", "*.yml"},
-    callback = function(args)
-      if M.is_kubernetes_yaml(args.buf) then
-        -- Set up Kubernetes-specific settings
-        vim.b[args.buf].yaml_schema = "kubernetes"
-        
-        -- Force LSP to use Kubernetes schema
-        vim.lsp.buf_attach_client(args.buf, vim.lsp.get_clients({name = "yamlls"})[1])
-        
-        -- Optional: Add modeline comment for explicit schema
-        -- vim.api.nvim_buf_set_lines(args.buf, 0, 0, false, {"# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.0-standalone-strict/all.json"})
-      end
-    end,
-  })
-  
   -- Command to manually set Kubernetes schema
   vim.api.nvim_create_user_command("K8sSchema", function()
     local bufnr = vim.api.nvim_get_current_buf()

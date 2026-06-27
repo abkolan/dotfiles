@@ -13,18 +13,22 @@ map("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Close diff view" })
 
 
 -- Go specific mappings
-map("n", "<leader>gr", "<cmd>GoRun<cr>", { desc = "Go run" })
-map("n", "<leader>gt", "<cmd>GoTest<cr>", { desc = "Go test" })
-map("n", "<leader>gb", "<cmd>GoBuild<cr>", { desc = "Go build" })
-map("n", "<leader>gi", "<cmd>GoInstallDeps<cr>", { desc = "Go install dependencies" })
-map("n", "<leader>gf", "<cmd>GoFmt<cr>", { desc = "Go format" })
+-- Re-homed from <leader>g… to <leader>G… to avoid collisions with the Git
+-- family (<leader>gb/gf/gr were shadowed by fzf-lua git mappings below).
+map("n", "<leader>Gr", "<cmd>GoRun<cr>", { desc = "Go run" })             -- was <leader>gr (collided with git below)
+map("n", "<leader>Gt", "<cmd>GoTest<cr>", { desc = "Go test" })           -- was <leader>gt
+map("n", "<leader>Gb", "<cmd>GoBuild<cr>", { desc = "Go build" })         -- was <leader>gb (collided with git branches)
+map("n", "<leader>Gi", "<cmd>GoInstallDeps<cr>", { desc = "Go install dependencies" }) -- was <leader>gi
+map("n", "<leader>Gf", "<cmd>GoFmt<cr>", { desc = "Go format" })          -- was <leader>gf (collided with git files)
 
 
 
 
 -- Python mappings
-map("n", "<leader>pr", "<cmd>!python %<cr>", { desc = "Run Python file" })
-map("n", "<leader>pt", "<cmd>!python -m pytest<cr>", { desc = "Run pytest" })
+-- Re-homed from <leader>p… to <leader>P… to avoid collision with the project
+-- navigation family (<leader>pr was shadowed by "Recent project files" below).
+map("n", "<leader>Pr", "<cmd>!python %<cr>", { desc = "Run Python file" })       -- was <leader>pr (collided with recent files)
+map("n", "<leader>Pt", "<cmd>!python -m pytest<cr>", { desc = "Run pytest" })    -- was <leader>pt
 
 
 -- YAML validation
@@ -283,10 +287,13 @@ map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", { desc = "Go to declara
 map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", { desc = "Go to implementation" })
 map("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", { desc = "Show references" })
 map("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", { desc = "Hover documentation" })
-map("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { desc = "Signature help" })
+-- Re-homed from <C-k> (which is window-nav-up above) to avoid the collision.
+map("n", "<leader>ls", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { desc = "LSP signature help" }) -- was <C-k>
+map("i", "<C-s>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { desc = "LSP signature help" })
 map("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<cr>", { desc = "Rename symbol" })
 map("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc = "Code actions" })
-map("n", "<leader>f", "<cmd>lua vim.lsp.buf.format({ async = true })<cr>", { desc = "Format document" })
+-- Re-homed from <leader>f to avoid collision with the <leader>f… finder family.
+map("n", "<leader>lf", "<cmd>lua vim.lsp.buf.format({ async = true })<cr>", { desc = "LSP format document" }) -- was <leader>f
 
 -- Diagnostics navigation
 map("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", { desc = "Previous diagnostic" })
@@ -294,13 +301,12 @@ map("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", { desc = "Next diagnos
 map("n", "<leader>D", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Show diagnostic" })
 
 -- NvChad Dashboard
-map("n", "<leader>d", "<cmd>Nvdash<cr>", { desc = "Open NvChad dashboard" })
+-- Re-homed from <leader>d, which shadowed the entire <leader>d… directory family.
+map("n", "<leader>;", "<cmd>Nvdash<cr>", { desc = "Open NvChad dashboard" }) -- was <leader>d
 
 -- Symbol occurrence navigation
 map("n", "*", "*zz", { desc = "Search word forward (centered)" })
 map("n", "#", "#zz", { desc = "Search word backward (centered)" })
-map("n", "n", "nzz", { desc = "Next search result (centered)" })
-map("n", "N", "Nzz", { desc = "Previous search result (centered)" })
 
 -- Reference navigation (for quickfix list)
 map("n", "]r", "<cmd>cnext<cr>zz", { desc = "Next reference" })
